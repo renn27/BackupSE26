@@ -28,6 +28,8 @@ class UploadFileToDrive implements ShouldQueue
 
     public function handle(GoogleDriveService $driveService, ImageCompressionService $compressor): void
     {
+        @set_time_limit(0);
+
         try {
             $pathToUpload = $this->tempPath;
             $compressedSize = null;
@@ -61,12 +63,14 @@ class UploadFileToDrive implements ShouldQueue
 
             Log::info("File {$this->file->id} berhasil diupload ke Drive user {$this->user->id}");
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->file->update([
                 'status'       => 'failed',
                 'upload_error' => $e->getMessage(),
             ]);
-            Log::error("Gagal upload file {$this->file->id}: " . $e->getMessage());
+            Log::error("Gagal upload file {$this->file->id}: " . $e->getMessage(), [
+                'exception' => get_class($e),
+            ]);
             throw $e; // Trigger retry
         } finally {
             // Hapus file sementara dari server

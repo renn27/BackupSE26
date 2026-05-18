@@ -40,6 +40,7 @@ class FileController extends Controller
         // Simpan sementara di server
         $tempName = Str::uuid() . '.' . $uploadedFile->getClientOriginalExtension();
         $tempPath = storage_path('app/temp/' . $tempName);
+        $this->ensureTempDirectoryExists();
         $uploadedFile->move(storage_path('app/temp'), $tempName);
 
         // Buat record file di DB dengan status 'uploading'
@@ -90,6 +91,7 @@ class FileController extends Controller
 
         $tempName = Str::uuid() . '.' . $uploadedFile->getClientOriginalExtension();
         $tempPath = storage_path('app/temp/' . $tempName);
+        $this->ensureTempDirectoryExists();
         $uploadedFile->move(storage_path('app/temp'), $tempName);
 
         $file = File::create([
@@ -129,6 +131,14 @@ class FileController extends Controller
         // Pastikan user hanya bisa cek status miliknya
         abort_if($file->user_id !== Auth::id(), 403);
 
+        if ($file->status === 'uploading' && $file->created_at->lt(now()->subMinutes(15))) {
+            $file->update([
+                'status' => 'failed',
+                'upload_error' => 'Upload berhenti terlalu lama di server. Coba unggah ulang atau cek konfigurasi queue/timeout hosting.',
+            ]);
+            $file->refresh();
+        }
+
         return response()->json([
             'status'       => $file->status,
             'drive_file_id' => $file->status === 'uploaded' ? $file->drive_file_id : null,
@@ -164,5 +174,14 @@ class FileController extends Controller
         $nameWithoutExt = pathinfo($originalName, PATHINFO_FILENAME);
         $slug = Str::slug($nameWithoutExt);
         return $slug . '_' . now()->format('Ymd_His') . '_' . Str::random(6) . '.' . $ext;
+    }
+
+    private function ensureTempDirectoryExists(): void
+    {
+        $tempDirectory = storage_path('app/temp');
+
+        if (! is_dir($tempDirectory)) {
+            mkdir($tempDirectory, 0755, true);
+        }
     }
 }
