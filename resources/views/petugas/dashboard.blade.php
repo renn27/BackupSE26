@@ -436,6 +436,7 @@ document.addEventListener('alpine:init', () => {
 
             const xhr = new XMLHttpRequest();
             xhr.open('POST', endpoint);
+            xhr.timeout = 180000;
             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             xhr.setRequestHeader('Accept', 'application/json');
 
@@ -475,10 +476,18 @@ document.addEventListener('alpine:init', () => {
                 uploadItem.detail = 'Terjadi kesalahan koneksi.';
             };
 
+            xhr.ontimeout = () => {
+                uploadItem.progress = 100;
+                uploadItem.status = 'failed';
+                uploadItem.detail = 'Server terlalu lama memproses upload. Cek queue/timeout hosting atau coba file yang lebih kecil.';
+            };
+
             xhr.onloadend = () => {
                 if (onComplete) onComplete();
             };
 
+            uploadItem.progress = 5;
+            uploadItem.detail = 'Mengunggah ke server...';
             xhr.send(formData);
         },
 
@@ -537,6 +546,8 @@ document.addEventListener('alpine:init', () => {
                         file.detail = data.upload_error || 'Upload ke Google Drive gagal.';
                         this.scheduleReloadIfReady();
                     } else {
+                        file.status = 'processing';
+                        file.progress = Math.max(file.progress, 75);
                         file.detail = 'Mengunggah ke Google Drive...';
                     }
                 });
