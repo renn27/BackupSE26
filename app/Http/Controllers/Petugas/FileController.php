@@ -9,6 +9,7 @@ use App\Models\File;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class FileController extends Controller
@@ -58,8 +59,10 @@ class FileController extends Controller
             'category'      => $request->category,
         ]);
 
-        // Dispatch job upload ke Drive (background)
-        UploadFileToDrive::dispatch($file, $user, $tempPath);
+        Log::info("Mulai upload foto ke Drive", ['file_id' => $file->id, 'temp_path' => $tempPath]);
+        // Jalankan langsung agar upload ke Drive tidak bergantung pada worker/config queue server.
+        UploadFileToDrive::dispatchSync($file, $user, $tempPath);
+        Log::info("Selesai dispatch upload foto ke Drive", ['file_id' => $file->id]);
 
         // Log aktivitas
         ActivityLog::create([
@@ -108,7 +111,9 @@ class FileController extends Controller
             'category'      => $request->category,
         ]);
 
-        UploadFileToDrive::dispatch($file, $user, $tempPath);
+        Log::info("Mulai upload backup ke Drive", ['file_id' => $file->id, 'temp_path' => $tempPath]);
+        UploadFileToDrive::dispatchSync($file, $user, $tempPath);
+        Log::info("Selesai dispatch upload backup ke Drive", ['file_id' => $file->id]);
 
         ActivityLog::create([
             'user_id'      => $user->id,

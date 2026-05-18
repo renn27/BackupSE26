@@ -17,11 +17,18 @@ class GoogleDriveService
     {
         $this->client = new GoogleClient();
 
+        $httpClientOptions = [
+            'connect_timeout' => 15,
+            'timeout' => 180,
+        ];
+
         // Bypass SSL di environment lokal (Windows) untuk mencegah cURL error 60
         if (app()->environment('local')) {
-            $httpClient = new \GuzzleHttp\Client(['verify' => false]);
-            $this->client->setHttpClient($httpClient);
+            $httpClientOptions['verify'] = false;
         }
+
+        $this->client->setHttpClient(new \GuzzleHttp\Client($httpClientOptions));
+
         $this->client->setClientId(config('google.client_id'));
         $this->client->setClientSecret(config('google.client_secret'));
         $this->client->setAccessType('offline');
