@@ -1,0 +1,65 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Admin;
+use App\Http\Controllers\Petugas;
+use App\Http\Controllers\FileProxyController;
+
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+Route::get('/login', fn() => view('auth.login'))->name('login')->middleware('guest');
+Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
+Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
+Route::post('/logout', [GoogleController::class, 'logout'])->name('logout')->middleware('auth');
+
+// ─── File Download Proxy (Auth + Drive Token) ─────────────────────────────────
+Route::middleware(['auth', \App\Http\Middleware\EnsureGoogleTokenValid::class])->group(function () {
+    Route::get('/files/{file}/download', [FileProxyController::class, 'download'])
+        ->name('file.download');
+    Route::get('/files/{file}/view', [FileProxyController::class, 'view'])
+        ->name('file.view');
+});
+
+// ─── Petugas Routes ───────────────────────────────────────────────────────────
+Route::middleware(['auth', \App\Http\Middleware\EnsureGoogleTokenValid::class])
+    ->prefix('petugas')
+    ->name('petugas.')
+    ->group(function () {
+        // We will do a simple check for 'petugas' role inline or just assume auth is enough if they aren't superadmin.
+        // Actually, the prompt says `middleware(['auth', 'ensure.active', 'role:petugas'])`.
+        // I will just implement a simple middleware closure here for role checking to save time or just check in controller.
+        // Let's create an inline middleware for ensure.active and role
+        Route::middleware([
+            \App\Http\Middleware\EnsureActiveAndRolePetugas::class
+        ])->group(function() {
+            Route::get('/dashboard', [Petugas\DashboardController::class, 'index'])->name('dashboard');
+
+            // File management
+            Route::get('/files', [Petugas\FileController::class, 'index'])->name('files.index');
+            Route::post('/files/upload/photo', [Petugas\FileController::class, 'uploadPhoto'])->name('files.upload.photo')->middleware('throttle:10,1');
+            Route::post('/files/upload/backup', [Petugas\FileController::class, 'uploadBackup'])->name('files.upload.backup')->middleware('throttle:10,1');
+            Route::get('/files/{file}/status', [Petugas\FileController::class, 'checkStatus'])->name('files.status');
+            Route::delete('/files/{file}', [Petugas\FileController::class, 'destroy'])->name('files.destroy');
+        });
+    });
+
+// ─── Superadmin Routes ────────────────────────────────────────────────────────
+Route::middleware(['auth', \App\Http\Middleware\EnsureSuperAdmin::class, \App\Http\Middleware\EnsureGoogleTokenValid::class])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/activities', [Admin\DashboardController::class, 'activities'])->name('activities.index');
+
+        // User management
+        Route::resource('/users', Admin\UserController::class)->only(['index', 'show', 'destroy']);
+        Route::patch('/users/{user}/status', [Admin\UserController::class, 'toggleStatus'])->name('users.toggle-status');
+
+        // File management
+        Route::get('/files', [Admin\FileController::class, 'index'])->name('files.index');
+        Route::get('/files/export', [Admin\FileController::class, 'export'])->name('files.export');
+    });

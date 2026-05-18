@@ -1,0 +1,185 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .file-toolbar {
+        @apply rounded-2xl border border-blue-100/80 bg-white/95 p-3 shadow-sm ring-1 ring-white/80 backdrop-blur sm:rounded-lg;
+    }
+
+    .file-control {
+        @apply h-12 w-full rounded-xl border border-slate-200 bg-slate-50/80 text-sm text-slate-700 outline-none transition duration-200 placeholder:text-slate-400 hover:border-blue-200 hover:bg-white focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-500/10 sm:h-11 sm:rounded-lg;
+    }
+
+    .file-search-control {
+        @apply file-control pl-10 pr-4;
+    }
+
+    .file-select-control {
+        @apply file-control appearance-none cursor-pointer pl-4 pr-10 font-medium;
+    }
+
+    .file-primary-button {
+        @apply inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 transition duration-200 hover:bg-blue-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-500/20 sm:h-11 sm:rounded-lg sm:hover:-translate-y-0.5;
+    }
+
+    .file-secondary-button {
+        @apply inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-green-200 bg-green-50 px-5 text-sm font-semibold text-green-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-green-300 hover:bg-green-100 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-green-500/10;
+    }
+
+    .file-results-shell {
+        @apply overflow-hidden rounded-2xl border border-blue-100/80 bg-white shadow-sm sm:rounded-lg;
+    }
+
+    .file-tabs-shell {
+        @apply flex items-center gap-2 border-b border-blue-100/80 bg-white px-3 py-3 sm:gap-3 sm:px-4;
+    }
+
+    .file-tab-list {
+        @apply inline-flex min-w-0 flex-1 gap-1 overflow-hidden rounded-xl bg-blue-50 p-1 sm:w-auto sm:flex-none sm:overflow-x-auto sm:rounded-lg;
+    }
+
+    .file-tab {
+        @apply inline-flex h-10 min-w-0 flex-[0_0_2.75rem] items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-2 text-xs font-semibold text-slate-500 transition duration-200 hover:bg-white/70 hover:text-slate-800 sm:h-10 sm:flex-none sm:justify-start sm:gap-2 sm:rounded-md sm:px-4 sm:text-sm;
+    }
+
+    .file-tab-active-neutral {
+        @apply flex-[1_1_auto] bg-white text-blue-700 shadow-sm ring-1 ring-blue-100 hover:bg-white hover:text-blue-700;
+    }
+
+    .file-tab-active-photo {
+        @apply flex-[1_1_auto] bg-white text-blue-700 shadow-sm ring-1 ring-blue-100 hover:bg-white hover:text-blue-700;
+    }
+
+    .file-tab-active-backup {
+        @apply flex-[1_1_auto] bg-white text-amber-700 shadow-sm ring-1 ring-amber-100 hover:bg-white hover:text-amber-700;
+    }
+
+    .file-view-toggle {
+        @apply ml-auto inline-flex shrink-0 items-center gap-1 rounded-xl bg-blue-50 p-1 sm:rounded-lg;
+    }
+
+    .file-view-toggle-button {
+        @apply inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition duration-200 hover:bg-slate-50 hover:text-slate-800 sm:rounded-md;
+    }
+
+    .file-view-toggle-button-active {
+        @apply bg-white text-blue-700 shadow-sm ring-1 ring-blue-100 hover:bg-white hover:text-blue-700;
+    }
+
+    .file-panel {
+        @apply overflow-hidden bg-white;
+    }
+
+    .file-table {
+        @apply w-full min-w-[900px] text-left text-sm;
+    }
+
+    .file-table-head {
+        @apply border-b border-slate-200 bg-slate-50/80 text-xs font-bold uppercase tracking-wide text-slate-500;
+    }
+
+    .file-table-th {
+        @apply px-6 py-4;
+    }
+
+    .file-table-row {
+        @apply transition duration-200 hover:bg-slate-50/80;
+    }
+
+    .file-table-cell {
+        @apply px-6 py-4 align-middle;
+    }
+
+    .file-name {
+        @apply max-w-[260px] truncate font-semibold text-slate-900;
+    }
+
+    .file-description {
+        @apply mt-1 max-w-[260px] truncate text-xs text-slate-500;
+    }
+
+    .file-icon {
+        @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border shadow-sm sm:rounded-lg;
+    }
+
+    .file-icon-photo {
+        @apply border-blue-100 bg-blue-50 text-blue-600;
+    }
+
+    .file-icon-backup {
+        @apply border-amber-100 bg-amber-50 text-amber-600;
+    }
+
+    .file-icon-danger {
+        @apply border-rose-100 bg-rose-50 text-rose-600;
+    }
+
+    .file-badge {
+        @apply inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold;
+    }
+
+    .file-category-badge {
+        @apply file-badge border-slate-200 bg-slate-100 text-slate-700;
+    }
+
+    .file-status-badge {
+        @apply inline-flex min-w-[92px] shrink-0 items-center justify-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold;
+    }
+
+    .file-status-success {
+        @apply border-green-200 bg-green-50 text-green-700;
+    }
+
+    .file-status-process {
+        @apply border-blue-200 bg-blue-50 text-blue-700;
+    }
+
+    .file-status-failed {
+        @apply border-rose-200 bg-rose-50 text-rose-700;
+    }
+
+    .file-status-muted {
+        @apply border-slate-200 bg-slate-100 text-slate-600;
+    }
+
+    .file-size-stack {
+        @apply flex min-w-[104px] items-center;
+    }
+
+    .file-size-value {
+        @apply whitespace-nowrap text-sm font-semibold leading-none tabular-nums text-slate-800;
+    }
+
+    .file-action {
+        @apply inline-flex h-10 w-10 items-center justify-center rounded-xl border border-transparent text-slate-400 transition duration-200 hover:shadow-sm sm:h-9 sm:w-9 sm:rounded-lg sm:hover:-translate-y-0.5;
+    }
+
+    .file-action-compact {
+        @apply h-7 w-7 rounded-md;
+    }
+
+    .file-action-muted {
+        @apply hover:border-slate-200 hover:bg-slate-50 hover:text-slate-800;
+    }
+
+    .file-action-blue {
+        @apply hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600;
+    }
+
+    .file-action-green {
+        @apply hover:border-green-200 hover:bg-green-50 hover:text-green-600;
+    }
+
+    .file-action-rose {
+        @apply hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600;
+    }
+
+    .file-grid-card {
+        @apply overflow-hidden rounded-lg border border-slate-200/80 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md;
+    }
+
+    .file-empty-state {
+        @apply rounded-2xl border border-dashed border-slate-300 bg-white/80 px-5 py-12 text-center text-slate-400 sm:rounded-lg sm:px-6 sm:py-14;
+    }
+}
