@@ -14,8 +14,7 @@ class UploadBackupRequest extends FormRequest
                 'required', 'file',
                 'max:51200', // 50MB
             ],
-            'description' => ['nullable', 'string', 'max:500'],
-            'category'    => ['nullable', 'string', 'max:100'],
+            'rename'      => ['nullable', 'string', 'max:180'],
         ];
     }
 }

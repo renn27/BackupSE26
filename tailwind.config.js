@@ -76,6 +76,9 @@ export default {
                     950: '#142a0c',
                 },
             },
+            fontFamily: {
+                sans: ['Outfit', 'Plus Jakarta Sans', 'Inter', 'sans-serif'],
+            },
         },
     },
     plugins: [],

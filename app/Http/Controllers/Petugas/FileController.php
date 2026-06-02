@@ -16,15 +16,7 @@ class FileController extends Controller
 {
     public function index(Request $request)
     {
-        $query = File::where('user_id', Auth::id())
-            ->when($request->type, fn($q, $t) => $q->where('type', $t))
-            ->when($request->status, fn($q, $s) => $q->where('status', $s))
-            ->when($request->search, fn($q, $s) => $q->where('original_name', 'like', "%{$s}%"))
-            ->latest();
-
-        $files = $query->paginate(20)->withQueryString();
-
-        return view('petugas.files.index', compact('files'));
+        return redirect()->route('petugas.dashboard', $request->query());
     }
 
     public function uploadPhoto(UploadPhotoRequest $request)
@@ -35,8 +27,11 @@ class FileController extends Controller
         // Ambil info file sebelum dipindah
         $mimeType = $uploadedFile->getMimeType();
         $sizeBytes = $uploadedFile->getSize();
-        $originalName = $uploadedFile->getClientOriginalName();
-        $storedName = $this->generateStoredName($originalName);
+        $sourceName = $uploadedFile->getClientOriginalName();
+        $displayName = $this->resolveDisplayName($sourceName, $request->rename);
+        $storedName = $request->filled('rename')
+            ? $displayName
+            : $this->generateStoredName($sourceName);
 
         // Simpan sementara di server
         $tempName = Str::uuid() . '.' . $uploadedFile->getClientOriginalExtension();
@@ -49,14 +44,12 @@ class FileController extends Controller
             'user_id'       => $user->id,
             'drive_file_id' => '',
             'drive_folder_id' => '',
-            'original_name' => $originalName,
+            'original_name' => $displayName,
             'stored_name'   => $storedName,
             'type'          => 'photo',
             'mime_type'     => $mimeType,
             'size_bytes'    => $sizeBytes,
             'status'        => 'uploading',
-            'description'   => $request->description,
-            'category'      => $request->category,
         ]);
 
         Log::info("Mulai upload foto ke Drive", ['file_id' => $file->id, 'temp_path' => $tempPath]);
@@ -89,8 +82,11 @@ class FileController extends Controller
 
         $mimeType = $uploadedFile->getMimeType();
         $sizeBytes = $uploadedFile->getSize();
-        $originalName = $uploadedFile->getClientOriginalName();
-        $storedName = $this->generateStoredName($originalName);
+        $sourceName = $uploadedFile->getClientOriginalName();
+        $displayName = $this->resolveDisplayName($sourceName, $request->rename);
+        $storedName = $request->filled('rename')
+            ? $displayName
+            : $this->generateStoredName($sourceName);
 
         $tempName = Str::uuid() . '.' . $uploadedFile->getClientOriginalExtension();
         $tempPath = storage_path('app/temp/' . $tempName);
@@ -101,14 +97,12 @@ class FileController extends Controller
             'user_id'       => $user->id,
             'drive_file_id' => '',
             'drive_folder_id' => '',
-            'original_name' => $originalName,
+            'original_name' => $displayName,
             'stored_name'   => $storedName,
             'type'          => 'backup',
             'mime_type'     => $mimeType,
             'size_bytes'    => $sizeBytes,
             'status'        => 'uploading',
-            'description'   => $request->description,
-            'category'      => $request->category,
         ]);
 
         Log::info("Mulai upload backup ke Drive", ['file_id' => $file->id, 'temp_path' => $tempPath]);
@@ -179,6 +173,30 @@ class FileController extends Controller
         $nameWithoutExt = pathinfo($originalName, PATHINFO_FILENAME);
         $slug = Str::slug($nameWithoutExt);
         return $slug . '_' . now()->format('Ymd_His') . '_' . Str::random(6) . '.' . $ext;
+    }
+
+    private function resolveDisplayName(string $originalName, ?string $rename): string
+    {
+        if (! filled($rename)) {
+            return $originalName;
+        }
+
+        $extension = pathinfo($originalName, PATHINFO_EXTENSION);
+        $nameWithoutExtension = trim($rename);
+
+        if ($extension && preg_match('/\.' . preg_quote($extension, '/') . '$/i', $nameWithoutExtension)) {
+            $nameWithoutExtension = substr($nameWithoutExtension, 0, -strlen($extension) - 1);
+        }
+
+        $sanitizedName = trim(preg_replace('/[\\\\\/:*?"<>|\x00-\x1F]+/', '-', $nameWithoutExtension), " .-_");
+
+        if ($sanitizedName === '') {
+            $sanitizedName = pathinfo($originalName, PATHINFO_FILENAME);
+        }
+
+        return $extension
+            ? "{$sanitizedName}.{$extension}"
+            : $sanitizedName;
     }
 
     private function ensureTempDirectoryExists(): void

@@ -31,6 +31,8 @@ class GoogleDriveService
 
         $this->client->setClientId(config('google.client_id'));
         $this->client->setClientSecret(config('google.client_secret'));
+        $this->client->setRedirectUri(config('google.redirect_uri'));
+        $this->client->setScopes(config('google.scopes'));
         $this->client->setAccessType('offline');
     }
 
@@ -58,6 +60,28 @@ class GoogleDriveService
         return $this;
     }
 
+    private function isInsufficientScopeException(\Throwable $e): bool
+    {
+        $message = $e->getMessage();
+
+        return $e instanceof \Google\Service\Exception
+            && $e->getCode() === 403
+            && (
+                str_contains($message, 'ACCESS_TOKEN_SCOPE_INSUFFICIENT')
+                || str_contains($message, 'insufficientPermissions')
+                || str_contains($message, 'insufficient authentication scopes')
+            );
+    }
+
+    private function rethrowWithScopeMessage(\Throwable $e): void
+    {
+        if ($this->isInsufficientScopeException($e)) {
+            throw new \Exception('Izin Google Drive belum lengkap. Silakan logout lalu login ulang dan setujui akses Google Drive.', 403, $e);
+        }
+
+        throw $e;
+    }
+
     /**
      * Buat folder utama aplikasi di Drive user
      * Struktur: [AppName] > Photos + Backups
@@ -67,16 +91,20 @@ class GoogleDriveService
         $this->forUser($user);
         $drive = new GoogleDrive($this->client);
 
-        // Buat folder utama
-        $mainFolder = $this->createFolder(
-            $drive,
-            config('google.drive.folder_name'),
-            'root'
-        );
+        try {
+            // Buat folder utama
+            $mainFolder = $this->createFolder(
+                $drive,
+                config('google.drive.folder_name'),
+                'root'
+            );
 
-        // Buat subfolder
-        $this->createFolder($drive, config('google.drive.photos_subfolder'), $mainFolder);
-        $this->createFolder($drive, config('google.drive.backups_subfolder'), $mainFolder);
+            // Buat subfolder
+            $this->createFolder($drive, config('google.drive.photos_subfolder'), $mainFolder);
+            $this->createFolder($drive, config('google.drive.backups_subfolder'), $mainFolder);
+        } catch (\Throwable $e) {
+            $this->rethrowWithScopeMessage($e);
+        }
 
         // Simpan ID folder utama ke user
         $user->update(['google_drive_folder_id' => $mainFolder]);
@@ -103,12 +131,16 @@ class GoogleDriveService
 
         $content = file_get_contents($localPath);
 
-        $uploadedFile = $drive->files->create($fileMetadata, [
-            'data'       => $content,
-            'mimeType'   => $mimeType,
-            'uploadType' => 'multipart',
-            'fields'     => 'id,name,webViewLink,size',
-        ]);
+        try {
+            $uploadedFile = $drive->files->create($fileMetadata, [
+                'data'       => $content,
+                'mimeType'   => $mimeType,
+                'uploadType' => 'multipart',
+                'fields'     => 'id,name,webViewLink,size',
+            ]);
+        } catch (\Throwable $e) {
+            $this->rethrowWithScopeMessage($e);
+        }
 
         return [
             'drive_file_id'    => $uploadedFile->getId(),

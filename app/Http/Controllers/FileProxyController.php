@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\File;
 use App\Services\GoogleDriveService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class FileProxyController extends Controller
@@ -37,7 +38,7 @@ class FileProxyController extends Controller
     /**
      * Proxy view file — menampilkan file langsung di browser (inline)
      */
-    public function view(File $file, GoogleDriveService $driveService)
+    public function view(File $file, GoogleDriveService $driveService, Request $request)
     {
         $user = Auth::user();
 
@@ -47,14 +48,29 @@ class FileProxyController extends Controller
 
         abort_if($file->status !== 'uploaded', 404, 'File belum tersedia.');
 
+        $lastModified = $file->updated_at ?? $file->created_at;
+        $etag = '"' . sha1("file-view-{$file->id}-{$file->drive_file_id}-{$file->updated_at?->timestamp}-{$file->size_bytes}") . '"';
+        $cacheHeaders = [
+            'Cache-Control'       => 'private, max-age=604800',
+            'ETag'                => $etag,
+            'Last-Modified'       => $lastModified->toRfc7231String(),
+            'Content-Type'        => $file->mime_type,
+            'Content-Disposition' => 'inline; filename="' . $file->original_name . '"',
+        ];
+
+        if ($request->headers->get('If-None-Match') === $etag) {
+            return response('', 304, $cacheHeaders);
+        }
+
+        if ($request->headers->get('If-Modified-Since') === $lastModified->toRfc7231String()) {
+            return response('', 304, $cacheHeaders);
+        }
+
         $fileOwner = $file->user;
         $stream = $driveService->getFileStream($fileOwner, $file->drive_file_id);
 
         return response()->stream(function () use ($stream) {
             echo $stream->getContents();
-        }, 200, [
-            'Content-Type'        => $file->mime_type,
-            'Content-Disposition' => 'inline; filename="' . $file->original_name . '"',
-        ]);
+        }, 200, $cacheHeaders);
     }
 }

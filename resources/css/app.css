@@ -4,7 +4,7 @@
 
 @layer components {
     .file-toolbar {
-        @apply rounded-2xl border border-blue-100/80 bg-white/95 p-3 shadow-sm ring-1 ring-white/80 backdrop-blur sm:rounded-lg;
+        @apply rounded-2xl border border-slate-100 bg-white p-3 shadow-sm shadow-slate-950/5;
     }
 
     .file-control {
@@ -28,11 +28,11 @@
     }
 
     .file-results-shell {
-        @apply overflow-hidden rounded-2xl border border-blue-100/80 bg-white shadow-sm sm:rounded-lg;
+        @apply overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm sm:rounded-3xl;
     }
 
     .file-tabs-shell {
-        @apply flex items-center gap-2 border-b border-blue-100/80 bg-white px-3 py-3 sm:gap-3 sm:px-4;
+        @apply flex items-center gap-2 border-b border-slate-100 bg-white px-3 py-3 sm:gap-3 sm:px-4;
     }
 
     .file-tab-list {
@@ -72,15 +72,15 @@
     }
 
     .file-table {
-        @apply w-full min-w-[900px] text-left text-sm;
+        @apply w-full min-w-[520px] text-left text-sm md:min-w-[900px];
     }
 
     .file-table-head {
-        @apply border-b border-slate-200 bg-slate-50/80 text-xs font-bold uppercase tracking-wide text-slate-500;
+        @apply border-b border-slate-200 bg-slate-50/80 text-xs font-semibold uppercase tracking-wide text-slate-500;
     }
 
     .file-table-th {
-        @apply px-6 py-4;
+        @apply px-3 py-3 sm:px-6 sm:py-4;
     }
 
     .file-table-row {
@@ -88,15 +88,11 @@
     }
 
     .file-table-cell {
-        @apply px-6 py-4 align-middle;
+        @apply px-3 py-3 align-middle sm:px-6 sm:py-4;
     }
 
     .file-name {
-        @apply max-w-[260px] truncate font-semibold text-slate-900;
-    }
-
-    .file-description {
-        @apply mt-1 max-w-[260px] truncate text-xs text-slate-500;
+        @apply max-w-[150px] truncate text-sm font-semibold text-slate-900 sm:max-w-[260px];
     }
 
     .file-icon {
@@ -117,10 +113,6 @@
 
     .file-badge {
         @apply inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold;
-    }
-
-    .file-category-badge {
-        @apply file-badge border-slate-200 bg-slate-100 text-slate-700;
     }
 
     .file-status-badge {
@@ -180,6 +172,6 @@
     }
 
     .file-empty-state {
-        @apply rounded-2xl border border-dashed border-slate-300 bg-white/80 px-5 py-12 text-center text-slate-400 sm:rounded-lg sm:px-6 sm:py-14;
+        @apply rounded-2xl border border-dashed border-slate-300 bg-white/80 px-5 py-12 text-center text-slate-400 sm:px-6 sm:py-14;
     }
 }

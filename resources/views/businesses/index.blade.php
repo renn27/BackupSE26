@@ -1,0 +1,395 @@
+@extends('layouts.app')
+
+@section('title', 'Monitoring SBR')
+
+@section('content')
+<div class="space-y-6">
+    <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-950/5 sm:p-6">
+        <div class="flex flex-col gap-5">
+            <div class="min-w-0">
+                <h1 class="text-xl font-semibold tracking-tight text-se-ink sm:text-2xl">Monitoring SBR</h1>
+            </div>
+        </div>
+
+        <div class="mt-5 space-y-4">
+            <div>
+                <div class="mb-2 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 1115 0"></path>
+                    </svg>
+                    Petugas
+                </div>
+                <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ auth()->user()->name }}</span>
+            </div>
+
+            <div>
+                <div class="mb-2 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                    </svg>
+                    Wilayah tugas
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    @forelse($assignedVillages as $village)
+                        <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ $village->nmkec }} - {{ $village->nmdesa }}</span>
+                    @empty
+                        <span class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">Kamu belum ditugaskan ke desa manapun. Hubungi admin.</span>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <form id="search-form" method="GET" class="mt-5 w-full">
+            <div class="relative">
+                <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+            </div>
+        </form>
+    </div>
+
+    <section id="business-table-container" class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5">
+        @include('businesses.partials.table')
+    </section>
+</div>
+
+<div id="status-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-950/55 px-4 py-6 justify-center items-start sm:items-center transition-all duration-300 ease-out opacity-0">
+    <div class="modal-content my-auto w-full max-w-xl transform rounded-2xl bg-white p-4 shadow-xl shadow-slate-950/20 transition-all duration-300 ease-out scale-95 opacity-0 flex flex-col gap-4 border border-slate-200 sm:p-5">
+        <!-- Header -->
+        <div class="relative border-b border-slate-100 pb-4 pr-8">
+            <div class="flex min-w-0 items-start gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-100 bg-orange-50 text-se-primary">
+                    <svg class="h-[18px] w-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <div class="flex h-10 items-center">
+                        <h2 id="modal-name" class="line-clamp-2 text-base font-semibold leading-5 tracking-tight text-slate-800"></h2>
+                    </div>
+                    <div class="mt-2 flex min-w-0 flex-wrap items-center gap-2">
+                        <span id="modal-idsbr" class="inline-flex max-w-full items-center truncate rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide text-slate-500 ring-1 ring-slate-200"></span>
+                        <span id="modal-last-status" class="inline-flex w-fit items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="modal-close" type="button" class="absolute right-0 top-0 rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Status Terakhir & Info Update -->
+        <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5">
+            <div class="mb-3 flex items-start gap-2 border-b border-slate-200/70 pb-3 text-xs leading-relaxed text-slate-600">
+                <svg class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <div class="min-w-0">
+                    <span class="block text-[10px] font-medium uppercase tracking-wide text-slate-400">Alamat</span>
+                    <span id="modal-address" class="block break-words font-medium text-slate-700"></span>
+                </div>
+            </div>
+            <div class="flex items-start gap-2 text-xs leading-snug text-slate-500">
+                    <svg class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div class="min-w-0">
+                        <span class="block text-[10px] font-medium uppercase tracking-wide text-slate-400">Diperbarui</span>
+                        <span id="modal-last-update" class="block font-medium text-slate-700"></span>
+                    </div>
+            </div>
+        </div>
+
+        <!-- Status Options Grid -->
+        <div class="space-y-2">
+            <span class="text-[10px] font-medium uppercase tracking-wide text-slate-500">Pilih status baru</span>
+            <div class="grid gap-3 sm:grid-cols-2">
+                <!-- Aktif -->
+                <button type="button" data-status-option="aktif" class="status-option group relative flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-green-200 hover:bg-green-50/40">
+                    <div class="status-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-green-100 bg-white text-green-600 transition-colors">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <div class="space-y-0.5 min-w-0">
+                        <p class="font-medium text-slate-700 text-sm leading-tight transition-colors status-title">Aktif</p>
+                        <p class="text-[11px] text-slate-500 leading-tight">Usaha aktif beroperasi di lokasi ini</p>
+                    </div>
+                    <span class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-green-500 scale-0 transition-transform duration-200 status-indicator"></span>
+                </button>
+
+                <!-- Tidak Aktif -->
+                <button type="button" data-status-option="tidak_aktif" class="status-option group relative flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-rose-200 hover:bg-rose-50/40">
+                    <div class="status-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-100 bg-white text-rose-600 transition-colors">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </div>
+                    <div class="space-y-0.5 min-w-0">
+                        <p class="font-medium text-slate-700 text-sm leading-tight transition-colors status-title">Tidak Aktif</p>
+                        <p class="text-[11px] text-slate-500 leading-tight">Usaha tutup atau tidak lagi beroperasi</p>
+                    </div>
+                    <span class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-rose-500 scale-0 transition-transform duration-200 status-indicator"></span>
+                </button>
+
+                <!-- Pindah -->
+                <button type="button" data-status-option="pindah" class="status-option group relative flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-amber-200 hover:bg-amber-50/40">
+                    <div class="status-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber-100 bg-white text-amber-600 transition-colors">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </div>
+                    <div class="space-y-0.5 min-w-0">
+                        <p class="font-medium text-slate-700 text-sm leading-tight transition-colors status-title">Pindah</p>
+                        <p class="text-[11px] text-slate-500 leading-tight">Usaha pindah alamat / keluar wilayah</p>
+                    </div>
+                    <span class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-amber-500 scale-0 transition-transform duration-200 status-indicator"></span>
+                </button>
+
+                <!-- Tidak Ditemukan -->
+                <button type="button" data-status-option="tidak_ditemukan" class="status-option group relative flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-slate-300 hover:bg-slate-50">
+                    <div class="status-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-colors">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M9 8.75a3 3 0 116 0c0 2.25-3 2.35-3 4.75M12 17.25h.01"></path>
+                        </svg>
+                    </div>
+                    <div class="space-y-0.5 min-w-0">
+                        <p class="font-medium text-slate-700 text-sm leading-tight transition-colors status-title">Tidak Ditemukan</p>
+                        <p class="text-[11px] text-slate-500 leading-tight">Keberadaan usaha tidak teridentifikasi</p>
+                    </div>
+                    <span class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-slate-500 scale-0 transition-transform duration-200 status-indicator"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-2.5 mt-1">
+            <button id="modal-cancel" type="button" class="w-full sm:w-auto rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+                Batal
+            </button>
+            <button id="modal-save" type="button" class="w-full sm:w-auto rounded-xl bg-se-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust active:scale-[0.99] transition flex items-center justify-center gap-1.5">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                </svg>
+                <span>Simpan Status</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="fixed right-4 top-4 z-[60] hidden rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700 shadow-lg">Status berhasil disimpan.</div>
+@endsection
+
+@push('scripts')
+<script>
+const statusLabels = {
+    aktif: 'Aktif',
+    tidak_aktif: 'Tidak Aktif',
+    pindah: 'Pindah',
+    tidak_ditemukan: 'Tidak Ditemukan'
+};
+const statusClasses = {
+    aktif: 'bg-green-50 text-green-700 ring-green-200',
+    tidak_aktif: 'bg-rose-50 text-rose-700 ring-rose-200',
+    pindah: 'bg-amber-50 text-amber-700 ring-amber-200',
+    tidak_ditemukan: 'bg-slate-100 text-slate-600 ring-slate-200'
+};
+let selectedBusinessId = null;
+let selectedStatus = null;
+let searchTimer = null;
+let searchController = null;
+const tableContainer = document.getElementById('business-table-container');
+const searchInput = document.getElementById('search-input');
+const searchForm = document.getElementById('search-form');
+
+searchForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    runLiveSearch(1);
+});
+
+searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => runLiveSearch(1), 350);
+});
+
+tableContainer.addEventListener('click', (event) => {
+    const paginationLink = event.target.closest('a[href]');
+    if (!paginationLink) return;
+
+    const url = new URL(paginationLink.href);
+    if (!url.searchParams.has('page')) return;
+
+    event.preventDefault();
+    runLiveSearch(url.searchParams.get('page') || 1);
+});
+
+async function runLiveSearch(page = 1) {
+    if (searchController) searchController.abort();
+
+    searchController = new AbortController();
+    const url = new URL(window.location.href);
+    url.searchParams.set('search', searchInput.value);
+    url.searchParams.set('page', page);
+    window.history.replaceState({}, '', url);
+    tableContainer.classList.add('opacity-60');
+
+    try {
+        const response = await fetch(url, {
+            headers: {'Accept': 'application/json'},
+            signal: searchController.signal
+        });
+        const data = await response.json();
+        tableContainer.innerHTML = data.html;
+    } catch (error) {
+        if (error.name !== 'AbortError') {
+            console.error(error);
+        }
+    } finally {
+        tableContainer.classList.remove('opacity-60');
+    }
+}
+
+function openModal(button) {
+    selectedBusinessId = button.dataset.id;
+    selectedStatus = button.dataset.status || null;
+    document.getElementById('modal-name').textContent = button.dataset.name;
+    document.getElementById('modal-idsbr').textContent = `SBR ${button.dataset.idsbr || '-'}`;
+    document.getElementById('modal-address').textContent = button.dataset.address;
+    
+    // Style the last status badge dynamically
+    const lastStatusBadge = document.getElementById('modal-last-status');
+    lastStatusBadge.textContent = selectedStatus ? statusLabels[selectedStatus] : 'Belum Dicatat';
+    lastStatusBadge.className = 'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ' + 
+        (selectedStatus ? statusClasses[selectedStatus] : 'bg-slate-100 text-slate-600 ring-slate-200');
+
+    const updatedBy = button.dataset.updatedBy || '-';
+    const updatedAt = button.dataset.updatedAt || '-';
+    document.getElementById('modal-last-update').textContent =
+        updatedBy === '-' && updatedAt === '-' ? 'Belum ada pembaruan' : `oleh ${updatedBy} pada ${updatedAt}`;
+    
+    renderStatusOptions();
+    
+    const modal = document.getElementById('status-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Trigger transition
+    setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
+        modal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
+    }, 20);
+}
+
+function closeModal() {
+    const modal = document.getElementById('status-modal');
+    modal.classList.add('opacity-0');
+    
+    const content = modal.querySelector('.modal-content');
+    content.classList.remove('scale-100', 'opacity-100');
+    content.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }, 300);
+}
+
+function renderStatusOptions() {
+    document.querySelectorAll('.status-option').forEach(button => {
+        const option = button.dataset.statusOption;
+        const active = option === selectedStatus;
+
+        button.classList.remove(
+            'border-green-300', 'bg-green-50',
+            'border-rose-300', 'bg-rose-50',
+            'border-amber-300', 'bg-amber-50',
+            'border-slate-400', 'bg-slate-50',
+            'border-slate-200', 'bg-white'
+        );
+
+        const title = button.querySelector('.status-title');
+        title.classList.remove('text-green-700', 'text-rose-700', 'text-amber-700', 'text-slate-800', 'text-slate-700');
+
+        const indicator = button.querySelector('.status-indicator');
+        indicator.classList.remove('scale-100');
+        indicator.classList.add('scale-0');
+
+        if (active) {
+            indicator.classList.remove('scale-0');
+            indicator.classList.add('scale-100');
+
+            if (option === 'aktif') {
+                button.classList.add('border-green-300', 'bg-green-50');
+                title.classList.add('text-green-700');
+            } else if (option === 'tidak_aktif') {
+                button.classList.add('border-rose-300', 'bg-rose-50');
+                title.classList.add('text-rose-700');
+            } else if (option === 'pindah') {
+                button.classList.add('border-amber-300', 'bg-amber-50');
+                title.classList.add('text-amber-700');
+            } else if (option === 'tidak_ditemukan') {
+                button.classList.add('border-slate-400', 'bg-slate-50');
+                title.classList.add('text-slate-800');
+            }
+        } else {
+            button.classList.add('border-slate-200', 'bg-white');
+            title.classList.add('text-slate-700');
+        }
+    });
+}
+
+tableContainer.addEventListener('click', (event) => {
+    const button = event.target.closest('.status-open');
+    if (!button) return;
+
+    openModal(button);
+});
+
+document.querySelectorAll('.status-option').forEach(button => {
+    button.addEventListener('click', () => {
+        selectedStatus = button.dataset.statusOption;
+        renderStatusOptions();
+    });
+});
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-cancel').addEventListener('click', closeModal);
+
+document.getElementById('modal-save').addEventListener('click', async () => {
+    if (!selectedBusinessId || !selectedStatus) return;
+
+    const response = await fetch(`{{ url('/petugas/monitoring-sbr') }}/${selectedBusinessId}/status`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({status: selectedStatus, catatan: null})
+    });
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const badge = document.querySelector(`[data-status-badge="${selectedBusinessId}"]`);
+    badge.className = `inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 ${statusClasses[data.status]}`;
+    badge.textContent = data.status_label;
+
+    const button = document.querySelector(`.status-open[data-id="${selectedBusinessId}"]`);
+    button.dataset.status = data.status;
+    button.dataset.note = data.catatan || '';
+    button.dataset.updatedBy = data.updated_by;
+    button.dataset.updatedAt = data.updated_at;
+
+    closeModal();
+    const toast = document.getElementById('toast');
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 2200);
+});
+</script>
+@endpush

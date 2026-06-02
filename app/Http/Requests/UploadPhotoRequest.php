@@ -15,8 +15,7 @@ class UploadPhotoRequest extends FormRequest
                 'mimes:jpeg,jpg,png,webp,heic',
                 'max:10240', // 10MB
             ],
-            'description' => ['nullable', 'string', 'max:500'],
-            'category'    => ['nullable', 'string', 'max:100'],
+            'rename'      => ['nullable', 'string', 'max:180'],
         ];
     }
 
@@ -27,6 +26,7 @@ class UploadPhotoRequest extends FormRequest
             'photo.image'    => 'File harus berupa gambar.',
             'photo.mimes'    => 'Format foto harus: JPEG, PNG, WebP, atau HEIC.',
             'photo.max'      => 'Ukuran foto maksimal 10MB.',
+            'rename.max'     => 'Nama file baru maksimal 180 karakter.',
         ];
     }
 }

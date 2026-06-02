@@ -62,6 +62,22 @@ class User extends Authenticatable
         return $this->hasMany(ActivityLog::class);
     }
 
+    public function villageAssignments()
+    {
+        return $this->hasMany(UserVillageAssignment::class);
+    }
+
+    public function villages()
+    {
+        return $this->belongsToMany(Village::class, 'user_village_assignments')
+            ->withPivot(['assigned_by', 'assigned_at']);
+    }
+
+    public function businessStatuses()
+    {
+        return $this->hasMany(BusinessStatus::class, 'updated_by_user_id');
+    }
+
     public function getTotalStorageUsedAttribute(): int
     {
         return $this->files()->where('status', 'uploaded')->sum('size_bytes');

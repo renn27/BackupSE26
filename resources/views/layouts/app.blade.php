@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'BackupSE26') - {{ config('app.name', 'BackupSE26') }}</title>
+    <title>@yield('title', 'Asisten SE2026') - {{ config('app.name', 'Asisten SE2026') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Outfit', 'Plus Jakarta Sans', 'Inter', sans-serif; }
         [x-cloak] { display: none !important; }
     </style>
     <!-- AlpineJS for interactive components -->
@@ -69,19 +69,27 @@
             </main>
 
             @if(!auth()->user()->isSuperAdmin())
-                <nav class="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur lg:hidden" aria-label="Navigasi petugas">
-                    <div class="mx-auto grid max-w-md grid-cols-2 gap-2">
-                        <a href="{{ route('petugas.dashboard') }}" class="flex min-h-[3.25rem] flex-col items-center justify-center gap-1 rounded-2xl px-3 text-xs font-bold transition {{ request()->routeIs('petugas.dashboard') ? 'bg-se-subtle text-se-rust ring-1 ring-amber-200/70' : 'text-slate-500 hover:bg-slate-50 hover:text-se-rust' }}">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                <nav class="fixed inset-x-0 bottom-0 z-40 rounded-t-3xl border-t border-slate-200 bg-white pb-[calc(env(safe-area-inset-bottom)+0.35rem)] pt-2 shadow-[0_-8px_28px_rgba(15,23,42,0.10)] lg:hidden" aria-label="Navigasi petugas">
+                    <div class="mx-auto grid h-14 max-w-md grid-cols-3">
+                        <a href="{{ route('petugas.dashboard') }}" class="group flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition {{ request()->routeIs('petugas.dashboard') ? 'text-se-primary' : 'text-slate-500 hover:text-se-primary' }}">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                             </svg>
-                            Dashboard
+                            <span>Backup</span>
                         </a>
-                        <a href="{{ route('petugas.files.index') }}" class="flex min-h-[3.25rem] flex-col items-center justify-center gap-1 rounded-2xl px-3 text-xs font-bold transition {{ request()->routeIs('petugas.files.*') ? 'bg-se-subtle text-se-rust ring-1 ring-amber-200/70' : 'text-slate-500 hover:bg-slate-50 hover:text-se-rust' }}">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+
+                        <a href="{{ route('petugas.monitoring-sbr.index') }}" class="group flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition {{ request()->routeIs('petugas.monitoring-sbr.*') ? 'text-se-primary' : 'text-slate-500 hover:text-se-primary' }}">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M9 17v-6m4 6V7m4 10v-4M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                             </svg>
-                            File Saya
+                            <span>SBR</span>
+                        </a>
+
+                        <a href="{{ route('petugas.tanya-kondef') }}" class="group flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition {{ request()->routeIs('petugas.tanya-kondef') ? 'text-se-primary' : 'text-slate-500 hover:text-se-primary' }}">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.84L3 20l1.33-3.1A7.45 7.45 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                            <span>Tanya</span>
                         </a>
                     </div>
                 </nav>

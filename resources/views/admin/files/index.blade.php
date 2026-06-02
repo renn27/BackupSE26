@@ -99,7 +99,6 @@
                         <tr>
                             <th class="file-table-th">File</th>
                             <th class="file-table-th">Uploader</th>
-                            <th class="file-table-th">Kategori</th>
                             <th class="file-table-th text-center">Status</th>
                             <th class="file-table-th w-36">Ukuran</th>
                             <th class="file-table-th">Waktu Upload</th>
@@ -122,9 +121,6 @@
                                     @endif
                                     <div class="min-w-0">
                                         <p class="file-name max-w-[220px]" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
-                                        @if($file->description)
-                                            <p class="file-description max-w-[220px]" title="{{ $file->description }}">{{ $file->description }}</p>
-                                        @endif
                                     </div>
                                 </div>
                             </td>
@@ -133,13 +129,6 @@
                                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A8 8 0 1118.879 17.8M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                     {{ $file->user->name ?? 'N/A' }}
                                 </a>
-                            </td>
-                            <td class="file-table-cell">
-                                @if($file->category)
-                                    <span class="file-category-badge">{{ $file->category }}</span>
-                                @else
-                                    <span class="text-slate-400">-</span>
-                                @endif
                             </td>
                             <td class="file-table-cell text-center">
                                 @if($file->status === 'uploaded')
@@ -183,7 +172,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-14">
+                            <td colspan="6" class="px-6 py-14">
                                 <div class="file-empty-state">
                                     <svg class="mx-auto mb-3 h-12 w-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     <p class="text-sm font-semibold text-slate-500">Tidak ada file yang ditemukan.</p>
@@ -202,7 +191,7 @@
                     <div class="file-grid-card flex flex-col">
                         @if($file->type === 'photo' && $file->status === 'uploaded')
                             <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
-                                <img src="{{ route('file.view', $file) }}" alt="{{ $file->original_name }}" class="absolute inset-0 h-full w-full object-cover transition duration-500 hover:scale-105" loading="lazy">
+                                <img src="{{ route('file.view', $file) }}" alt="{{ $file->original_name }}" class="absolute inset-0 h-full w-full object-cover transition duration-500 hover:scale-105" loading="lazy" decoding="async">
                                 <div class="absolute left-3 top-3">
                                     <span class="file-status-badge file-status-success bg-white/95">
                                         <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Berhasil
@@ -243,10 +232,7 @@
 
                         <div class="flex flex-1 flex-col gap-3 p-4">
                             <div class="min-w-0">
-                                <p class="truncate text-sm font-bold text-slate-900" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
-                                @if($file->description)
-                                    <p class="mt-1 truncate text-xs text-slate-500" title="{{ $file->description }}">{{ $file->description }}</p>
-                                @endif
+                                <p class="truncate text-sm font-semibold text-slate-900" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
                             </div>
 
                             <div class="space-y-1.5 text-xs font-medium text-slate-500">
@@ -257,11 +243,7 @@
                                     <span class="text-slate-300">•</span>
                                     <span class="shrink-0 font-semibold text-slate-700">{{ $file->human_size }}</span>
                                 </div>
-                                <div class="flex min-w-0 items-center gap-1.5">
-                                    <span class="truncate">{{ $file->category ?: 'Tanpa kategori' }}</span>
-                                    <span class="text-slate-300">•</span>
-                                    <span class="shrink-0">{{ $file->created_at->format('d M H:i') }}</span>
-                                </div>
+                                <div>{{ $file->created_at->format('d M H:i') }}</div>
                             </div>
 
                             <div class="mt-auto flex items-center justify-end border-t border-slate-100 pt-1.5">

@@ -6,7 +6,7 @@
             </svg>
         </button>
         <div class="min-w-0">
-            <h1 class="truncate text-base font-bold tracking-tight text-se-ink sm:text-xl">@yield('title', 'Dashboard')</h1>
+            <h1 class="truncate text-base font-semibold tracking-tight text-se-ink sm:text-xl">@yield('title', 'Dashboard')</h1>
         </div>
     </div>
 
@@ -22,7 +22,7 @@
                 <div class="flex items-center gap-3 border-b border-slate-100 bg-slate-50/70 px-4 py-4">
                     <img class="h-11 w-11 rounded-full border border-white shadow-sm" src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=FFF3DE&color=9A3D12' }}" alt="Avatar">
                     <div class="min-w-0">
-                        <p class="truncate text-sm font-bold text-se-ink">{{ auth()->user()->name }}</p>
+                        <p class="truncate text-sm font-semibold text-se-ink">{{ auth()->user()->name }}</p>
                         <p class="truncate text-xs font-medium text-slate-500">{{ auth()->user()->email }}</p>
                     </div>
                 </div>

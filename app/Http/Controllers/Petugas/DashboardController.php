@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $storageLimit = 15 * 1024 * 1024 * 1024; // 15GB
@@ -38,6 +38,14 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('petugas.dashboard', compact('stats', 'recentPhotos', 'recentBackups'));
+        $files = $user->files()
+            ->when($request->type, fn($q, $t) => $q->where('type', $t))
+            ->when($request->status, fn($q, $s) => $q->where('status', $s))
+            ->when($request->search, fn($q, $s) => $q->where('original_name', 'like', "%{$s}%"))
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('petugas.dashboard', compact('stats', 'recentPhotos', 'recentBackups', 'files'));
     }
 }

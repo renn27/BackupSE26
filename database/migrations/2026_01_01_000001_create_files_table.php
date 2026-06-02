@@ -22,8 +22,6 @@ return new class extends Migration
             $table->string('drive_web_view_link')->nullable();
             $table->enum('status', ['uploading', 'uploaded', 'failed', 'deleted'])->default('uploading');
             $table->text('upload_error')->nullable();
-            $table->string('description')->nullable();
-            $table->string('category')->nullable();          // Kategori bebas dari user
             $table->timestamps();
             $table->softDeletes();
             

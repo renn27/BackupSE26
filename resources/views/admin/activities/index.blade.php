@@ -7,7 +7,7 @@
     <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-950/5">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h2 class="text-xl font-bold tracking-tight text-se-ink">Semua Aktivitas</h2>
+                <h2 class="text-xl font-semibold tracking-tight text-se-ink">Semua Aktivitas</h2>
                 <p class="mt-1 text-sm text-slate-500">Riwayat aktivitas login, upload, dan penghapusan file.</p>
             </div>
             <a href="{{ route('admin.dashboard') }}" class="inline-flex h-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-600 transition hover:border-amber-200 hover:bg-amber-50 hover:text-se-rust">

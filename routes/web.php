@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Petugas;
 use App\Http\Controllers\FileProxyController;
+use App\Http\Controllers\UserBusinessController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -44,6 +45,12 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureGoogleTokenValid::class])
             Route::post('/files/upload/backup', [Petugas\FileController::class, 'uploadBackup'])->name('files.upload.backup')->middleware('throttle:10,1');
             Route::get('/files/{file}/status', [Petugas\FileController::class, 'checkStatus'])->name('files.status');
             Route::delete('/files/{file}', [Petugas\FileController::class, 'destroy'])->name('files.destroy');
+
+            // Monitoring SBR
+            Route::get('/monitoring-sbr', [UserBusinessController::class, 'index'])->name('monitoring-sbr.index');
+            Route::post('/monitoring-sbr/{business}/status', [UserBusinessController::class, 'updateStatus'])->name('monitoring-sbr.status');
+
+            Route::view('/tanya-kondef', 'petugas.tanya-kondef')->name('tanya-kondef');
         });
     });
 
@@ -62,4 +69,13 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureSuperAdmin::class, \App\Ht
         // File management
         Route::get('/files', [Admin\FileController::class, 'index'])->name('files.index');
         Route::get('/files/export', [Admin\FileController::class, 'export'])->name('files.export');
+
+        // Monitoring SBR
+        Route::get('/monitoring-sbr', [Admin\AdminBusinessController::class, 'index'])->name('monitoring-sbr.index');
+        Route::post('/monitoring-sbr/upload', [Admin\AdminBusinessController::class, 'uploadStore'])->name('monitoring-sbr.upload');
+        Route::get('/monitoring-sbr/upload/{importId}/progress', [Admin\AdminBusinessController::class, 'uploadProgress'])->name('monitoring-sbr.upload.progress');
+        Route::post('/monitoring-sbr/upload/{importId}/cancel', [Admin\AdminBusinessController::class, 'cancelUpload'])->name('monitoring-sbr.upload.cancel');
+        Route::post('/monitoring-sbr/assign', [Admin\AdminBusinessController::class, 'assignUser'])->name('monitoring-sbr.assign');
+        Route::delete('/monitoring-sbr/assign', [Admin\AdminBusinessController::class, 'removeAssignment'])->name('monitoring-sbr.unassign');
+        Route::get('/monitoring-sbr/assignments', [Admin\AdminBusinessController::class, 'getVillagesByUser'])->name('monitoring-sbr.assignments');
     });

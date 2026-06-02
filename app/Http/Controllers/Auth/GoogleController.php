@@ -16,8 +16,9 @@ class GoogleController extends Controller
         $driver = Socialite::driver('google')
             ->scopes(config('google.scopes'))
             ->with([
-                'access_type' => 'offline',
-                'prompt'      => 'consent',  // WAJIB: agar selalu dapat refresh_token baru
+                'access_type'             => config('google.access_type', 'offline'),
+                'prompt'                  => config('google.prompt', 'consent'),
+                'include_granted_scopes'  => 'true',
             ]);
             
         // Bypass SSL di lokal (Windows) untuk mencegah cURL error 60
@@ -55,6 +56,7 @@ class GoogleController extends Controller
                 'google_refresh_token'  => $googleUser->refreshToken,
                 'role'                  => $this->isSuperAdminEmail($googleUser->getEmail())
                                             ? 'superadmin' : 'petugas',
+                'status'                => 'active',
             ]);
 
             // Buat folder di Drive user secara async

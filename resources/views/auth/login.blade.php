@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - {{ config('app.name', 'BackupSE26') }}</title>
+    <title>Login - {{ config('app.name', 'Asisten SE2026') }}</title>
     @vite(['resources/css/app.css'])
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Outfit', 'Inter', sans-serif; }</style>
 </head>
 <body class="flex min-h-full items-center justify-center bg-se-soft p-4 text-se-ink">
     <div class="w-full max-w-md">
@@ -16,8 +16,8 @@
                 <div class="h-10 w-px bg-se-line"></div>
                 <img src="{{ asset('images/logo-se2026-small.png') }}" alt="Sensus Ekonomi 2026" class="h-14 w-10 object-contain">
             </div>
-            <h1 class="text-2xl font-bold text-se-ink">{{ config('app.name', 'BackupSE26') }}</h1>
-            <p class="mt-2 text-sm font-semibold text-se-primary">Sistem Manajemen File Sensus Ekonomi 2026</p>
+            <h1 class="text-2xl font-semibold text-se-ink">{{ config('app.name', 'Asisten SE2026') }}</h1>
+            <p class="mt-2 text-sm font-medium text-se-primary">Sistem Manajemen File Sensus Ekonomi 2026</p>
         </div>
 
         <div class="rounded-2xl border border-se-line bg-white p-8 shadow-xl shadow-amber-900/5">
@@ -31,14 +31,14 @@
             @endif
 
             <div class="mb-6 text-center">
-                <h2 class="text-lg font-bold text-se-ink">Masuk ke Akun Anda</h2>
+                <h2 class="text-lg font-semibold text-se-ink">Masuk ke Akun Anda</h2>
                 <p class="mt-1 text-sm text-slate-500">
                     Gunakan Gmail khusus yang telah didaftarkan
                 </p>
             </div>
 
             <a href="{{ route('auth.google') }}"
-               class="group flex w-full items-center justify-center gap-3 rounded-xl border-2 border-se-line px-4 py-3 font-semibold text-se-ink transition-all duration-200 hover:border-amber-300 hover:bg-amber-50 hover:text-se-primary focus:outline-none focus:ring-4 focus:ring-amber-500/20">
+               class="group flex w-full items-center justify-center gap-3 rounded-xl border-2 border-se-line px-4 py-3 font-medium text-se-ink transition-all duration-200 hover:border-amber-300 hover:bg-amber-50 hover:text-se-primary focus:outline-none focus:ring-4 focus:ring-amber-500/20">
                 <svg class="h-5 w-5" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -59,7 +59,7 @@
         </div>
 
         <p class="mt-8 text-center text-xs font-medium text-slate-400">
-            &copy; {{ date('Y') }} {{ config('app.name', 'BackupSE26') }}. Hak Cipta Dilindungi.
+            &copy; {{ date('Y') }} {{ config('app.name', 'Asisten SE2026') }}. Hak Cipta Dilindungi.
         </p>
     </div>
 </body>

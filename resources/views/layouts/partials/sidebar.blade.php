@@ -7,8 +7,8 @@
                 <img src="{{ asset('images/logo-se2026-small.png') }}" alt="Logo Sensus Ekonomi 2026" class="h-10 w-8 object-contain">
             </div>
             <div class="min-w-0">
-                <p class="truncate text-base font-bold tracking-tight text-se-ink">{{ config('app.name', 'BackupSE26') }}</p>
-                <p class="mt-0.5 truncate text-xs font-semibold text-se-rust">Sensus Ekonomi 2026</p>
+                <p class="truncate text-base font-semibold tracking-tight text-se-ink">{{ config('app.name', 'Asisten SE2026') }}</p>
+                <p class="mt-0.5 truncate text-xs font-medium text-se-rust">Sensus Ekonomi 2026</p>
             </div>
         </div>
         <button @click="sidebarOpen = false" class="rounded-lg p-2 text-slate-400 transition hover:bg-se-subtle hover:text-se-rust lg:hidden">
@@ -21,7 +21,7 @@
     <nav class="flex-1 overflow-y-auto px-4 py-5">
         @if(auth()->user()->isSuperAdmin())
             <div class="mb-4 px-2">
-                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Menu</p>
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Menu</p>
             </div>
             <div class="space-y-1.5">
                 <a href="{{ route('admin.dashboard') }}" class="group relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition duration-200 {{ request()->routeIs('admin.dashboard') ? 'bg-se-subtle text-se-rust ring-1 ring-amber-200/70' : 'text-slate-600 hover:bg-slate-50 hover:text-se-rust' }}">
@@ -53,10 +53,20 @@
                     </span>
                     <span class="min-w-0 flex-1 truncate">Semua File</span>
                 </a>
+
+                <a href="{{ route('admin.monitoring-sbr.index') }}" class="group relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition duration-200 {{ request()->routeIs('admin.monitoring-sbr.*') ? 'bg-se-subtle text-se-rust ring-1 ring-amber-200/70' : 'text-slate-600 hover:bg-slate-50 hover:text-se-rust' }}">
+                    <span class="{{ request()->routeIs('admin.monitoring-sbr.*') ? 'opacity-100' : 'opacity-0' }} absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-se-primary transition"></span>
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl transition {{ request()->routeIs('admin.monitoring-sbr.*') ? 'bg-se-primary text-white shadow-sm shadow-se-primary/25' : 'border border-slate-200 bg-white text-se-rust group-hover:border-amber-200 group-hover:bg-se-subtle' }}">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6m4 6V7m4 10v-4M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                    </span>
+                    <span class="min-w-0 flex-1 truncate">Monitoring SBR</span>
+                </a>
             </div>
         @else
             <div class="mb-4 px-2">
-                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Menu</p>
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Menu</p>
             </div>
             <div class="space-y-1.5">
                 <a href="{{ route('petugas.dashboard') }}" class="group relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition duration-200 {{ request()->routeIs('petugas.dashboard') ? 'bg-se-subtle text-se-rust ring-1 ring-amber-200/70' : 'text-slate-600 hover:bg-slate-50 hover:text-se-rust' }}">
@@ -66,17 +76,27 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                         </svg>
                     </span>
-                    <span class="min-w-0 flex-1 truncate">Dashboard</span>
+                    <span class="min-w-0 flex-1 truncate">Backup</span>
                 </a>
 
-                <a href="{{ route('petugas.files.index') }}" class="group relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition duration-200 {{ request()->routeIs('petugas.files.*') ? 'bg-se-subtle text-se-rust ring-1 ring-amber-200/70' : 'text-slate-600 hover:bg-slate-50 hover:text-se-rust' }}">
-                    <span class="{{ request()->routeIs('petugas.files.*') ? 'opacity-100' : 'opacity-0' }} absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-se-primary transition"></span>
-                    <span class="flex h-9 w-9 items-center justify-center rounded-xl transition {{ request()->routeIs('petugas.files.*') ? 'bg-se-primary text-white shadow-sm shadow-se-primary/25' : 'border border-slate-200 bg-white text-se-rust group-hover:border-amber-200 group-hover:bg-se-subtle' }}">
+                <a href="{{ route('petugas.monitoring-sbr.index') }}" class="group relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition duration-200 {{ request()->routeIs('petugas.monitoring-sbr.*') ? 'bg-se-subtle text-se-rust ring-1 ring-amber-200/70' : 'text-slate-600 hover:bg-slate-50 hover:text-se-rust' }}">
+                    <span class="{{ request()->routeIs('petugas.monitoring-sbr.*') ? 'opacity-100' : 'opacity-0' }} absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-se-primary transition"></span>
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl transition {{ request()->routeIs('petugas.monitoring-sbr.*') ? 'bg-se-primary text-white shadow-sm shadow-se-primary/25' : 'border border-slate-200 bg-white text-se-rust group-hover:border-amber-200 group-hover:bg-se-subtle' }}">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6m4 6V7m4 10v-4M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                         </svg>
                     </span>
-                    <span class="min-w-0 flex-1 truncate">File Saya</span>
+                    <span class="min-w-0 flex-1 truncate">Monitoring SBR</span>
+                </a>
+
+                <a href="{{ route('petugas.tanya-kondef') }}" class="group relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition duration-200 {{ request()->routeIs('petugas.tanya-kondef') ? 'bg-se-subtle text-se-rust ring-1 ring-amber-200/70' : 'text-slate-600 hover:bg-slate-50 hover:text-se-rust' }}">
+                    <span class="{{ request()->routeIs('petugas.tanya-kondef') ? 'opacity-100' : 'opacity-0' }} absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-se-primary transition"></span>
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl transition {{ request()->routeIs('petugas.tanya-kondef') ? 'bg-se-primary text-white shadow-sm shadow-se-primary/25' : 'border border-slate-200 bg-white text-se-rust group-hover:border-amber-200 group-hover:bg-se-subtle' }}">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.84L3 20l1.33-3.1A7.45 7.45 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </span>
+                    <span class="min-w-0 flex-1 truncate">Tanya KonDef</span>
                 </a>
             </div>
         @endif

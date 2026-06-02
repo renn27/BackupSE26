@@ -76,7 +76,7 @@
 
                         <div class="min-w-0 flex-1">
                             <div class="flex items-start justify-between gap-2">
-                                <p class="line-clamp-2 min-w-0 text-sm font-bold leading-5 text-slate-900" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
+                                <p class="line-clamp-2 min-w-0 text-sm font-semibold leading-5 text-slate-900" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
 
                                 @if($file->status === 'uploaded' || ($file->status !== 'uploading' && $file->status !== 'deleted'))
                                     <button type="button" @click="actionOpen = !actionOpen" class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50" title="Buka aksi">
@@ -106,34 +106,23 @@
                                 <span class="text-[11px] font-medium text-slate-500">{{ $file->created_at->format('d M Y H:i') }}</span>
                             </div>
 
-                            @if($file->category || $file->description)
-                                <div class="mt-2 space-y-1.5 rounded-lg bg-slate-50 p-2">
-                                    @if($file->category)
-                                        <span class="file-category-badge max-w-full truncate">{{ $file->category }}</span>
-                                    @endif
-                                    @if($file->description)
-                                        <p class="line-clamp-2 text-xs leading-5 text-slate-500">{{ $file->description }}</p>
-                                    @endif
-                                </div>
-                            @endif
-
                             @if($file->status === 'uploaded' || ($file->status !== 'uploading' && $file->status !== 'deleted'))
                                 <div x-show="actionOpen" @click.away="actionOpen = false" x-transition.origin.top.right x-cloak class="absolute right-3 top-12 z-20 w-40 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl shadow-slate-950/10">
                                     @if($file->status === 'uploaded')
                                         @if($file->drive_web_view_link)
-                                        <a href="{{ $file->drive_web_view_link }}" target="_blank" class="flex items-center gap-2 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-50" title="Buka di Drive">
+                                        <a href="{{ $file->drive_web_view_link }}" target="_blank" class="flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-blue-700 transition hover:bg-blue-50" title="Buka di Drive">
                                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                             Drive
                                         </a>
                                         @endif
-                                        <a href="{{ route('file.download', $file) }}" class="flex items-center gap-2 px-3 py-2.5 text-xs font-bold text-green-700 transition hover:bg-green-50" title="Download">
+                                        <a href="{{ route('file.download', $file) }}" class="flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-green-700 transition hover:bg-green-50" title="Download">
                                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                             Unduh
                                         </a>
                                     @endif
 
                                     @if($file->status !== 'uploading' && $file->status !== 'deleted')
-                                        <button type="button" @click="deleteFile({{ $file->id }})" class="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs font-bold text-rose-700 transition hover:bg-rose-50" title="Hapus">
+                                        <button type="button" @click="deleteFile({{ $file->id }})" class="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs font-semibold text-rose-700 transition hover:bg-rose-50" title="Hapus">
                                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                             Hapus
                                         </button>
@@ -158,9 +147,9 @@
                 <article class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
                     <div class="relative flex aspect-square items-center justify-center bg-slate-50">
                         @if($file->type === 'photo' && $file->status === 'uploaded')
-                            <img src="{{ route('file.view', $file) }}" alt="{{ $file->original_name }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
+                            <img src="{{ route('file.view', $file) }}" alt="{{ $file->original_name }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async">
                             <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/70 to-transparent p-2">
-                                <span class="text-[10px] font-bold text-white">{{ $file->human_size }}</span>
+                                <span class="text-[10px] font-semibold text-white">{{ $file->human_size }}</span>
                             </div>
                         @else
                             <div class="file-icon {{ $file->type === 'photo' ? 'file-icon-danger' : 'file-icon-backup' }} h-12 w-12">
@@ -174,19 +163,19 @@
 
                         <div class="absolute left-2 top-2">
                             @if($file->status === 'uploaded')
-                                <span class="rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-[10px] font-bold text-green-700">OK</span>
+                                <span class="rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-[10px] font-semibold text-green-700">OK</span>
                             @elseif($file->status === 'uploading')
-                                <span class="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700">Proses</span>
+                                <span class="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">Proses</span>
                             @elseif($file->status === 'failed')
-                                <span class="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700">Gagal</span>
+                                <span class="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700">Gagal</span>
                             @else
-                                <span class="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">Dihapus</span>
+                                <span class="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">Dihapus</span>
                             @endif
                         </div>
                     </div>
 
                     <div class="p-2.5">
-                        <p class="line-clamp-2 min-h-9 text-xs font-bold leading-4 text-slate-900" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
+                        <p class="line-clamp-2 min-h-9 text-xs font-semibold leading-4 text-slate-900" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
                         <p class="mt-1 text-[10px] font-medium text-slate-500">{{ $file->created_at->format('d M') }} - {{ $file->human_size }}</p>
 
                         <div class="mt-2 flex items-center gap-1">
@@ -224,7 +213,6 @@
                     <thead class="file-table-head">
                         <tr>
                             <th class="file-table-th">File</th>
-                            <th class="file-table-th">Kategori</th>
                             <th class="file-table-th text-center">Status</th>
                             <th class="file-table-th w-36">Ukuran</th>
                             <th class="file-table-th">Waktu Upload</th>
@@ -247,18 +235,8 @@
                                     @endif
                                     <div class="min-w-0">
                                         <p class="file-name" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
-                                        @if($file->description)
-                                            <p class="file-description" title="{{ $file->description }}">{{ $file->description }}</p>
-                                        @endif
                                     </div>
                                 </div>
-                            </td>
-                            <td class="file-table-cell">
-                                @if($file->category)
-                                    <span class="file-category-badge">{{ $file->category }}</span>
-                                @else
-                                    <span class="text-slate-400">-</span>
-                                @endif
                             </td>
                             <td class="file-table-cell text-center">
                                 @if($file->status === 'uploaded')
@@ -310,7 +288,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-14">
+                            <td colspan="5" class="px-6 py-14">
                                 <div class="file-empty-state">
                                     <svg class="mx-auto mb-3 h-12 w-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     <p class="text-sm font-semibold text-slate-500">Tidak ada file.</p>
@@ -329,7 +307,7 @@
                     @if($file->type === 'photo' && $file->status === 'uploaded')
                         <div class="file-grid-card group flex flex-col">
                             <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
-                                <img src="{{ route('file.view', $file) }}" alt="{{ $file->original_name }}" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy">
+                                <img src="{{ route('file.view', $file) }}" alt="{{ $file->original_name }}" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" decoding="async">
                                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent opacity-0 transition duration-300 group-hover:opacity-100"></div>
                                 <p class="absolute inset-x-3 bottom-3 truncate text-sm font-semibold text-white opacity-0 transition duration-300 group-hover:opacity-100" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
                             </div>

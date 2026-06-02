@@ -15,7 +15,7 @@
                 </div>
                 <div>
                     <p class="text-sm font-medium text-slate-500">Total Petugas</p>
-                    <p class="text-2xl font-bold text-slate-800">{{ $stats['active_users'] }} <span class="text-sm font-normal text-slate-400">/ {{ $stats['total_users'] }} aktif</span></p>
+                    <p class="text-2xl font-semibold text-slate-800">{{ $stats['active_users'] }} <span class="text-sm font-normal text-slate-400">/ {{ $stats['total_users'] }} aktif</span></p>
                 </div>
             </div>
         </div>
@@ -29,7 +29,7 @@
                 </div>
                 <div>
                     <p class="text-sm font-medium text-slate-500">Total Foto</p>
-                    <p class="text-2xl font-bold text-slate-800">{{ number_format($stats['total_photos']) }}</p>
+                    <p class="text-2xl font-semibold text-slate-800">{{ number_format($stats['total_photos']) }}</p>
                 </div>
             </div>
         </div>
@@ -43,7 +43,7 @@
                 </div>
                 <div>
                     <p class="text-sm font-medium text-slate-500">Total Backup</p>
-                    <p class="text-2xl font-bold text-slate-800">{{ number_format($stats['total_backups']) }}</p>
+                    <p class="text-2xl font-semibold text-slate-800">{{ number_format($stats['total_backups']) }}</p>
                 </div>
             </div>
         </div>
@@ -57,7 +57,7 @@
                 </div>
                 <div>
                     <p class="text-sm font-medium text-slate-500">Storage Digunakan</p>
-                    <p class="text-2xl font-bold text-slate-800">
+                    <p class="text-2xl font-semibold text-slate-800">
                         @if($stats['total_size_bytes'] >= 1073741824)
                             {{ number_format($stats['total_size_bytes'] / 1073741824, 2) }} <span class="text-sm font-normal text-slate-400">GB</span>
                         @elseif($stats['total_size_bytes'] >= 1048576)
@@ -145,11 +145,11 @@
         
         <!-- Tab Navigation -->
         <div class="flex border-b border-slate-100 bg-white">
-            <button @click="activeTab = 'photo'" :class="activeTab === 'photo' ? 'border-b-2 border-blue-600 text-blue-600 bg-blue-50/50' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'" class="flex-1 py-3 px-4 text-sm font-bold flex items-center justify-center gap-2 transition-all -mb-px">
+            <button @click="activeTab = 'photo'" :class="activeTab === 'photo' ? 'border-b-2 border-blue-600 text-blue-600 bg-blue-50/50' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'" class="flex-1 py-3 px-4 text-sm font-semibold flex items-center justify-center gap-2 transition-all -mb-px">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 Foto Laporan
             </button>
-            <button @click="activeTab = 'backup'" :class="activeTab === 'backup' ? 'border-b-2 border-amber-500 text-amber-600 bg-amber-50/50' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'" class="flex-1 py-3 px-4 text-sm font-bold flex items-center justify-center gap-2 transition-all -mb-px">
+            <button @click="activeTab = 'backup'" :class="activeTab === 'backup' ? 'border-b-2 border-amber-500 text-amber-600 bg-amber-50/50' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'" class="flex-1 py-3 px-4 text-sm font-semibold flex items-center justify-center gap-2 transition-all -mb-px">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
                 Data Backup
             </button>

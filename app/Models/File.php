@@ -14,7 +14,6 @@ class File extends Model
         'original_name', 'stored_name', 'type', 'mime_type',
         'size_bytes', 'compressed_size_bytes',
         'drive_web_view_link', 'status', 'upload_error',
-        'description', 'category',
     ];
 
     protected function casts(): array
