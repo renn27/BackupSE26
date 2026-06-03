@@ -3,15 +3,15 @@
 @section('title', 'Monitoring SBR')
 
 @section('content')
-<div class="space-y-6">
-    <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-950/5 sm:p-6">
+<div class="space-y-5 sm:space-y-8">
+    <div class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm shadow-slate-950/5 sm:rounded-3xl sm:p-6">
         <div class="flex flex-col gap-5">
             <div class="min-w-0">
-                <h1 class="text-xl font-semibold tracking-tight text-se-ink sm:text-2xl">Monitoring SBR</h1>
+                <h1 class="text-lg font-semibold tracking-tight text-se-ink sm:text-2xl">Monitoring SBR</h1>
             </div>
         </div>
 
-        <div class="mt-5 space-y-4">
+        <div class="mt-4 space-y-4 sm:mt-5">
             <div>
                 <div class="mb-2 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-slate-400">
                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,7 +33,7 @@
                     @forelse($assignedVillages as $village)
                         <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ $village->nmkec }} - {{ $village->nmdesa }}</span>
                     @empty
-                        <span class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">Kamu belum ditugaskan ke desa manapun. Hubungi admin.</span>
+                        <span class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">Kamu belum ditugaskan ke desa manapun. Hubungi admin.</span>
                     @endforelse
                 </div>
             </div>
@@ -49,7 +49,7 @@
         </form>
     </div>
 
-    <section id="business-table-container" class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5">
+    <section id="business-table-container" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5 sm:rounded-3xl">
         @include('businesses.partials.table')
     </section>
 </div>
@@ -66,7 +66,7 @@
                 </div>
                 <div class="min-w-0 flex-1">
                     <div class="flex h-10 items-center">
-                        <h2 id="modal-name" class="line-clamp-2 text-base font-semibold leading-5 tracking-tight text-slate-800"></h2>
+                        <h2 id="modal-name" class="line-clamp-2 text-base font-medium leading-5 text-slate-800"></h2>
                     </div>
                     <div class="mt-2 flex min-w-0 flex-wrap items-center gap-2">
                         <span id="modal-idsbr" class="inline-flex max-w-full items-center truncate rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide text-slate-500 ring-1 ring-slate-200"></span>
@@ -91,7 +91,7 @@
                 </svg>
                 <div class="min-w-0">
                     <span class="block text-[10px] font-medium uppercase tracking-wide text-slate-400">Alamat</span>
-                    <span id="modal-address" class="block break-words font-medium text-slate-700"></span>
+                    <span id="modal-address" class="block break-words text-slate-700"></span>
                 </div>
             </div>
             <div class="flex items-start gap-2 text-xs leading-snug text-slate-500">
@@ -100,14 +100,17 @@
                     </svg>
                     <div class="min-w-0">
                         <span class="block text-[10px] font-medium uppercase tracking-wide text-slate-400">Diperbarui</span>
-                        <span id="modal-last-update" class="block font-medium text-slate-700"></span>
+                        <span id="modal-last-update" class="block text-slate-700"></span>
                     </div>
             </div>
         </div>
 
         <!-- Status Options Grid -->
         <div class="space-y-2">
-            <span class="text-[10px] font-medium uppercase tracking-wide text-slate-500">Pilih status baru</span>
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <span class="text-[10px] font-medium uppercase tracking-wide text-slate-500">Pilih status baru</span>
+                <span id="modal-readonly-note" class="hidden rounded-full bg-slate-100 px-2.5 py-1 text-[11px] text-slate-600">Hanya bisa dilihat</span>
+            </div>
             <div class="grid gap-3 sm:grid-cols-2">
                 <!-- Aktif -->
                 <button type="button" data-status-option="aktif" class="status-option group relative flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-green-200 hover:bg-green-50/40">
@@ -169,10 +172,10 @@
 
         <!-- Action Buttons -->
         <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-2.5 mt-1">
-            <button id="modal-cancel" type="button" class="w-full sm:w-auto rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <button id="modal-cancel" type="button" class="w-full sm:w-auto rounded-xl border border-slate-200 px-5 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition">
                 Batal
             </button>
-            <button id="modal-save" type="button" class="w-full sm:w-auto rounded-xl bg-se-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust active:scale-[0.99] transition flex items-center justify-center gap-1.5">
+            <button id="modal-save" type="button" class="w-full sm:w-auto rounded-xl bg-se-primary px-6 py-2.5 text-sm font-medium text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust active:scale-[0.99] transition flex items-center justify-center gap-1.5">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
                 </svg>
@@ -182,7 +185,7 @@
     </div>
 </div>
 
-<div id="toast" class="fixed right-4 top-4 z-[60] hidden rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700 shadow-lg">Status berhasil disimpan.</div>
+<div id="toast" class="fixed right-4 top-4 z-[60] hidden rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700 shadow-lg">Status berhasil disimpan.</div>
 @endsection
 
 @push('scripts')
@@ -201,6 +204,7 @@ const statusClasses = {
 };
 let selectedBusinessId = null;
 let selectedStatus = null;
+let modalReadOnly = false;
 let searchTimer = null;
 let searchController = null;
 const tableContainer = document.getElementById('business-table-container');
@@ -257,6 +261,7 @@ async function runLiveSearch(page = 1) {
 function openModal(button) {
     selectedBusinessId = button.dataset.id;
     selectedStatus = button.dataset.status || null;
+    modalReadOnly = Boolean(button.dataset.statusOwnerId && button.dataset.statusOwnerId !== '{{ auth()->id() }}');
     document.getElementById('modal-name').textContent = button.dataset.name;
     document.getElementById('modal-idsbr').textContent = `SBR ${button.dataset.idsbr || '-'}`;
     document.getElementById('modal-address').textContent = button.dataset.address;
@@ -273,6 +278,7 @@ function openModal(button) {
         updatedBy === '-' && updatedAt === '-' ? 'Belum ada pembaruan' : `oleh ${updatedBy} pada ${updatedAt}`;
     
     renderStatusOptions();
+    renderModalPermissions();
     
     const modal = document.getElementById('status-modal');
     modal.classList.remove('hidden');
@@ -284,6 +290,21 @@ function openModal(button) {
         modal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
         modal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
     }, 20);
+}
+
+function renderModalPermissions() {
+    const saveButton = document.getElementById('modal-save');
+    const readOnlyNote = document.getElementById('modal-readonly-note');
+
+    saveButton.classList.toggle('hidden', modalReadOnly);
+    readOnlyNote.classList.toggle('hidden', !modalReadOnly);
+    readOnlyNote.textContent = modalReadOnly ? 'Sudah diperbarui petugas lain' : '';
+
+    document.querySelectorAll('.status-option').forEach(button => {
+        button.disabled = modalReadOnly;
+        button.classList.toggle('cursor-not-allowed', modalReadOnly);
+        button.classList.toggle('opacity-75', modalReadOnly);
+    });
 }
 
 function closeModal() {
@@ -353,6 +374,8 @@ tableContainer.addEventListener('click', (event) => {
 
 document.querySelectorAll('.status-option').forEach(button => {
     button.addEventListener('click', () => {
+        if (modalReadOnly) return;
+
         selectedStatus = button.dataset.statusOption;
         renderStatusOptions();
     });
@@ -362,7 +385,7 @@ document.getElementById('modal-close').addEventListener('click', closeModal);
 document.getElementById('modal-cancel').addEventListener('click', closeModal);
 
 document.getElementById('modal-save').addEventListener('click', async () => {
-    if (!selectedBusinessId || !selectedStatus) return;
+    if (modalReadOnly || !selectedBusinessId || !selectedStatus) return;
 
     const response = await fetch(`{{ url('/petugas/monitoring-sbr') }}/${selectedBusinessId}/status`, {
         method: 'POST',
@@ -377,7 +400,7 @@ document.getElementById('modal-save').addEventListener('click', async () => {
 
     const data = await response.json();
     const badge = document.querySelector(`[data-status-badge="${selectedBusinessId}"]`);
-    badge.className = `inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 ${statusClasses[data.status]}`;
+    badge.className = `inline-flex rounded-full px-3 py-1 text-xs font-medium ring-1 ${statusClasses[data.status]}`;
     badge.textContent = data.status_label;
 
     const button = document.querySelector(`.status-open[data-id="${selectedBusinessId}"]`);
@@ -385,6 +408,7 @@ document.getElementById('modal-save').addEventListener('click', async () => {
     button.dataset.note = data.catatan || '';
     button.dataset.updatedBy = data.updated_by;
     button.dataset.updatedAt = data.updated_at;
+    button.dataset.statusOwnerId = '{{ auth()->id() }}';
 
     closeModal();
     const toast = document.getElementById('toast');

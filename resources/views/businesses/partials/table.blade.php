@@ -8,8 +8,8 @@
 @endphp
 
 <div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-slate-200 text-sm">
-        <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+    <table class="min-w-full divide-y divide-slate-200 text-xs sm:text-sm">
+        <thead class="bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
             <tr>
                 <th class="px-4 py-3">No</th>
                 <th class="px-4 py-3">ID SBR</th>
@@ -35,16 +35,17 @@
                     data-village="{{ e($business->village->nmdesa) }}"
                     data-district="{{ e($business->village->nmkec) }}"
                     data-status="{{ $currentStatus }}"
+                    data-status-owner-id="{{ $business->status?->updated_by_user_id }}"
                     data-note="{{ e($business->status?->catatan ?? '') }}"
                     data-updated-by="{{ e($business->status?->updated_by_name ?? '-') }}"
                     data-updated-at="{{ $business->status?->updated_at?->format('d M Y H:i') ?? '-' }}">
                     <td class="px-4 py-4 text-slate-500">{{ $businesses->firstItem() + $loop->index }}</td>
-                    <td class="whitespace-nowrap px-4 py-4 font-mono text-xs font-semibold text-slate-600">{{ $business->idsbr }}</td>
-                    <td class="min-w-[180px] max-w-[240px] px-4 py-4 font-semibold text-se-ink">
+                    <td class="whitespace-nowrap px-4 py-4 font-mono text-[11px] font-medium text-slate-600 sm:text-xs">{{ $business->idsbr }}</td>
+                    <td class="min-w-[180px] max-w-[240px] px-4 py-4 font-medium text-se-ink">
                         <span class="line-clamp-2 leading-5">{{ $business->nama_usaha }}</span>
                     </td>
                     <td class="w-1 whitespace-nowrap px-4 py-4">
-                        <span data-status-badge="{{ $business->id }}" class="inline-flex whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $meta['class'] }}">{{ $meta['label'] }}</span>
+                        <span data-status-badge="{{ $business->id }}" class="inline-flex whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium ring-1 {{ $meta['class'] }}">{{ $meta['label'] }}</span>
                     </td>
                     <td class="px-4 py-4 text-slate-600">{{ $business->village->nmdesa }}</td>
                     <td class="px-4 py-4 text-slate-600">{{ $business->village->nmkec }}</td>

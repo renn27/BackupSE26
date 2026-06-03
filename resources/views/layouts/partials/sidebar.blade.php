@@ -1,14 +1,14 @@
-<div :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" x-cloak class="fixed inset-y-0 left-0 z-50 flex w-72 transform flex-col border-r border-slate-200 bg-white shadow-2xl shadow-slate-950/5 transition-transform duration-300 ease-out lg:translate-x-0 lg:shadow-none">
-    <div class="flex h-[68px] items-center justify-between gap-3 border-b border-slate-200 px-5">
-        <div class="flex min-w-0 items-center gap-3">
-            <div class="flex h-12 shrink-0 items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-3 shadow-sm shadow-slate-950/5">
-                <img src="{{ asset('images/logo-bps.svg') }}" alt="Logo BPS" class="h-9 w-9 object-contain">
-                <span class="h-7 w-px bg-slate-200"></span>
-                <img src="{{ asset('images/logo-se2026-small.png') }}" alt="Logo Sensus Ekonomi 2026" class="h-10 w-8 object-contain">
+<div :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" x-cloak class="fixed inset-y-0 left-0 z-50 flex w-[min(20rem,calc(100vw-2rem))] transform flex-col border-r border-slate-200 bg-white shadow-2xl shadow-slate-950/5 transition-transform duration-300 ease-out lg:w-72 lg:translate-x-0 lg:shadow-none">
+    <div class="flex h-16 items-center justify-between gap-3 border-b border-slate-200 px-4 sm:h-[68px] sm:px-5">
+        <div class="flex min-w-0 items-center gap-2.5 sm:gap-3">
+            <div class="flex h-10 shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 shadow-sm shadow-slate-950/5 sm:h-12 sm:gap-2.5 sm:px-3">
+                <img src="{{ asset('images/logo-bps.svg') }}" alt="Logo BPS" class="h-7 w-7 object-contain sm:h-9 sm:w-9">
+                <span class="h-6 w-px bg-slate-200 sm:h-7"></span>
+                <img src="{{ asset('images/logo-se2026-small.png') }}" alt="Logo Sensus Ekonomi 2026" class="h-8 w-6 object-contain sm:h-10 sm:w-8">
             </div>
             <div class="min-w-0">
-                <p class="truncate text-base font-semibold tracking-tight text-se-ink">{{ config('app.name', 'Asisten SE2026') }}</p>
-                <p class="mt-0.5 truncate text-xs font-medium text-se-rust">Sensus Ekonomi 2026</p>
+                <p class="truncate text-sm font-medium text-se-ink sm:text-base sm:font-semibold sm:tracking-tight">{{ config('app.name', 'Asisten SE2026') }}</p>
+                <p class="mt-0.5 hidden truncate text-xs font-medium text-se-rust min-[360px]:block">Sensus Ekonomi 2026</p>
             </div>
         </div>
         <button @click="sidebarOpen = false" class="rounded-lg p-2 text-slate-400 transition hover:bg-se-subtle hover:text-se-rust lg:hidden">

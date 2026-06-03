@@ -58,6 +58,15 @@ class UserBusinessController extends Controller
             'catatan' => ['nullable', 'string', 'max:500'],
         ]);
 
+        $existingStatus = $business->status;
+
+        if ($existingStatus && $existingStatus->updated_by_user_id !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Status usaha ini sudah diperbarui petugas lain dan hanya bisa dilihat.',
+            ], 423);
+        }
+
         $status = BusinessStatus::updateOrCreate(
             ['business_id' => $business->id],
             [
