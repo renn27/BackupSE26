@@ -2,12 +2,16 @@
   "name": "ASISTEN SE2026",
   "short_name": "ASISTEN SE",
   "description": "Aplikasi Simpan, Informasi Progres, dan Tanya Konsepnya Sensus Ekonomi 2026.",
+  "id": "/",
   "start_url": "/",
   "scope": "/",
+  "display_override": ["standalone", "minimal-ui"],
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#f68b24",
   "orientation": "portrait",
+  "categories": ["productivity", "utilities"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/images/asisten-se2026-icon-192.png",

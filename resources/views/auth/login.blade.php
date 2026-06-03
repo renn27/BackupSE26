@@ -5,8 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - ASISTEN SE2026</title>
     <meta name="theme-color" content="#f68b24">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ASISTEN SE2026">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="ASISTEN SE2026">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="msapplication-TileColor" content="#f68b24">
     <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/logo-se2026-small.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/asisten-se2026-icon-192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/asisten-se2026-icon-512.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/asisten-se2026-icon-192.png') }}">
     @vite(['resources/css/app.css'])
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -111,19 +119,40 @@
                             <span>Masuk dengan Google</span>
                         </a>
 
-                        <div class="my-5 flex items-center gap-4 text-center">
-                            <div class="h-px flex-1 bg-slate-200"></div>
-                            <p class="text-sm font-normal text-slate-500">atau</p>
-                            <div class="h-px flex-1 bg-slate-200"></div>
+                        <div id="install-app-block">
+                            <div class="my-5 flex items-center gap-4 text-center">
+                                <div class="h-px flex-1 bg-slate-200"></div>
+                                <p class="text-sm font-normal text-slate-500">atau</p>
+                                <div class="h-px flex-1 bg-slate-200"></div>
+                            </div>
+
+                            <button id="install-app-button" type="button" class="group flex min-h-[3rem] w-full items-center justify-center gap-3 rounded-2xl border border-se-primary bg-white px-4 py-3 text-sm font-semibold text-se-primary transition hover:bg-amber-50/70 focus:outline-none focus:ring-4 focus:ring-amber-500/10 lg:text-sm">
+                                <svg class="h-4 w-4 transition group-hover:text-se-rust" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"></path>
+                                </svg>
+                                <span id="install-app-label">Instal Aplikasi</span>
+                            </button>
+                            <p id="install-app-help" class="mt-2 hidden text-center text-xs leading-5 text-slate-500">Jika prompt instal belum muncul, buka menu browser lalu pilih Tambahkan ke layar utama.</p>
                         </div>
 
-                        <button id="install-app-button" type="button" class="group flex min-h-[3rem] w-full items-center justify-center gap-3 rounded-2xl border border-se-primary bg-white px-4 py-3 text-sm font-semibold text-se-primary transition hover:bg-amber-50/70 focus:outline-none focus:ring-4 focus:ring-amber-500/10 lg:text-sm">
-                            <svg class="h-4 w-4 transition group-hover:text-se-rust" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"></path>
+                        <div id="installed-app-note" class="mt-5 hidden items-center justify-center gap-2 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-center text-xs font-medium text-emerald-700">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            <span>Instal Aplikasi</span>
-                        </button>
-                        <p id="install-app-help" class="mt-2 hidden text-center text-xs leading-5 text-slate-500">Jika prompt instal belum muncul, buka menu browser lalu pilih Tambahkan ke layar utama.</p>
+                            <span>Aplikasi sudah berjalan dalam mode instal.</span>
+                        </div>
+
+                        <noscript>
+                            <div class="my-5 flex items-center gap-4 text-center">
+                                <div class="h-px flex-1 bg-slate-200"></div>
+                                <p class="text-sm font-normal text-slate-500">atau</p>
+                                <div class="h-px flex-1 bg-slate-200"></div>
+                            </div>
+                            <a href="{{ asset('manifest.webmanifest') }}" class="flex min-h-[3rem] w-full items-center justify-center gap-3 rounded-2xl border border-se-primary bg-white px-4 py-3 text-sm font-semibold text-se-primary">
+                                Instal Aplikasi
+                            </a>
+                        </noscript>
+
                     </div>
 
                     <div class="mt-7 h-px bg-slate-200"></div>
@@ -136,8 +165,39 @@
     </main>
     <script>
         let deferredInstallPrompt = null;
+        const installBlock = document.getElementById('install-app-block');
         const installButton = document.getElementById('install-app-button');
+        const installLabel = document.getElementById('install-app-label');
         const installHelp = document.getElementById('install-app-help');
+        const installedNote = document.getElementById('installed-app-note');
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+
+        const showInstallBlock = () => {
+            installBlock.classList.remove('hidden');
+        };
+
+        const hideInstallBlock = () => {
+            installBlock.classList.add('hidden');
+        };
+
+        const runInstallFlow = async () => {
+            if (isIOS) {
+                installHelp.classList.remove('hidden');
+                showInstallBlock();
+                return;
+            }
+
+            if (!deferredInstallPrompt) {
+                installHelp.classList.remove('hidden');
+                showInstallBlock();
+                return;
+            }
+
+            deferredInstallPrompt.prompt();
+            await deferredInstallPrompt.userChoice;
+            deferredInstallPrompt = null;
+        };
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -145,26 +205,35 @@
             });
         }
 
+        if (isStandalone) {
+            hideInstallBlock();
+            installedNote.classList.remove('hidden');
+            installedNote.classList.add('flex');
+        } else if (isIOS) {
+            showInstallBlock();
+            installLabel.textContent = 'Cara Instal di iPhone';
+            installHelp.textContent = 'Buka tombol Bagikan di Safari, lalu pilih Tambahkan ke Layar Utama.';
+        } else {
+            showInstallBlock();
+        }
+
         window.addEventListener('beforeinstallprompt', (event) => {
             event.preventDefault();
             deferredInstallPrompt = event;
             installHelp.classList.add('hidden');
+            installLabel.textContent = 'Instal Aplikasi';
+            showInstallBlock();
         });
 
         installButton.addEventListener('click', async () => {
-            if (!deferredInstallPrompt) {
-                installHelp.classList.remove('hidden');
-                return;
-            }
-
-            deferredInstallPrompt.prompt();
-            await deferredInstallPrompt.userChoice;
-            deferredInstallPrompt = null;
+            await runInstallFlow();
         });
 
         window.addEventListener('appinstalled', () => {
-            installButton.classList.add('hidden');
+            hideInstallBlock();
             installHelp.classList.add('hidden');
+            installedNote.classList.remove('hidden');
+            installedNote.classList.add('flex');
         });
     </script>
 </body>

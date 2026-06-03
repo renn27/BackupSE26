@@ -6,8 +6,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Asisten SE2026') - {{ config('app.name', 'Asisten SE2026') }}</title>
     <meta name="theme-color" content="#f68b24">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ASISTEN SE2026">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="ASISTEN SE2026">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="msapplication-TileColor" content="#f68b24">
     <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/logo-se2026-small.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/asisten-se2026-icon-192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/asisten-se2026-icon-512.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/asisten-se2026-icon-192.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
