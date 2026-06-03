@@ -10,7 +10,7 @@ return [
         'https://www.googleapis.com/auth/drive.file',
     ],
     'access_type'   => 'offline',
-    'prompt'        => 'consent',   // WAJIB untuk dapat refresh_token setiap login
+    'prompt'        => env('GOOGLE_PROMPT'), // Kosongkan agar Google tidak memaksa consent setiap login.
     'drive' => [
         'folder_name' => env('APP_NAME', 'Sistem Backup'),
         'photos_subfolder'  => 'Foto',

@@ -24,28 +24,14 @@ class DashboardController extends Controller
             'uploading'      => $user->files()->where('status', 'uploading')->count(),
         ];
 
-        $recentPhotos = $user->files()
-            ->where('type', 'photo')
-            ->where('status', 'uploaded')
-            ->latest()
-            ->take(6)
-            ->get();
-
-        $recentBackups = $user->files()
-            ->where('type', 'backup')
-            ->where('status', 'uploaded')
-            ->latest()
-            ->take(5)
-            ->get();
-
         $files = $user->files()
+            ->where('status', 'uploaded')
             ->when($request->type, fn($q, $t) => $q->where('type', $t))
-            ->when($request->status, fn($q, $s) => $q->where('status', $s))
             ->when($request->search, fn($q, $s) => $q->where('original_name', 'like', "%{$s}%"))
             ->latest()
             ->paginate(20)
             ->withQueryString();
 
-        return view('petugas.dashboard', compact('stats', 'recentPhotos', 'recentBackups', 'files'));
+        return view('petugas.dashboard', compact('stats', 'files'));
     }
 }

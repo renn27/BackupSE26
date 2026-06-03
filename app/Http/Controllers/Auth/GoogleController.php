@@ -11,15 +11,24 @@ use Laravel\Socialite\Facades\Socialite;
 
 class GoogleController extends Controller
 {
-    public function redirect()
+    public function redirect(Request $request)
     {
+        $prompt = $request->boolean('consent')
+            ? 'consent'
+            : config('google.prompt');
+
+        $oauthOptions = [
+            'access_type'            => config('google.access_type', 'offline'),
+            'include_granted_scopes' => 'true',
+        ];
+
+        if ($prompt) {
+            $oauthOptions['prompt'] = $prompt;
+        }
+
         $driver = Socialite::driver('google')
             ->scopes(config('google.scopes'))
-            ->with([
-                'access_type'             => config('google.access_type', 'offline'),
-                'prompt'                  => config('google.prompt', 'consent'),
-                'include_granted_scopes'  => 'true',
-            ]);
+            ->with($oauthOptions);
             
         // Bypass SSL di lokal (Windows) untuk mencegah cURL error 60
         if (app()->environment('local')) {

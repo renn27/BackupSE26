@@ -33,22 +33,25 @@ class UploadFileToDrive implements ShouldQueue
         try {
             $pathToUpload = $this->tempPath;
             $compressedSize = null;
+            $storedNameToUpload = $this->file->stored_name;
+            $mimeTypeToUpload = $this->file->mime_type;
 
             // Kompresi jika foto
             if ($this->file->type === 'photo') {
-                $ext = pathinfo($this->tempPath, PATHINFO_EXTENSION);
-                $compressedPath = str_replace('.' . $ext, '_compressed.' . $ext, $this->tempPath);
+                $compressedPath = preg_replace('/\.[^.]+$/', '_compressed.jpg', $this->tempPath) ?: $this->tempPath . '_compressed.jpg';
                 $compressionResult = $compressor->compress($this->tempPath, $compressedPath);
                 $pathToUpload = $compressedPath;
                 $compressedSize = $compressionResult['compressed_size'];
+                $storedNameToUpload = $this->replaceExtension($this->file->stored_name, 'jpg');
+                $mimeTypeToUpload = 'image/jpeg';
             }
 
             // Upload ke Drive
             $result = $driveService->uploadFile(
                 $this->user,
                 $pathToUpload,
-                $this->file->stored_name,
-                $this->file->mime_type,
+                $storedNameToUpload,
+                $mimeTypeToUpload,
                 $this->file->type,
             );
 
@@ -57,6 +60,9 @@ class UploadFileToDrive implements ShouldQueue
                 'drive_file_id'          => $result['drive_file_id'],
                 'drive_folder_id'        => $result['drive_folder_id'],
                 'drive_web_view_link'    => $result['web_view_link'],
+                'stored_name'            => $storedNameToUpload,
+                'mime_type'              => $mimeTypeToUpload,
+                'size_bytes'             => $compressedSize ?? $this->file->size_bytes,
                 'compressed_size_bytes'  => $compressedSize,
                 'status'                 => 'uploaded',
             ]);
@@ -85,5 +91,14 @@ class UploadFileToDrive implements ShouldQueue
             'status'       => 'failed',
             'upload_error' => 'Gagal setelah ' . $this->tries . ' percobaan: ' . $exception->getMessage(),
         ]);
+    }
+
+    private function replaceExtension(string $filename, string $extension): string
+    {
+        if (str_contains($filename, '.')) {
+            return preg_replace('/\.[^.]+$/', '.' . $extension, $filename) ?: $filename . '.' . $extension;
+        }
+
+        return $filename . '.' . $extension;
     }
 }

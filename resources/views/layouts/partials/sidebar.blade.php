@@ -93,7 +93,10 @@
                     <span class="{{ request()->routeIs('petugas.tanya-kondef') ? 'opacity-100' : 'opacity-0' }} absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-se-primary transition"></span>
                     <span class="flex h-9 w-9 items-center justify-center rounded-xl transition {{ request()->routeIs('petugas.tanya-kondef') ? 'bg-se-primary text-white shadow-sm shadow-se-primary/25' : 'border border-slate-200 bg-white text-se-rust group-hover:border-amber-200 group-hover:bg-se-subtle' }}">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.84L3 20l1.33-3.1A7.45 7.45 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5c5 0 8.5 3.05 8.5 7.15S17 19 12 19a10.4 10.4 0 01-3.6-.63L4 19.5l1.25-3.25a6.85 6.85 0 01-1.75-4.6C3.5 7.55 7 4.5 12 4.5z"></path>
+                            <circle cx="8.7" cy="11.75" r="0.8" fill="currentColor" stroke="none"></circle>
+                            <circle cx="12" cy="11.75" r="0.8" fill="currentColor" stroke="none"></circle>
+                            <circle cx="15.3" cy="11.75" r="0.8" fill="currentColor" stroke="none"></circle>
                         </svg>
                     </span>
                     <span class="min-w-0 flex-1 truncate">Tanya KonDef</span>

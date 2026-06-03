@@ -1,14 +1,16 @@
 <?php
 namespace App\Services;
 
-use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\JpegEncoder;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Interfaces\ImageInterface;
 
 class ImageCompressionService
 {
-    private int $maxWidth  = 1920;
-    private int $maxHeight = 1080;
-    private int $quality   = 75;
+    private int $maxWidth  = 1600;
+    private int $maxHeight = 1200;
+    private int $targetSize = 500 * 1024;
 
     public function compress(string $sourcePath, string $destinationPath): array
     {
@@ -22,27 +24,31 @@ class ImageCompressionService
             $image->scaleDown($this->maxWidth, $this->maxHeight);
         }
 
-        // Strip EXIF data & simpan awal
-        $currentQuality = $this->quality;
-        $image->save($destinationPath, quality: $currentQuality);
-        clearstatcache(true, $destinationPath);
+        $qualities = [76, 68, 60, 52, 44, 36, 30, 24, 18, 12];
+        $resizeAttempts = 0;
 
-        $targetSize = 500 * 1024; // Maksimal 500KB
+        do {
+            foreach ($qualities as $quality) {
+                $this->saveAsJpeg($image, $destinationPath, $quality);
 
-        // Jika masih di atas 500KB, lakukan loop kompresi agresif
-        while (filesize($destinationPath) > $targetSize && $currentQuality >= 10) {
-            $currentQuality -= 10;
-
-            // Jika kualitas sudah sangat rendah tapi file masih besar, pangkas dimensi 20%
-            if ($currentQuality <= 30) {
-                $image->scaleDown(
-                    (int)($image->width() * 0.8),
-                    (int)($image->height() * 0.8)
-                );
+                if (filesize($destinationPath) <= $this->targetSize) {
+                    break 2;
+                }
             }
 
-            $image->save($destinationPath, quality: $currentQuality);
-            clearstatcache(true, $destinationPath);
+            $nextWidth = max(480, (int) round($image->width() * 0.82));
+            $nextHeight = max(360, (int) round($image->height() * 0.82));
+
+            if ($nextWidth >= $image->width() && $nextHeight >= $image->height()) {
+                break;
+            }
+
+            $image->scaleDown($nextWidth, $nextHeight);
+            $resizeAttempts++;
+        } while (filesize($destinationPath) > $this->targetSize && $resizeAttempts < 8);
+
+        if (filesize($destinationPath) > $this->targetSize) {
+            $this->saveAsJpeg($image, $destinationPath, 8);
         }
 
         $compressedSize = filesize($destinationPath);
@@ -53,5 +59,11 @@ class ImageCompressionService
             'saved_bytes'      => $originalSize - $compressedSize,
             'compression_ratio'=> round((1 - $compressedSize / $originalSize) * 100, 1) . '%',
         ];
+    }
+
+    private function saveAsJpeg(ImageInterface $image, string $destinationPath, int $quality): void
+    {
+        $image->encode(new JpegEncoder(quality: $quality, strip: true))->save($destinationPath);
+        clearstatcache(true, $destinationPath);
     }
 }

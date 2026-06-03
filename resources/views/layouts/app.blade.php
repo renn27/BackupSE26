@@ -105,7 +105,10 @@
 
                         <a href="{{ route('petugas.tanya-kondef') }}" class="group flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition {{ request()->routeIs('petugas.tanya-kondef') ? 'text-se-primary' : 'text-slate-500 hover:text-se-primary' }}">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.84L3 20l1.33-3.1A7.45 7.45 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M12 4.5c5 0 8.5 3.05 8.5 7.15S17 19 12 19a10.4 10.4 0 01-3.6-.63L4 19.5l1.25-3.25a6.85 6.85 0 01-1.75-4.6C3.5 7.55 7 4.5 12 4.5z"></path>
+                                <circle cx="8.7" cy="11.75" r="0.8" fill="currentColor" stroke="none"></circle>
+                                <circle cx="12" cy="11.75" r="0.8" fill="currentColor" stroke="none"></circle>
+                                <circle cx="15.3" cy="11.75" r="0.8" fill="currentColor" stroke="none"></circle>
                             </svg>
                             <span>Tanya</span>
                         </a>

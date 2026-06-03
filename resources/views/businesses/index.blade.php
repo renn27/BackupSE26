@@ -54,10 +54,10 @@
     </section>
 </div>
 
-<div id="status-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-950/55 px-4 py-6 justify-center items-start sm:items-center transition-all duration-300 ease-out opacity-0">
-    <div class="modal-content my-auto w-full max-w-xl transform rounded-2xl bg-white p-4 shadow-xl shadow-slate-950/20 transition-all duration-300 ease-out scale-95 opacity-0 flex flex-col gap-4 border border-slate-200 sm:p-5">
+<div id="status-modal" class="fixed inset-0 z-50 hidden overflow-hidden bg-slate-950/55 px-4 py-4 justify-center items-center transition-all duration-300 ease-out opacity-0 sm:py-6">
+    <div class="modal-content w-full max-w-xl max-h-[calc(100dvh-2rem)] transform overflow-hidden rounded-2xl bg-white shadow-xl shadow-slate-950/20 transition-all duration-300 ease-out scale-95 opacity-0 flex flex-col border border-slate-200 sm:max-h-[calc(100dvh-3rem)]">
         <!-- Header -->
-        <div class="relative border-b border-slate-100 pb-4 pr-8">
+        <div class="relative shrink-0 border-b border-slate-100 p-4 pr-12 sm:p-5 sm:pr-12">
             <div class="flex min-w-0 items-start gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-100 bg-orange-50 text-se-primary">
                     <svg class="h-[18px] w-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,13 +75,14 @@
                 </div>
             </div>
             
-            <button id="modal-close" type="button" class="absolute right-0 top-0 rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700">
+            <button id="modal-close" type="button" class="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 sm:right-5 sm:top-5">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
         </div>
 
+        <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5">
         <!-- Status Terakhir & Info Update -->
         <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5">
             <div class="mb-3 flex items-start gap-2 border-b border-slate-200/70 pb-3 text-xs leading-relaxed text-slate-600">
@@ -106,7 +107,7 @@
         </div>
 
         <!-- Status Options Grid -->
-        <div class="space-y-2">
+        <div class="mt-4 space-y-2">
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <span class="text-[10px] font-medium uppercase tracking-wide text-slate-500">Pilih status baru</span>
                 <span id="modal-readonly-note" class="hidden rounded-full bg-slate-100 px-2.5 py-1 text-[11px] text-slate-600">Hanya bisa dilihat</span>
@@ -169,9 +170,10 @@
                 </button>
             </div>
         </div>
+        </div>
 
         <!-- Action Buttons -->
-        <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-2.5 mt-1">
+        <div class="flex shrink-0 flex-col-reverse gap-2 border-t border-slate-100 bg-white p-4 sm:flex-row sm:justify-end sm:gap-2.5 sm:p-5">
             <button id="modal-cancel" type="button" class="w-full sm:w-auto rounded-xl border border-slate-200 px-5 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition">
                 Batal
             </button>
@@ -205,11 +207,32 @@ const statusClasses = {
 let selectedBusinessId = null;
 let selectedStatus = null;
 let modalReadOnly = false;
+let lockedScrollY = 0;
 let searchTimer = null;
 let searchController = null;
 const tableContainer = document.getElementById('business-table-container');
 const searchInput = document.getElementById('search-input');
 const searchForm = document.getElementById('search-form');
+
+function lockBodyScroll() {
+    lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${lockedScrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+}
+
+function unlockBodyScroll() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    document.body.style.overflow = '';
+    window.scrollTo(0, lockedScrollY);
+}
 
 searchForm.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -281,8 +304,10 @@ function openModal(button) {
     renderModalPermissions();
     
     const modal = document.getElementById('status-modal');
+    lockBodyScroll();
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+    modal.querySelector('.modal-content > .min-h-0').scrollTop = 0;
     
     // Trigger transition
     setTimeout(() => {
@@ -318,6 +343,7 @@ function closeModal() {
     setTimeout(() => {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+        unlockBodyScroll();
     }, 300);
 }
 
