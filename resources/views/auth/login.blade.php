@@ -3,64 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - {{ config('app.name', 'Asisten SE2026') }}</title>
+    <title>Login - ASISTEN SE2026</title>
+    <meta name="theme-color" content="#f68b24">
+    <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-se2026-small.png') }}">
     @vite(['resources/css/app.css'])
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Outfit', 'Inter', sans-serif; }</style>
+    <style>
+        body { font-family: 'Outfit', 'Inter', sans-serif; }
+
+        .login-shell {
+            background:
+                radial-gradient(circle at 100% -4%, rgba(226, 232, 240, 0.66) 0 16rem, transparent 16.2rem),
+                radial-gradient(circle at -14% 84%, transparent 0 14rem, rgba(249, 115, 22, 0.22) 14.1rem 14.22rem, transparent 14.32rem),
+                radial-gradient(circle at 119% 48%, transparent 0 12.7rem, rgba(251, 146, 60, 0.18) 12.8rem 12.92rem, transparent 13.02rem),
+                linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .login-shell::before,
+        .login-shell::after {
+            content: "";
+            position: fixed;
+            z-index: 0;
+            width: 4.75rem;
+            height: 11.25rem;
+            pointer-events: none;
+            opacity: 0.18;
+            background-image: radial-gradient(circle, rgba(249, 115, 22, 0.28) 0 1.7px, transparent 2.2px);
+            background-size: 1.45rem 1.45rem;
+        }
+
+        .login-shell::before {
+            left: -1.8rem;
+            top: 8.5rem;
+        }
+
+        .login-shell::after {
+            right: -2.25rem;
+            bottom: 5.25rem;
+        }
+    </style>
 </head>
-<body class="flex min-h-full items-center justify-center bg-se-soft p-4 text-se-ink">
-    <div class="w-full max-w-md">
-        <div class="mb-8 text-center">
-            <div class="mx-auto mb-5 flex w-max items-center gap-3 rounded-xl border border-se-line bg-white p-3 shadow-sm">
-                <img src="{{ asset('images/logo-bps.svg') }}" alt="Logo BPS" class="h-12 w-12 object-contain">
-                <div class="h-10 w-px bg-se-line"></div>
-                <img src="{{ asset('images/logo-se2026-small.png') }}" alt="Sensus Ekonomi 2026" class="h-14 w-10 object-contain">
-            </div>
-            <h1 class="text-2xl font-semibold text-se-ink">{{ config('app.name', 'Asisten SE2026') }}</h1>
-            <p class="mt-2 text-sm font-medium text-se-primary">Sistem Manajemen File Sensus Ekonomi 2026</p>
-        </div>
-
-        <div class="rounded-2xl border border-se-line bg-white p-8 shadow-xl shadow-amber-900/5">
-            @if(session('error'))
-                <div class="mb-6 flex items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4">
-                    <svg class="h-5 w-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <p class="text-sm font-medium text-rose-700">{{ session('error') }}</p>
+<body class="login-shell min-h-full text-se-ink">
+    <main class="relative z-10 flex min-h-screen flex-col items-center justify-center px-5 py-6 sm:px-6 lg:py-10">
+        <div class="grid w-full max-w-[21rem] overflow-hidden rounded-[2rem] bg-white/95 shadow-2xl shadow-slate-950/10 ring-1 ring-slate-200/80 backdrop-blur sm:max-w-md lg:max-w-4xl lg:grid-cols-[1fr_0.92fr] lg:rounded-3xl">
+            <section class="relative hidden min-h-[32rem] overflow-hidden border-r border-slate-200 bg-gradient-to-br from-slate-50 via-white to-orange-50/40 p-10 lg:flex lg:flex-col lg:justify-start">
+                <div class="absolute -left-16 top-10 h-44 w-44 rounded-full border border-orange-200/60"></div>
+                <div class="absolute -right-12 bottom-10 h-36 w-36 rounded-full bg-slate-100/80"></div>
+                <div class="absolute right-10 top-10 grid grid-cols-5 gap-2 opacity-30">
+                    @for($i = 0; $i < 20; $i++)
+                        <span class="h-1.5 w-1.5 rounded-full bg-orange-300"></span>
+                    @endfor
                 </div>
-            @endif
 
-            <div class="mb-6 text-center">
-                <h2 class="text-lg font-semibold text-se-ink">Masuk ke Akun Anda</h2>
-                <p class="mt-1 text-sm text-slate-500">
-                    Gunakan Gmail khusus yang telah didaftarkan
-                </p>
-            </div>
+                <div class="relative lg:pt-2">
+                    <div class="flex w-fit items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm shadow-slate-950/5">
+                        <img src="{{ asset('images/logo-bps.svg') }}" alt="Logo BPS" class="h-11 w-11 object-contain">
+                        <div class="h-10 w-px bg-slate-200"></div>
+                        <img src="{{ asset('images/logo-se2026-small.png') }}" alt="Sensus Ekonomi 2026" class="h-12 w-9 object-contain">
+                    </div>
 
-            <a href="{{ route('auth.google') }}"
-               class="group flex w-full items-center justify-center gap-3 rounded-xl border-2 border-se-line px-4 py-3 font-medium text-se-ink transition-all duration-200 hover:border-amber-300 hover:bg-amber-50 hover:text-se-primary focus:outline-none focus:ring-4 focus:ring-amber-500/20">
-                <svg class="h-5 w-5" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                <span>Masuk dengan Google</span>
-            </a>
+                    <div class="mt-7 max-w-md">
+                        <p class="text-sm font-medium uppercase tracking-wide text-se-rust">Sensus Ekonomi 2026</p>
+                        <h1 class="mt-3 text-4xl font-semibold tracking-tight text-se-ink">ASISTEN SE2026</h1>
+                        <p class="mt-4 text-base leading-7 text-slate-600">Aplikasi Simpan, Informasi Progres, dan Tanya Konsepnya Sensus Ekonomi 2026.</p>
+                    </div>
 
-            <div class="mt-8 border-t border-se-line pt-6">
-                <div class="flex items-start gap-3 rounded-lg border border-amber-100 bg-amber-50 p-3 text-xs text-se-muted">
-                    <svg class="mt-0.5 h-4 w-4 flex-shrink-0 text-se-primary" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
-                    </svg>
-                    <span>File tersimpan aman di Google Drive pribadi. Sistem hanya menyimpan metadata file.</span>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <p class="mt-8 text-center text-xs font-medium text-slate-400">
-            &copy; {{ date('Y') }} {{ config('app.name', 'Asisten SE2026') }}. Hak Cipta Dilindungi.
-        </p>
-    </div>
+            <section class="p-6 sm:p-9 lg:flex lg:items-stretch lg:p-10">
+                <div class="mx-auto flex w-full max-w-md flex-col lg:min-h-[26rem]">
+                    <div class="text-center lg:hidden">
+                        <div class="mx-auto flex w-fit items-center gap-4 px-2 py-1">
+                            <img src="{{ asset('images/logo-bps.svg') }}" alt="Logo BPS" class="h-12 w-12 object-contain">
+                            <div class="h-10 w-px bg-slate-300"></div>
+                            <img src="{{ asset('images/logo-se2026-small.png') }}" alt="Sensus Ekonomi 2026" class="h-12 w-9 object-contain">
+                        </div>
+                        <h1 class="mt-7 text-[1.8rem] font-semibold leading-tight tracking-wide text-slate-900">ASISTEN SE2026</h1>
+                        <p class="mx-auto mt-3 max-w-xs text-[0.95rem] font-normal leading-6 text-slate-500">Aplikasi Simpan, Informasi Progres, dan Tanya Konsepnya Sensus Ekonomi 2026</p>
+                    </div>
+
+                    <div class="mt-8 lg:mt-[5.25rem]">
+                        @if(session('error'))
+                            <div class="mb-5 flex items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4">
+                                <svg class="h-5 w-5 shrink-0 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <p class="text-sm font-medium text-rose-700">{{ session('error') }}</p>
+                            </div>
+                        @endif
+
+                        <div class="mb-5 flex items-center gap-4 text-center lg:justify-start">
+                            <div class="h-px flex-1 bg-slate-200"></div>
+                            <p class="text-sm font-medium uppercase tracking-wide text-se-primary">Login</p>
+                            <div class="h-px flex-1 bg-slate-200"></div>
+                        </div>
+
+                        <a href="{{ route('auth.google') }}"
+                           class="group flex min-h-[3rem] w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-lg shadow-slate-950/8 transition-all duration-200 hover:border-amber-300 hover:bg-amber-50 hover:text-se-primary hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-500/20 lg:text-sm">
+                            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            <span>Masuk dengan Google</span>
+                        </a>
+
+                        <div class="my-5 flex items-center gap-4 text-center">
+                            <div class="h-px flex-1 bg-slate-200"></div>
+                            <p class="text-sm font-normal text-slate-500">atau</p>
+                            <div class="h-px flex-1 bg-slate-200"></div>
+                        </div>
+
+                        <button id="install-app-button" type="button" class="group flex min-h-[3rem] w-full items-center justify-center gap-3 rounded-2xl border border-se-primary bg-white px-4 py-3 text-sm font-semibold text-se-primary transition hover:bg-amber-50/70 focus:outline-none focus:ring-4 focus:ring-amber-500/10 lg:text-sm">
+                            <svg class="h-4 w-4 transition group-hover:text-se-rust" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"></path>
+                            </svg>
+                            <span>Instal Aplikasi</span>
+                        </button>
+                        <p id="install-app-help" class="mt-2 hidden text-center text-xs leading-5 text-slate-500">Jika prompt instal belum muncul, buka menu browser lalu pilih Tambahkan ke layar utama.</p>
+                    </div>
+
+                    <div class="mt-7 h-px bg-slate-200"></div>
+                    <p class="mt-5 text-center text-xs font-normal leading-5 text-slate-500 lg:mt-auto lg:pt-16">
+                        &copy; {{ date('Y') }} ASISTEN SE2026. Hak Cipta Dilindungi.
+                    </p>
+                </div>
+            </section>
+        </div>
+    </main>
+    <script>
+        let deferredInstallPrompt = null;
+        const installButton = document.getElementById('install-app-button');
+        const installHelp = document.getElementById('install-app-help');
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            });
+        }
+
+        window.addEventListener('beforeinstallprompt', (event) => {
+            event.preventDefault();
+            deferredInstallPrompt = event;
+            installHelp.classList.add('hidden');
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (!deferredInstallPrompt) {
+                installHelp.classList.remove('hidden');
+                return;
+            }
+
+            deferredInstallPrompt.prompt();
+            await deferredInstallPrompt.userChoice;
+            deferredInstallPrompt = null;
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installButton.classList.add('hidden');
+            installHelp.classList.add('hidden');
+        });
+    </script>
 </body>
 </html>
