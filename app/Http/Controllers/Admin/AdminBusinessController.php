@@ -53,10 +53,11 @@ class AdminBusinessController extends Controller
             'unrecorded' => max(0, $totalBusinesses - $recordedStatuses),
             'progress' => $totalBusinesses > 0 ? round(($recordedStatuses / $totalBusinesses) * 100, 1) : 0,
             'statuses' => [
-                'aktif' => (int) ($statusCounts['aktif'] ?? 0),
-                'tidak_aktif' => (int) ($statusCounts['tidak_aktif'] ?? 0),
-                'pindah' => (int) ($statusCounts['pindah'] ?? 0),
                 'tidak_ditemukan' => (int) ($statusCounts['tidak_ditemukan'] ?? 0),
+                'ditemukan' => (int) ($statusCounts['ditemukan'] ?? 0),
+                'baru' => (int) ($statusCounts['baru'] ?? 0),
+                'tutup' => (int) ($statusCounts['tutup'] ?? 0),
+                'ganda' => (int) ($statusCounts['ganda'] ?? 0),
             ],
         ];
 
@@ -68,10 +69,11 @@ class AdminBusinessController extends Controller
                 DB::raw('COUNT(DISTINCT villages.id) as villages_count'),
                 DB::raw('COUNT(businesses.id) as businesses_count'),
                 DB::raw('COUNT(business_statuses.id) as recorded_count'),
-                DB::raw("SUM(CASE WHEN business_statuses.status = 'aktif' THEN 1 ELSE 0 END) as aktif_count"),
-                DB::raw("SUM(CASE WHEN business_statuses.status = 'tidak_aktif' THEN 1 ELSE 0 END) as tidak_aktif_count"),
-                DB::raw("SUM(CASE WHEN business_statuses.status = 'pindah' THEN 1 ELSE 0 END) as pindah_count"),
-                DB::raw("SUM(CASE WHEN business_statuses.status = 'tidak_ditemukan' THEN 1 ELSE 0 END) as tidak_ditemukan_count")
+                DB::raw("SUM(CASE WHEN business_statuses.status = 'tidak_ditemukan' THEN 1 ELSE 0 END) as tidak_ditemukan_count"),
+                DB::raw("SUM(CASE WHEN business_statuses.status = 'ditemukan' THEN 1 ELSE 0 END) as ditemukan_count"),
+                DB::raw("SUM(CASE WHEN business_statuses.status = 'baru' THEN 1 ELSE 0 END) as baru_count"),
+                DB::raw("SUM(CASE WHEN business_statuses.status = 'tutup' THEN 1 ELSE 0 END) as tutup_count"),
+                DB::raw("SUM(CASE WHEN business_statuses.status = 'ganda' THEN 1 ELSE 0 END) as ganda_count")
             )
             ->groupBy('villages.nmkec')
             ->orderBy('villages.nmkec')
@@ -95,10 +97,11 @@ class AdminBusinessController extends Controller
                 'villages.kddesa',
                 DB::raw('COUNT(businesses.id) as businesses_count'),
                 DB::raw('COUNT(business_statuses.id) as recorded_count'),
-                DB::raw("SUM(CASE WHEN business_statuses.status = 'aktif' THEN 1 ELSE 0 END) as aktif_count"),
-                DB::raw("SUM(CASE WHEN business_statuses.status = 'tidak_aktif' THEN 1 ELSE 0 END) as tidak_aktif_count"),
-                DB::raw("SUM(CASE WHEN business_statuses.status = 'pindah' THEN 1 ELSE 0 END) as pindah_count"),
-                DB::raw("SUM(CASE WHEN business_statuses.status = 'tidak_ditemukan' THEN 1 ELSE 0 END) as tidak_ditemukan_count")
+                DB::raw("SUM(CASE WHEN business_statuses.status = 'tidak_ditemukan' THEN 1 ELSE 0 END) as tidak_ditemukan_count"),
+                DB::raw("SUM(CASE WHEN business_statuses.status = 'ditemukan' THEN 1 ELSE 0 END) as ditemukan_count"),
+                DB::raw("SUM(CASE WHEN business_statuses.status = 'baru' THEN 1 ELSE 0 END) as baru_count"),
+                DB::raw("SUM(CASE WHEN business_statuses.status = 'tutup' THEN 1 ELSE 0 END) as tutup_count"),
+                DB::raw("SUM(CASE WHEN business_statuses.status = 'ganda' THEN 1 ELSE 0 END) as ganda_count")
             )
             ->groupBy('villages.nmkec', 'villages.nmdesa', 'villages.kdkec', 'villages.kddesa')
             ->orderBy('villages.nmkec')
@@ -138,10 +141,11 @@ class AdminBusinessController extends Controller
                     'recorded_count' => $recordedCount,
                     'unrecorded_count' => max(0, $businessCount - $recordedCount),
                     'progress' => $businessCount > 0 ? round(($recordedCount / $businessCount) * 100, 1) : 0,
-                    'aktif_count' => (int) ($statusCounts['aktif'] ?? 0),
-                    'tidak_aktif_count' => (int) ($statusCounts['tidak_aktif'] ?? 0),
-                    'pindah_count' => (int) ($statusCounts['pindah'] ?? 0),
                     'tidak_ditemukan_count' => (int) ($statusCounts['tidak_ditemukan'] ?? 0),
+                    'ditemukan_count' => (int) ($statusCounts['ditemukan'] ?? 0),
+                    'baru_count' => (int) ($statusCounts['baru'] ?? 0),
+                    'tutup_count' => (int) ($statusCounts['tutup'] ?? 0),
+                    'ganda_count' => (int) ($statusCounts['ganda'] ?? 0),
                 ];
             });
 

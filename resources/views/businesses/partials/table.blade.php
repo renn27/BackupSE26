@@ -1,9 +1,10 @@
 @php
     $statusMeta = [
-        'aktif' => ['label' => 'Aktif', 'class' => 'bg-green-50 text-green-700 ring-green-200'],
-        'tidak_aktif' => ['label' => 'Tidak Aktif', 'class' => 'bg-rose-50 text-rose-700 ring-rose-200'],
-        'pindah' => ['label' => 'Pindah', 'class' => 'bg-amber-50 text-amber-700 ring-amber-200'],
         'tidak_ditemukan' => ['label' => 'Tidak Ditemukan', 'class' => 'bg-slate-100 text-slate-600 ring-slate-200'],
+        'ditemukan' => ['label' => 'Ditemukan', 'class' => 'bg-green-50 text-green-700 ring-green-200'],
+        'baru' => ['label' => 'Baru', 'class' => 'bg-blue-50 text-blue-700 ring-blue-200'],
+        'tutup' => ['label' => 'Tutup', 'class' => 'bg-rose-50 text-rose-700 ring-rose-200'],
+        'ganda' => ['label' => 'Ganda', 'class' => 'bg-amber-50 text-amber-700 ring-amber-200'],
     ];
 @endphp
 
@@ -24,7 +25,7 @@
             @forelse($businesses as $business)
                 @php
                     $currentStatus = $business->status?->status;
-                    $meta = $currentStatus ? $statusMeta[$currentStatus] : ['label' => 'Belum Dicatat', 'class' => 'bg-white text-slate-500 ring-slate-200'];
+                    $meta = $currentStatus ? ($statusMeta[$currentStatus] ?? ['label' => 'Status Lama', 'class' => 'bg-slate-100 text-slate-600 ring-slate-200']) : ['label' => 'Belum Dicatat', 'class' => 'bg-white text-slate-500 ring-slate-200'];
                 @endphp
                 <tr id="business-row-{{ $business->id }}"
                     class="status-open cursor-pointer transition hover:bg-slate-50"

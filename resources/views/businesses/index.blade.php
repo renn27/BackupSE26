@@ -113,52 +113,9 @@
                 <span id="modal-readonly-note" class="hidden rounded-full bg-slate-100 px-2.5 py-1 text-[11px] text-slate-600">Hanya bisa dilihat</span>
             </div>
             <div class="grid gap-3 sm:grid-cols-2">
-                <!-- Aktif -->
-                <button type="button" data-status-option="aktif" class="status-option group relative flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-green-200 hover:bg-green-50/40">
-                    <div class="status-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-green-100 bg-white text-green-600 transition-colors">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                    </div>
-                    <div class="space-y-0.5 min-w-0">
-                        <p class="font-medium text-slate-700 text-sm leading-tight transition-colors status-title">Aktif</p>
-                        <p class="text-[11px] text-slate-500 leading-tight">Usaha aktif beroperasi di lokasi ini</p>
-                    </div>
-                    <span class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-green-500 scale-0 transition-transform duration-200 status-indicator"></span>
-                </button>
-
-                <!-- Tidak Aktif -->
-                <button type="button" data-status-option="tidak_aktif" class="status-option group relative flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-rose-200 hover:bg-rose-50/40">
-                    <div class="status-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-100 bg-white text-rose-600 transition-colors">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </div>
-                    <div class="space-y-0.5 min-w-0">
-                        <p class="font-medium text-slate-700 text-sm leading-tight transition-colors status-title">Tidak Aktif</p>
-                        <p class="text-[11px] text-slate-500 leading-tight">Usaha tutup atau tidak lagi beroperasi</p>
-                    </div>
-                    <span class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-rose-500 scale-0 transition-transform duration-200 status-indicator"></span>
-                </button>
-
-                <!-- Pindah -->
-                <button type="button" data-status-option="pindah" class="status-option group relative flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-amber-200 hover:bg-amber-50/40">
-                    <div class="status-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber-100 bg-white text-amber-600 transition-colors">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                        </svg>
-                    </div>
-                    <div class="space-y-0.5 min-w-0">
-                        <p class="font-medium text-slate-700 text-sm leading-tight transition-colors status-title">Pindah</p>
-                        <p class="text-[11px] text-slate-500 leading-tight">Usaha pindah alamat / keluar wilayah</p>
-                    </div>
-                    <span class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-amber-500 scale-0 transition-transform duration-200 status-indicator"></span>
-                </button>
-
-                <!-- Tidak Ditemukan -->
                 <button type="button" data-status-option="tidak_ditemukan" class="status-option group relative flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-slate-300 hover:bg-slate-50">
                     <div class="status-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-colors">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M9 8.75a3 3 0 116 0c0 2.25-3 2.35-3 4.75M12 17.25h.01"></path>
                         </svg>
                     </div>
@@ -167,6 +124,59 @@
                         <p class="text-[11px] text-slate-500 leading-tight">Keberadaan usaha tidak teridentifikasi</p>
                     </div>
                     <span class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-slate-500 scale-0 transition-transform duration-200 status-indicator"></span>
+                </button>
+
+                <button type="button" data-status-option="ditemukan" class="status-option group relative flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-green-200 hover:bg-green-50/40">
+                    <div class="status-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-green-100 bg-white text-green-600 transition-colors">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <div class="space-y-0.5 min-w-0">
+                        <p class="font-medium text-slate-700 text-sm leading-tight transition-colors status-title">Ditemukan</p>
+                        <p class="text-[11px] text-slate-500 leading-tight">Usaha ditemukan di lokasi</p>
+                    </div>
+                    <span class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-green-500 scale-0 transition-transform duration-200 status-indicator"></span>
+                </button>
+
+                <button type="button" data-status-option="baru" class="status-option group relative flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-blue-200 hover:bg-blue-50/40">
+                    <div class="status-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-white text-blue-600 transition-colors">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 5v14m7-7H5"></path>
+                        </svg>
+                    </div>
+                    <div class="space-y-0.5 min-w-0">
+                        <p class="font-medium text-slate-700 text-sm leading-tight transition-colors status-title">Baru</p>
+                        <p class="text-[11px] text-slate-500 leading-tight">Usaha baru ditemukan di lapangan</p>
+                    </div>
+                    <span class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-blue-500 scale-0 transition-transform duration-200 status-indicator"></span>
+                </button>
+
+                <button type="button" data-status-option="tutup" class="status-option group relative flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-rose-200 hover:bg-rose-50/40">
+                    <div class="status-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-100 bg-white text-rose-600 transition-colors">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </div>
+                    <div class="space-y-0.5 min-w-0">
+                        <p class="font-medium text-slate-700 text-sm leading-tight transition-colors status-title">Tutup</p>
+                        <p class="text-[11px] text-slate-500 leading-tight">Usaha tutup atau tidak beroperasi</p>
+                    </div>
+                    <span class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-rose-500 scale-0 transition-transform duration-200 status-indicator"></span>
+                </button>
+
+                <button type="button" data-status-option="ganda" class="status-option group relative flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-amber-200 hover:bg-amber-50/40">
+                    <div class="status-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber-100 bg-white text-amber-600 transition-colors">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7h8M8 12h8M8 17h5"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 5h14v14H5z"></path>
+                        </svg>
+                    </div>
+                    <div class="space-y-0.5 min-w-0">
+                        <p class="font-medium text-slate-700 text-sm leading-tight transition-colors status-title">Ganda</p>
+                        <p class="text-[11px] text-slate-500 leading-tight">Usaha terindikasi duplikasi</p>
+                    </div>
+                    <span class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-amber-500 scale-0 transition-transform duration-200 status-indicator"></span>
                 </button>
             </div>
         </div>
@@ -188,21 +198,24 @@
 </div>
 
 <div id="toast" class="fixed right-4 top-4 z-[60] hidden rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700 shadow-lg">Status berhasil disimpan.</div>
+<div id="error-toast" class="fixed right-4 top-4 z-[60] hidden max-w-sm rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 shadow-lg">Gagal menyimpan status.</div>
 @endsection
 
 @push('scripts')
 <script>
 const statusLabels = {
-    aktif: 'Aktif',
-    tidak_aktif: 'Tidak Aktif',
-    pindah: 'Pindah',
-    tidak_ditemukan: 'Tidak Ditemukan'
+    tidak_ditemukan: 'Tidak Ditemukan',
+    ditemukan: 'Ditemukan',
+    baru: 'Baru',
+    tutup: 'Tutup',
+    ganda: 'Ganda'
 };
 const statusClasses = {
-    aktif: 'bg-green-50 text-green-700 ring-green-200',
-    tidak_aktif: 'bg-rose-50 text-rose-700 ring-rose-200',
-    pindah: 'bg-amber-50 text-amber-700 ring-amber-200',
-    tidak_ditemukan: 'bg-slate-100 text-slate-600 ring-slate-200'
+    tidak_ditemukan: 'bg-slate-100 text-slate-600 ring-slate-200',
+    ditemukan: 'bg-green-50 text-green-700 ring-green-200',
+    baru: 'bg-blue-50 text-blue-700 ring-blue-200',
+    tutup: 'bg-rose-50 text-rose-700 ring-rose-200',
+    ganda: 'bg-amber-50 text-amber-700 ring-amber-200'
 };
 let selectedBusinessId = null;
 let selectedStatus = null;
@@ -213,6 +226,8 @@ let searchController = null;
 const tableContainer = document.getElementById('business-table-container');
 const searchInput = document.getElementById('search-input');
 const searchForm = document.getElementById('search-form');
+const saveButton = document.getElementById('modal-save');
+const saveButtonLabel = saveButton.querySelector('span');
 
 function lockBodyScroll() {
     lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
@@ -347,6 +362,20 @@ function closeModal() {
     }, 300);
 }
 
+function showErrorToast(message) {
+    const toast = document.getElementById('error-toast');
+    toast.textContent = message || 'Gagal menyimpan status.';
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 3000);
+}
+
+function setSaveLoading(loading) {
+    saveButton.disabled = loading;
+    saveButton.classList.toggle('cursor-not-allowed', loading);
+    saveButton.classList.toggle('opacity-75', loading);
+    saveButtonLabel.textContent = loading ? 'Menyimpan...' : 'Simpan Status';
+}
+
 function renderStatusOptions() {
     document.querySelectorAll('.status-option').forEach(button => {
         const option = button.dataset.statusOption;
@@ -354,6 +383,7 @@ function renderStatusOptions() {
 
         button.classList.remove(
             'border-green-300', 'bg-green-50',
+            'border-blue-300', 'bg-blue-50',
             'border-rose-300', 'bg-rose-50',
             'border-amber-300', 'bg-amber-50',
             'border-slate-400', 'bg-slate-50',
@@ -361,7 +391,7 @@ function renderStatusOptions() {
         );
 
         const title = button.querySelector('.status-title');
-        title.classList.remove('text-green-700', 'text-rose-700', 'text-amber-700', 'text-slate-800', 'text-slate-700');
+        title.classList.remove('text-green-700', 'text-blue-700', 'text-rose-700', 'text-amber-700', 'text-slate-800', 'text-slate-700');
 
         const indicator = button.querySelector('.status-indicator');
         indicator.classList.remove('scale-100');
@@ -371,13 +401,16 @@ function renderStatusOptions() {
             indicator.classList.remove('scale-0');
             indicator.classList.add('scale-100');
 
-            if (option === 'aktif') {
+            if (option === 'ditemukan') {
                 button.classList.add('border-green-300', 'bg-green-50');
                 title.classList.add('text-green-700');
-            } else if (option === 'tidak_aktif') {
+            } else if (option === 'baru') {
+                button.classList.add('border-blue-300', 'bg-blue-50');
+                title.classList.add('text-blue-700');
+            } else if (option === 'tutup') {
                 button.classList.add('border-rose-300', 'bg-rose-50');
                 title.classList.add('text-rose-700');
-            } else if (option === 'pindah') {
+            } else if (option === 'ganda') {
                 button.classList.add('border-amber-300', 'bg-amber-50');
                 title.classList.add('text-amber-700');
             } else if (option === 'tidak_ditemukan') {
@@ -413,33 +446,46 @@ document.getElementById('modal-cancel').addEventListener('click', closeModal);
 document.getElementById('modal-save').addEventListener('click', async () => {
     if (modalReadOnly || !selectedBusinessId || !selectedStatus) return;
 
-    const response = await fetch(`{{ url('/petugas/monitoring-sbr') }}/${selectedBusinessId}/status`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({status: selectedStatus, catatan: null})
-    });
+    setSaveLoading(true);
 
-    if (!response.ok) return;
+    try {
+        const response = await fetch(`{{ url('/petugas/monitoring-sbr') }}/${selectedBusinessId}/status`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({status: selectedStatus, catatan: null})
+        });
 
-    const data = await response.json();
-    const badge = document.querySelector(`[data-status-badge="${selectedBusinessId}"]`);
-    badge.className = `inline-flex rounded-full px-3 py-1 text-xs font-medium ring-1 ${statusClasses[data.status]}`;
-    badge.textContent = data.status_label;
+        const data = await response.json().catch(() => ({}));
 
-    const button = document.querySelector(`.status-open[data-id="${selectedBusinessId}"]`);
-    button.dataset.status = data.status;
-    button.dataset.note = data.catatan || '';
-    button.dataset.updatedBy = data.updated_by;
-    button.dataset.updatedAt = data.updated_at;
-    button.dataset.statusOwnerId = '{{ auth()->id() }}';
+        if (!response.ok || !data.success) {
+            showErrorToast(data.message || 'Gagal menyimpan status. Coba muat ulang halaman.');
+            return;
+        }
 
-    closeModal();
-    const toast = document.getElementById('toast');
-    toast.classList.remove('hidden');
-    setTimeout(() => toast.classList.add('hidden'), 2200);
+        const badge = document.querySelector(`[data-status-badge="${selectedBusinessId}"]`);
+        badge.className = `inline-flex rounded-full px-3 py-1 text-xs font-medium ring-1 ${statusClasses[data.status]}`;
+        badge.textContent = data.status_label;
+
+        const button = document.querySelector(`.status-open[data-id="${selectedBusinessId}"]`);
+        button.dataset.status = data.status;
+        button.dataset.note = data.catatan || '';
+        button.dataset.updatedBy = data.updated_by;
+        button.dataset.updatedAt = data.updated_at;
+        button.dataset.statusOwnerId = '{{ auth()->id() }}';
+
+        closeModal();
+        const toast = document.getElementById('toast');
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 2200);
+    } catch (error) {
+        showErrorToast('Terjadi kesalahan koneksi saat menyimpan status.');
+    } finally {
+        setSaveLoading(false);
+    }
 });
 </script>
 @endpush

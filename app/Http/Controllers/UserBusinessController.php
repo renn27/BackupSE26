@@ -54,7 +54,7 @@ class UserBusinessController extends Controller
         abort_unless($assignedVillageIds->contains($business->village_id), 403);
 
         $validated = $request->validate([
-            'status' => ['required', 'in:aktif,tidak_aktif,pindah,tidak_ditemukan'],
+            'status' => ['required', 'in:tidak_ditemukan,ditemukan,baru,tutup,ganda'],
             'catatan' => ['nullable', 'string', 'max:500'],
         ]);
 
@@ -90,10 +90,11 @@ class UserBusinessController extends Controller
     private function statusLabel(string $status): string
     {
         return match ($status) {
-            'aktif' => 'Aktif',
-            'tidak_aktif' => 'Tidak Aktif',
-            'pindah' => 'Pindah',
             'tidak_ditemukan' => 'Tidak Ditemukan',
+            'ditemukan' => 'Ditemukan',
+            'baru' => 'Baru',
+            'tutup' => 'Tutup',
+            'ganda' => 'Ganda',
         };
     }
 }

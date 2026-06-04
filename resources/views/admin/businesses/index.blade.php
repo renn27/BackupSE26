@@ -32,14 +32,16 @@
             ? min(100, round(($summary['assigned_villages'] / $summary['villages']) * 100, 1))
             : 0;
         $statusTotal = max(1, array_sum($summary['statuses']));
-        $aktifStop = round(($summary['statuses']['aktif'] / $statusTotal) * 100, 1);
-        $tidakAktifStop = round((($summary['statuses']['aktif'] + $summary['statuses']['tidak_aktif']) / $statusTotal) * 100, 1);
-        $pindahStop = round((($summary['statuses']['aktif'] + $summary['statuses']['tidak_aktif'] + $summary['statuses']['pindah']) / $statusTotal) * 100, 1);
+        $tidakDitemukanStop = round(($summary['statuses']['tidak_ditemukan'] / $statusTotal) * 100, 1);
+        $ditemukanStop = round((($summary['statuses']['tidak_ditemukan'] + $summary['statuses']['ditemukan']) / $statusTotal) * 100, 1);
+        $baruStop = round((($summary['statuses']['tidak_ditemukan'] + $summary['statuses']['ditemukan'] + $summary['statuses']['baru']) / $statusTotal) * 100, 1);
+        $tutupStop = round((($summary['statuses']['tidak_ditemukan'] + $summary['statuses']['ditemukan'] + $summary['statuses']['baru'] + $summary['statuses']['tutup']) / $statusTotal) * 100, 1);
         $statusItems = [
-            ['label' => 'Aktif', 'value' => $summary['statuses']['aktif'], 'color' => 'bg-green-500', 'text' => 'text-green-700', 'soft' => 'bg-green-50'],
-            ['label' => 'Tidak Aktif', 'value' => $summary['statuses']['tidak_aktif'], 'color' => 'bg-rose-500', 'text' => 'text-rose-700', 'soft' => 'bg-rose-50'],
-            ['label' => 'Pindah', 'value' => $summary['statuses']['pindah'], 'color' => 'bg-amber-500', 'text' => 'text-amber-700', 'soft' => 'bg-amber-50'],
             ['label' => 'Tidak Ditemukan', 'value' => $summary['statuses']['tidak_ditemukan'], 'color' => 'bg-slate-500', 'text' => 'text-slate-700', 'soft' => 'bg-slate-50'],
+            ['label' => 'Ditemukan', 'value' => $summary['statuses']['ditemukan'], 'color' => 'bg-green-500', 'text' => 'text-green-700', 'soft' => 'bg-green-50'],
+            ['label' => 'Baru', 'value' => $summary['statuses']['baru'], 'color' => 'bg-blue-500', 'text' => 'text-blue-700', 'soft' => 'bg-blue-50'],
+            ['label' => 'Tutup', 'value' => $summary['statuses']['tutup'], 'color' => 'bg-rose-500', 'text' => 'text-rose-700', 'soft' => 'bg-rose-50'],
+            ['label' => 'Ganda', 'value' => $summary['statuses']['ganda'], 'color' => 'bg-amber-500', 'text' => 'text-amber-700', 'soft' => 'bg-amber-50'],
         ];
     @endphp
 
@@ -90,7 +92,7 @@
             <div class="rounded-2xl border border-slate-200 bg-white p-4">
                 <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Komposisi Status</p>
                 <div class="mx-auto mt-4 flex h-36 w-36 items-center justify-center rounded-full"
-                    style="background: conic-gradient(#22c55e 0 {{ $aktifStop }}%, #f43f5e {{ $aktifStop }}% {{ $tidakAktifStop }}%, #f59e0b {{ $tidakAktifStop }}% {{ $pindahStop }}%, #64748b {{ $pindahStop }}% 100%);">
+                    style="background: conic-gradient(#64748b 0 {{ $tidakDitemukanStop }}%, #22c55e {{ $tidakDitemukanStop }}% {{ $ditemukanStop }}%, #3b82f6 {{ $ditemukanStop }}% {{ $baruStop }}%, #f43f5e {{ $baruStop }}% {{ $tutupStop }}%, #f59e0b {{ $tutupStop }}% 100%);">
                     <div class="flex h-24 w-24 flex-col items-center justify-center rounded-full bg-white text-center shadow-sm">
                         <span class="text-2xl font-semibold text-se-ink">{{ number_format(array_sum($summary['statuses'])) }}</span>
                         <span class="text-xs text-slate-500">status</span>
@@ -118,7 +120,7 @@
             </div>
         </div>
 
-        <div class="mt-4 grid gap-3 lg:grid-cols-4">
+        <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
             @foreach($statusItems as $status)
                 @php($statusPercent = round(($status['value'] / $statusTotal) * 100, 1))
                 <div class="rounded-2xl border border-slate-200 bg-white p-4">

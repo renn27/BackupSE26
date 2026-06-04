@@ -55,14 +55,28 @@ class GoogleController extends Controller
         // Cek apakah email sudah terdaftar
         $user = User::where('email', $googleUser->getEmail())->first();
 
+        $refreshToken = $googleUser->refreshToken;
+
         if (!$user) {
+            if (!$refreshToken) {
+                if (! $request->session()->pull('google_consent_retry', false)) {
+                    $request->session()->put('google_consent_retry', true);
+
+                    return redirect()->route('auth.google', ['consent' => 1])
+                        ->with('error', 'Google belum mengirim izin Drive. Silakan setujui akses Google Drive.');
+                }
+
+                return redirect()->route('login', ['consent' => 1])
+                    ->with('error', 'Google belum memberikan refresh token Drive. Klik Masuk dengan Google dan setujui akses Drive.');
+            }
+
             // Auto-register petugas baru
             $user = User::create([
                 'name'                  => $googleUser->getName(),
                 'email'                 => $googleUser->getEmail(),
                 'google_id'             => $googleUser->getId(),
                 'avatar'                => $googleUser->getAvatar(),
-                'google_refresh_token'  => $googleUser->refreshToken,
+                'google_refresh_token'  => $refreshToken,
                 'role'                  => $this->isSuperAdminEmail($googleUser->getEmail())
                                             ? 'superadmin' : 'petugas',
                 'status'                => 'active',
@@ -71,13 +85,25 @@ class GoogleController extends Controller
             // Buat folder di Drive user secara async
             dispatch(new \App\Jobs\CreateUserDriveFolder($user));
         } else {
+            if (!$user->google_refresh_token && !$refreshToken) {
+                if (! $request->session()->pull('google_consent_retry', false)) {
+                    $request->session()->put('google_consent_retry', true);
+
+                    return redirect()->route('auth.google', ['consent' => 1])
+                        ->with('error', 'Google belum mengirim izin Drive. Silakan setujui akses Google Drive.');
+                }
+
+                return redirect()->route('login', ['consent' => 1])
+                    ->with('error', 'Google belum memberikan refresh token Drive. Klik Masuk dengan Google dan setujui akses Drive.');
+            }
+
             // Update token jika ada yang baru (refresh token bisa berubah)
             $updateData = [
                 'name'   => $googleUser->getName(),
                 'avatar' => $googleUser->getAvatar(),
             ];
-            if ($googleUser->refreshToken) {
-                $updateData['google_refresh_token'] = $googleUser->refreshToken;
+            if ($refreshToken) {
+                $updateData['google_refresh_token'] = $refreshToken;
             }
             $user->update($updateData);
         }

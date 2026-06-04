@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('business_statuses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('business_id')->unique()->constrained('businesses')->cascadeOnDelete();
-            $table->enum('status', ['aktif', 'tidak_aktif', 'pindah', 'tidak_ditemukan']);
+            $table->enum('status', ['tidak_ditemukan', 'ditemukan', 'baru', 'tutup', 'ganda']);
             $table->foreignId('updated_by_user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('updated_by_name', 150);
             $table->text('catatan')->nullable();

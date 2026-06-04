@@ -108,7 +108,7 @@
                             <div class="h-px flex-1 bg-slate-200"></div>
                         </div>
 
-                        <a href="{{ route('auth.google') }}"
+                        <a href="{{ route('auth.google', (session('force_google_consent') || request()->boolean('consent')) ? ['consent' => 1] : []) }}"
                            class="group flex min-h-[3rem] w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-lg shadow-slate-950/8 transition-all duration-200 hover:border-amber-300 hover:bg-amber-50 hover:text-se-primary hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-500/20 lg:text-sm">
                             <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24">
                                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

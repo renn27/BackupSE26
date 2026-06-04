@@ -12,7 +12,8 @@ class EnsureGoogleTokenValid
         if ($user && !$user->google_refresh_token) {
             auth()->logout();
             return redirect()->route('login')
-                ->with('error', 'Sesi Google Anda telah berakhir. Silakan login ulang.');
+                ->with('error', 'Sesi Google Anda telah berakhir. Silakan login ulang dan setujui akses Google Drive.')
+                ->with('force_google_consent', true);
         }
         return $next($request);
     }
