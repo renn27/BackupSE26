@@ -4,7 +4,7 @@
             <div class="flex h-10 shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 shadow-sm shadow-slate-950/5 sm:h-12 sm:gap-2.5 sm:px-3">
                 <img src="{{ asset('images/logo-bps.svg') }}" alt="Logo BPS" class="h-7 w-7 object-contain sm:h-9 sm:w-9">
                 <span class="h-6 w-px bg-slate-200 sm:h-7"></span>
-                <img src="{{ asset('images/logo-se2026-small.png') }}" alt="Logo Sensus Ekonomi 2026" class="h-8 w-6 object-contain sm:h-10 sm:w-8">
+                <img src="{{ asset('images/logo-se2026-ribbon-only-v3.png') }}" alt="Logo SE2026" class="h-8 w-9 object-contain sm:h-10 sm:w-11">
             </div>
             <div class="min-w-0">
                 <p class="truncate text-sm font-medium text-se-ink sm:text-base sm:font-semibold sm:tracking-tight">{{ config('app.name', 'Asisten SE2026') }}</p>

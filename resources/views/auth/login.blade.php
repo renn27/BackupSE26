@@ -21,11 +21,7 @@
         body { font-family: 'Outfit', 'Inter', sans-serif; }
 
         .login-shell {
-            background:
-                radial-gradient(circle at 100% -4%, rgba(226, 232, 240, 0.66) 0 16rem, transparent 16.2rem),
-                radial-gradient(circle at -14% 84%, transparent 0 14rem, rgba(249, 115, 22, 0.22) 14.1rem 14.22rem, transparent 14.32rem),
-                radial-gradient(circle at 119% 48%, transparent 0 12.7rem, rgba(251, 146, 60, 0.18) 12.8rem 12.92rem, transparent 13.02rem),
-                linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            background: rgba(180, 83, 9, 0.05);
         }
 
         .login-shell::before,
@@ -33,26 +29,103 @@
             content: "";
             position: fixed;
             z-index: 0;
-            width: 4.75rem;
-            height: 11.25rem;
             pointer-events: none;
-            opacity: 0.18;
-            background-image: radial-gradient(circle, rgba(249, 115, 22, 0.28) 0 1.7px, transparent 2.2px);
-            background-size: 1.45rem 1.45rem;
+            border-radius: 9999px;
+            filter: blur(56px);
         }
 
         .login-shell::before {
-            left: -1.8rem;
-            top: 8.5rem;
+            top: -10%;
+            right: -10%;
+            width: 50vw;
+            height: 50vh;
+            background: linear-gradient(135deg, rgba(255, 237, 213, 0.72), rgba(255, 255, 255, 0));
+            animation: login-pulse 8s ease-in-out infinite;
         }
 
         .login-shell::after {
-            right: -2.25rem;
-            bottom: 5.25rem;
+            top: 20%;
+            left: -10%;
+            width: 40vw;
+            height: 40vh;
+            background: linear-gradient(45deg, rgba(254, 249, 195, 0.58), rgba(255, 255, 255, 0));
+        }
+
+        .login-watermark {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .login-watermark img {
+            position: absolute;
+            width: min(48rem, 55vw);
+            height: auto;
+            user-select: none;
+        }
+
+        .login-watermark__top {
+            top: -12%;
+            right: -19%;
+            opacity: 0.07;
+            transform: rotate(15deg);
+        }
+
+        .login-watermark__bottom {
+            bottom: -10%;
+            left: -10%;
+            opacity: 0.085;
+            transform: rotate(-10deg);
+        }
+
+        .login-watermark__center {
+            top: 19%;
+            left: 18%;
+            width: min(16rem, 26vw) !important;
+            opacity: 0.065;
+            filter: blur(1px);
+            transform: rotate(45deg);
+        }
+
+        @media (max-width: 639px) {
+            .login-watermark img {
+                width: 24rem;
+            }
+
+            .login-watermark__top {
+                top: -1.5rem;
+                right: -11.25rem;
+                opacity: 0.14;
+            }
+
+            .login-watermark__bottom {
+                bottom: -2.75rem;
+                left: -10.75rem;
+                opacity: 0.16;
+            }
+
+            .login-watermark__center {
+                top: 11.5rem;
+                left: -8.75rem;
+                width: 17rem !important;
+                opacity: 0.06;
+            }
+        }
+
+        @keyframes login-pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.64; }
         }
     </style>
 </head>
 <body class="login-shell min-h-full text-se-ink">
+    <div class="login-watermark" aria-hidden="true">
+        <img src="{{ asset('images/logo-se2026-ribbon-only-v3.png') }}" alt="" class="login-watermark__top">
+        <img src="{{ asset('images/logo-se2026-ribbon-only-v3.png') }}" alt="" class="login-watermark__bottom">
+        <img src="{{ asset('images/logo-se2026-ribbon-only-v3.png') }}" alt="" class="login-watermark__center">
+    </div>
     <main class="relative z-10 flex min-h-screen flex-col items-center justify-center px-5 py-6 sm:px-6 lg:py-10">
         <div class="grid w-full max-w-[21rem] overflow-hidden rounded-[2rem] bg-white/95 shadow-2xl shadow-slate-950/10 ring-1 ring-slate-200/80 backdrop-blur sm:max-w-md lg:max-w-4xl lg:grid-cols-[1fr_0.92fr] lg:rounded-3xl">
             <section class="relative hidden min-h-[32rem] overflow-hidden border-r border-slate-200 bg-gradient-to-br from-slate-50 via-white to-orange-50/40 p-10 lg:flex lg:flex-col lg:justify-start">
@@ -68,7 +141,7 @@
                     <div class="flex w-fit items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm shadow-slate-950/5">
                         <img src="{{ asset('images/logo-bps.svg') }}" alt="Logo BPS" class="h-11 w-11 object-contain">
                         <div class="h-10 w-px bg-slate-200"></div>
-                        <img src="{{ asset('images/logo-se2026-small.png') }}" alt="Sensus Ekonomi 2026" class="h-12 w-9 object-contain">
+                        <img src="{{ asset('images/logo-se2026-ribbon-only-v3.png') }}" alt="Logo SE2026" class="h-12 w-14 object-contain">
                     </div>
 
                     <div class="mt-7 max-w-md">
@@ -86,7 +159,7 @@
                         <div class="mx-auto flex w-fit items-center gap-4 px-2 py-1">
                             <img src="{{ asset('images/logo-bps.svg') }}" alt="Logo BPS" class="h-12 w-12 object-contain">
                             <div class="h-10 w-px bg-slate-300"></div>
-                            <img src="{{ asset('images/logo-se2026-small.png') }}" alt="Sensus Ekonomi 2026" class="h-12 w-9 object-contain">
+                            <img src="{{ asset('images/logo-se2026-ribbon-only-v3.png') }}" alt="Logo SE2026" class="h-12 w-14 object-contain">
                         </div>
                         <h1 class="mt-7 text-[1.8rem] font-semibold leading-tight tracking-wide text-slate-900">ASISTEN SE2026</h1>
                         <p class="mx-auto mt-3 max-w-xs text-[0.95rem] font-normal leading-6 text-slate-500">Aplikasi Simpan, Informasi Progres, dan Tanya Konsepnya Sensus Ekonomi 2026</p>
