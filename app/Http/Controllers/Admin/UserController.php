@@ -3,7 +3,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\UserDeletionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -46,10 +48,22 @@ class UserController extends Controller
         return back()->with('success', "Status user {$user->name} berhasil diubah menjadi {$newStatus}.");
     }
 
-    public function destroy(User $user)
+    public function destroy(User $user, UserDeletionService $userDeletionService)
     {
-        // TODO: Hapus file di Drive secara background sebelum menghapus user
-        $user->delete();
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
+        abort_if($user->isSuperAdmin(), 403, 'Akun superadmin tidak boleh dihapus dari halaman ini.');
+
+        try {
+            $userDeletionService->deletePermanently($user);
+        } catch (\Throwable $e) {
+            Log::error("Gagal menghapus user {$user->id} secara permanen: " . $e->getMessage(), [
+                'exception' => get_class($e),
+            ]);
+
+            return redirect()
+                ->route('admin.users.index')
+                ->with('error', 'User belum dihapus karena proses hapus file/data terkait gagal. Coba lagi atau cek koneksi Google Drive user.');
+        }
+
+        return redirect()->route('admin.users.index')->with('success', 'User dan seluruh data terkait berhasil dihapus permanen.');
     }
 }

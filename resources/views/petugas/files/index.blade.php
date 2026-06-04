@@ -301,17 +301,17 @@
             </div>
         </div>
 
-        <div x-show="viewMode === 'grid'" x-transition.opacity.duration.150ms x-cloak class="max-md:hidden p-4" style="display: none;">
+        <div x-show="viewMode === 'grid'" x-transition.opacity.duration.150ms x-cloak class="max-md:hidden px-4 pb-6 pt-4" style="display: none;">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                 @forelse($files as $file)
                     @if($file->type === 'photo' && $file->status === 'uploaded')
-                        <div class="file-grid-card group flex flex-col">
-                            <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
-                                <img src="{{ route('file.view', $file) }}" alt="{{ $file->original_name }}" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" decoding="async">
+                        <div class="file-grid-card flex flex-col">
+                            <div class="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-slate-100">
+                                <img src="{{ route('file.view', $file) }}" alt="{{ $file->original_name }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async">
                                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent opacity-0 transition duration-300 group-hover:opacity-100"></div>
                                 <p class="absolute inset-x-3 bottom-3 truncate text-sm font-semibold text-white opacity-0 transition duration-300 group-hover:opacity-100" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
                             </div>
-                            <div class="flex items-center justify-between gap-3 border-t border-slate-100 bg-white px-3 py-2">
+                            <div class="flex items-center justify-between gap-3 rounded-b-xl border-t border-slate-100 bg-white px-3 py-2">
                                 <div class="min-w-0">
                                     <p class="truncate text-sm font-semibold text-slate-900" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
                                     <p class="mt-0.5 text-xs font-medium text-slate-500">{{ $file->created_at->format('d M') }} - {{ $file->human_size }}</p>
@@ -330,7 +330,7 @@
                         </div>
                     @else
                         <div class="file-grid-card flex flex-col">
-                            <div class="relative flex aspect-[4/3] flex-col items-center justify-center overflow-hidden bg-slate-50/80 p-5 text-center">
+                            <div class="relative flex aspect-[4/3] flex-col items-center justify-center overflow-hidden rounded-t-xl bg-slate-50/80 p-5 text-center">
                                 @if($file->type === 'photo')
                                     <div class="file-icon file-icon-danger mb-4">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -352,7 +352,7 @@
                                     @endif
                                 </span>
                             </div>
-                            <div class="flex items-center justify-between gap-3 border-t border-slate-100 bg-white px-3 py-2">
+                            <div class="flex items-center justify-between gap-3 rounded-b-xl border-t border-slate-100 bg-white px-3 py-2">
                                 <div class="min-w-0">
                                     <p class="truncate text-sm font-semibold text-slate-900" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
                                     <p class="mt-0.5 text-xs font-medium text-slate-500">{{ $file->created_at->format('d M') }} - {{ $file->human_size }}</p>

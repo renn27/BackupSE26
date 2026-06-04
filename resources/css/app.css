@@ -144,7 +144,7 @@
     }
 
     .file-action {
-        @apply inline-flex h-10 w-10 items-center justify-center rounded-xl border border-transparent text-slate-400 transition duration-200 hover:shadow-sm sm:h-9 sm:w-9 sm:rounded-lg sm:hover:-translate-y-0.5;
+        @apply inline-flex h-10 w-10 items-center justify-center rounded-xl border border-transparent text-slate-400 transition-colors duration-150 hover:shadow-sm sm:h-9 sm:w-9 sm:rounded-lg;
     }
 
     .file-action-compact {
@@ -168,7 +168,7 @@
     }
 
     .file-grid-card {
-        @apply overflow-hidden rounded-lg border border-slate-200/80 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md;
+        @apply overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm;
     }
 
     .file-empty-state {

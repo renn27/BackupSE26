@@ -23,8 +23,10 @@ class FileProxyController extends Controller
 
         abort_if($file->status !== 'uploaded', 404, 'File belum tersedia.');
 
-        // Ambil file stream menggunakan token pemilik file
         $fileOwner = $file->user;
+        abort_if(! $fileOwner, 404, 'Pemilik file tidak ditemukan.');
+
+        // Ambil file stream menggunakan token pemilik file
         $stream = $driveService->getFileStream($fileOwner, $file->drive_file_id);
 
         return response()->streamDownload(function () use ($stream) {
@@ -67,6 +69,8 @@ class FileProxyController extends Controller
         }
 
         $fileOwner = $file->user;
+        abort_if(! $fileOwner, 404, 'Pemilik file tidak ditemukan.');
+
         $stream = $driveService->getFileStream($fileOwner, $file->drive_file_id);
 
         return response()->stream(function () use ($stream) {

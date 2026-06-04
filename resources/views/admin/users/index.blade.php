@@ -3,7 +3,20 @@
 @section('title', 'Manajemen User')
 
 @section('content')
-<div class="space-y-6">
+<div
+    class="space-y-6"
+    x-data="{
+        deleteModalOpen: false,
+        deleteUser: { name: '', email: '', files: 0, formId: '' },
+        openDeleteModal(user) {
+            this.deleteUser = user;
+            this.deleteModalOpen = true;
+        },
+        submitDelete() {
+            document.getElementById(this.deleteUser.formId)?.submit();
+        }
+    }"
+>
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <form action="{{ route('admin.users.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <div class="relative">
@@ -70,10 +83,20 @@
                                         {{ $user->status === 'active' ? 'Suspend' : 'Aktifkan' }}
                                     </button>
                                 </form>
-                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus user ini beserta seluruh filenya?')">
+                                <form id="delete-user-{{ $user->id }}" action="{{ route('admin.users.destroy', $user) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 transition-colors" title="Hapus">
+                                    <button
+                                        type="button"
+                                        @click="openDeleteModal({
+                                            name: @js($user->name),
+                                            email: @js($user->email),
+                                            files: {{ $user->files()->withTrashed()->count() }},
+                                            formId: 'delete-user-{{ $user->id }}'
+                                        })"
+                                        class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 transition-colors"
+                                        title="Hapus"
+                                    >
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
                                 </form>
@@ -97,5 +120,82 @@
         </div>
         @endif
     </div>
+
+    <template x-teleport="body">
+        <div
+            x-show="deleteModalOpen"
+            x-transition.opacity.duration.150ms
+            x-cloak
+            class="fixed inset-0 z-[80] flex min-h-dvh items-center justify-center bg-slate-900/45 px-4 py-6 backdrop-blur-[2px]"
+            @keydown.escape.window="deleteModalOpen = false"
+        >
+            <button
+                type="button"
+                class="absolute inset-0 cursor-default"
+                aria-label="Tutup modal"
+                @click="deleteModalOpen = false"
+            ></button>
+
+            <div
+                x-show="deleteModalOpen"
+                x-transition:enter="transition ease-out duration-150"
+                x-transition:enter-start="opacity-0 translate-y-2 scale-[0.98]"
+                x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                x-transition:leave="transition ease-in duration-100"
+                x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                x-transition:leave-end="opacity-0 translate-y-2 scale-[0.98]"
+                class="relative w-full max-w-[30rem] overflow-hidden rounded-2xl border border-white/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.28)] ring-1 ring-slate-950/5"
+                role="dialog"
+                aria-modal="true"
+            >
+                <div class="flex items-start gap-4 px-6 pb-5 pt-6">
+                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-600 ring-4 ring-rose-50/80">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h2 class="text-lg font-bold leading-7 text-slate-950">Hapus user permanen?</h2>
+                        <p class="mt-1 text-sm leading-6 text-slate-600">
+                            Akun <span class="font-semibold text-slate-950" x-text="deleteUser.name"></span> akan dihapus bersama seluruh file dan data terkait.
+                        </p>
+                        <div class="mt-3 inline-flex max-w-full items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
+                            <span class="truncate" x-text="deleteUser.email"></span>
+                        </div>
+                    </div>
+                    <button type="button" @click="deleteModalOpen = false" class="-mr-2 -mt-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600" aria-label="Tutup">
+                        <svg class="h-[18px] w-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="mx-6 mb-5 rounded-xl border border-rose-100 bg-rose-50/70 p-4 text-sm text-rose-800">
+                    <div class="flex items-start gap-3">
+                        <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-rose-600 ring-1 ring-rose-100">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="font-semibold leading-5" x-text="`${deleteUser.files} file akan ikut dihapus`"></div>
+                            <p class="mt-1.5 text-xs leading-5 text-rose-700">
+                                Record database, sesi, assignment, log user, dan file Google Drive yang tercatat akan dihapus permanen.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col-reverse gap-2 border-t border-slate-100 bg-slate-50/80 px-6 py-4 sm:flex-row sm:justify-end">
+                    <button type="button" @click="deleteModalOpen = false" class="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                        Batal
+                    </button>
+                    <button type="button" @click="submitDelete()" class="inline-flex h-11 items-center justify-center rounded-xl bg-rose-600 px-5 text-sm font-semibold text-white shadow-sm shadow-rose-600/20 transition hover:bg-rose-700">
+                        Hapus permanen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
 </div>
 @endsection

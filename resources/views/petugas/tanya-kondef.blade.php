@@ -4,7 +4,7 @@
 
 @section('content')
 @php
-    $notebookUrl = 'https://notebooklm.google.com/notebook/1c715acd-c98d-4e47-9414-3ab09e96fe67';
+    $notebookUrl = 'https://notebooklm.google.com/notebook/f12ec5bf-d166-4335-8719-ca9e425ff32b?authuser=2';
 @endphp
 
 <div class="mx-auto max-w-3xl space-y-5 sm:space-y-8">

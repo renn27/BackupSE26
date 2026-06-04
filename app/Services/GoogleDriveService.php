@@ -181,6 +181,11 @@ class GoogleDriveService
             $drive->files->delete($driveFileId);
             return true;
         } catch (\Google\Service\Exception $e) {
+            if ($e->getCode() === 404) {
+                Log::info("File {$driveFileId} sudah tidak ada di Drive user {$user->id}");
+                return true;
+            }
+
             Log::error("Gagal hapus file {$driveFileId} dari Drive user {$user->id}: " . $e->getMessage());
             return false;
         }
