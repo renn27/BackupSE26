@@ -76,7 +76,7 @@
                     
                     <input type="file" name="photo" x-ref="photoInput" class="hidden" accept="image/jpeg,image/png,image/webp,image/heic" @change="handlePhotoSelect">
                     
-                    <div x-show="!photoPreview" class="space-y-2 sm:space-y-3">
+                    <div x-show="!uploadPhotoPreview" class="space-y-2 sm:space-y-3">
                         <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-slate-100 bg-white text-blue-500 shadow-sm sm:h-16 sm:w-16">
                             <svg class="h-6 w-6 sm:h-8 sm:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                         </div>
@@ -84,8 +84,8 @@
                         <p class="text-xs text-slate-400">JPG, PNG, WebP (Max 10MB)</p>
                     </div>
 
-                    <div x-show="photoPreview" class="relative group" x-cloak>
-                        <img :src="photoPreview" class="max-h-48 mx-auto rounded-xl shadow-sm object-contain" alt="Preview">
+                    <div x-show="photoFile && uploadPhotoPreview" class="relative group" x-cloak>
+                        <img :src="uploadPhotoPreview || ''" class="max-h-48 mx-auto rounded-xl shadow-sm object-contain" alt="Preview">
                         <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
                             <span class="text-white text-sm font-medium bg-slate-900/60 px-3 py-1 rounded-lg backdrop-blur-sm">Ganti Foto</span>
                         </div>
@@ -236,13 +236,13 @@
                 </div>
             </div>
 
-            <div x-show="viewMode === 'table'" x-transition.opacity.duration.150ms x-cloak class="file-panel">
-                <div class="overflow-x-auto">
-                    <table class="file-table !min-w-0 table-fixed md:!min-w-0">
+            <div x-show="viewMode === 'table'" x-transition.opacity.duration.150ms x-cloak class="file-panel overflow-hidden [scrollbar-width:none]">
+                <div class="max-w-full overflow-hidden">
+                    <table class="file-table !min-w-0 !w-full max-w-full table-fixed md:!min-w-0">
                         <thead class="file-table-head">
                             <tr>
                                 <th class="file-table-th">File</th>
-                                <th class="file-table-th w-24 text-right sm:w-28">Aksi</th>
+                                <th class="file-table-th w-32 text-center sm:w-36">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -263,8 +263,8 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="file-table-cell text-right">
-                                    <div class="flex items-center justify-end gap-1">
+                                <td class="file-table-cell text-center">
+                                    <div class="flex items-center justify-center gap-1.5">
                                         @if($file->status === 'uploaded')
                                             @if($file->drive_web_view_link)
                                              <a href="{{ $file->drive_web_view_link }}" target="_blank" class="file-action file-action-blue max-sm:h-8 max-sm:w-8" title="Buka di Drive">
@@ -486,11 +486,11 @@
             >
                 <div class="flex items-center justify-between gap-3 border-b border-white/10 bg-slate-950/95 px-4 py-3 text-white sm:px-5">
                     <div class="min-w-0">
-                        <h2 class="truncate text-sm font-semibold sm:text-base" x-text="photoPreview.name"></h2>
+                        <h2 class="truncate text-sm font-semibold sm:text-base" x-text="selectedPhotoPreview.name"></h2>
                         <p class="mt-0.5 truncate text-xs text-slate-300">
-                            <span x-text="photoPreview.date"></span>
+                            <span x-text="selectedPhotoPreview.date"></span>
                             <span class="mx-1.5 text-slate-500">-</span>
-                            <span x-text="photoPreview.size"></span>
+                            <span x-text="selectedPhotoPreview.size"></span>
                         </p>
                     </div>
                     <button type="button" @click="closePhotoPreview()" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-200 transition hover:bg-white/10 hover:text-white" aria-label="Tutup">
@@ -502,8 +502,8 @@
 
                 <div class="flex min-h-0 flex-1 items-center justify-center bg-slate-900 p-3 sm:p-5">
                     <img
-                        :src="photoPreview.src"
-                        :alt="photoPreview.name"
+                        :src="selectedPhotoPreview.src"
+                        :alt="selectedPhotoPreview.name"
                         class="max-h-[calc(92dvh-5.5rem)] w-auto max-w-full rounded-xl object-contain shadow-2xl shadow-black/30"
                     >
                 </div>
@@ -519,7 +519,7 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('uploadManager', () => ({
         dragPhoto: false,
         photoFile: null,
-        photoPreview: null,
+        uploadPhotoPreview: null,
         isUploadingPhoto: false,
         photoProgress: 0,
         photoDetail: 'Mengunggah',
@@ -537,18 +537,18 @@ document.addEventListener('alpine:init', () => {
         deleteFileLoading: false,
         deleteFileError: '',
         photoPreviewOpen: false,
-        photoPreview: { name: '', src: '', size: '', date: '' },
+        selectedPhotoPreview: { name: '', src: '', size: '', date: '' },
 
         init() {},
 
         openPhotoPreview(photo) {
-            this.photoPreview = photo;
+            this.selectedPhotoPreview = photo;
             this.photoPreviewOpen = true;
         },
 
         closePhotoPreview() {
             this.photoPreviewOpen = false;
-            this.photoPreview = { name: '', src: '', size: '', date: '' };
+            this.selectedPhotoPreview = { name: '', src: '', size: '', date: '' };
         },
 
         requestDeleteFile(file) {
@@ -616,7 +616,7 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
             this.photoFile = file;
-            this.photoPreview = URL.createObjectURL(file);
+            this.uploadPhotoPreview = URL.createObjectURL(file);
         },
         submitPhoto() {
             if (!this.photoFile) return;
@@ -636,7 +636,7 @@ document.addEventListener('alpine:init', () => {
                     this.photoDetail = 'Berhasil';
                     this.photoProgress = 100;
                     this.photoFile = null;
-                    this.photoPreview = null;
+                    this.uploadPhotoPreview = null;
                     this.$refs.photoInput.value = '';
                     document.getElementById('formPhoto').reset();
                     setTimeout(() => window.location.reload(), 700);

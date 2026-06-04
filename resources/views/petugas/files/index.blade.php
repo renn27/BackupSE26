@@ -216,7 +216,7 @@
                             <th class="file-table-th text-center">Status</th>
                             <th class="file-table-th w-36">Ukuran</th>
                             <th class="file-table-th">Waktu Upload</th>
-                            <th class="file-table-th text-right">Aksi</th>
+                            <th class="file-table-th text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -265,8 +265,8 @@
                             <td class="file-table-cell text-xs font-medium text-slate-500">
                                 {{ $file->created_at->format('d M Y H:i') }}
                             </td>
-                            <td class="file-table-cell text-right">
-                                <div class="flex items-center justify-end gap-1">
+                            <td class="file-table-cell text-center">
+                                <div class="flex items-center justify-center gap-1">
                                     @if($file->status === 'uploaded')
                                         @if($file->drive_web_view_link)
                                         <a href="{{ $file->drive_web_view_link }}" target="_blank" class="file-action file-action-blue" title="Buka di Drive">

@@ -147,7 +147,7 @@
                     <div class="mt-7 max-w-md">
                         <p class="text-sm font-medium uppercase tracking-wide text-se-rust">Sensus Ekonomi 2026</p>
                         <h1 class="mt-3 text-4xl font-semibold tracking-tight text-se-ink">ASISTEN SE2026</h1>
-                        <p class="mt-4 text-base leading-7 text-slate-600">Aplikasi Simpan, Informasi Progres, dan Tanya Konsepnya Sensus Ekonomi 2026.</p>
+                        <p class="mt-4 text-base leading-7 text-slate-600">Aplikasi Simpan, Informasi progres, dan Tanya Kondefnya Sensus Ekonomi 2026</p>
                     </div>
 
                 </div>
@@ -162,7 +162,7 @@
                             <img src="{{ asset('images/logo-se2026-ribbon-only-v3.png') }}" alt="Logo SE2026" class="h-12 w-14 object-contain">
                         </div>
                         <h1 class="mt-7 text-[1.8rem] font-semibold leading-tight tracking-wide text-slate-900">ASISTEN SE2026</h1>
-                        <p class="mx-auto mt-3 max-w-xs text-[0.95rem] font-normal leading-6 text-slate-500">Aplikasi Simpan, Informasi Progres, dan Tanya Konsepnya Sensus Ekonomi 2026</p>
+                        <p class="mx-auto mt-3 max-w-xs text-[0.95rem] font-normal leading-6 text-slate-500">Aplikasi Simpan, Informasi progres, dan Tanya Kondefnya Sensus Ekonomi 2026</p>
                     </div>
 
                     <div class="mt-8 lg:mt-[5.25rem]">
