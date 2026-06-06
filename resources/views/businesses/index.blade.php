@@ -6,8 +6,16 @@
 <div class="space-y-5 sm:space-y-8">
     <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-950/5 sm:rounded-3xl sm:p-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 mb-4">
-            <div class="min-w-0">
+            <div class="flex items-center gap-3 min-w-0">
                 <h1 class="text-lg font-semibold tracking-tight text-se-ink sm:text-2xl">Monitoring SBR</h1>
+                @if(auth()->user()->isSuperAdmin())
+                    <a href="{{ route('admin.monitoring-sbr.export') }}" class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-emerald-600/15 hover:bg-emerald-700 transition focus:outline-none focus:ring-4 focus:ring-emerald-500/10">
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Export Progress Monitoring
+                    </a>
+                @endif
             </div>
 
             <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-sm">

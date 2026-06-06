@@ -71,6 +71,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureSuperAdmin::class, \App\Ht
         Route::get('/files/export', [Admin\FileController::class, 'export'])->name('files.export');
 
         // Monitoring SBR
+        Route::get('/monitoring-sbr/export', [Admin\AdminBusinessController::class, 'exportProgress'])->name('monitoring-sbr.export');
         Route::get('/monitoring-sbr', [Admin\AdminBusinessController::class, 'index'])->name('monitoring-sbr.index');
         Route::post('/monitoring-sbr/upload', [Admin\AdminBusinessController::class, 'uploadStore'])->name('monitoring-sbr.upload');
         Route::get('/monitoring-sbr/upload/{importId}/progress', [Admin\AdminBusinessController::class, 'uploadProgress'])->name('monitoring-sbr.upload.progress');

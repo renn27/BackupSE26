@@ -346,6 +346,12 @@ class AdminBusinessController extends Controller
         return response()->json(['success' => true, 'villages' => $villages]);
     }
 
+    public function exportProgress()
+    {
+        $filename = 'Update Monitoring SBR_SE2026_' . now()->format('Ymd_His') . '.xlsx';
+        return Excel::download(new \App\Exports\ProgressMonitoringExport, $filename);
+    }
+
     private function progressKey(Request $request, ?string $importId): ?string
     {
         if (! $importId) {
