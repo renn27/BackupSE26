@@ -56,7 +56,7 @@
                     <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
                 </div>
 
-                <div class="grid gap-3 md:grid-cols-3 mt-3">
+                <div class="grid gap-3 grid-cols-3 mt-3">
                     <!-- Desa Filter -->
                     <div class="relative">
                         <select id="village-filter" name="village_id" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
@@ -110,7 +110,7 @@
                     <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
                 </div>
 
-                <div class="grid gap-3 md:grid-cols-2 mt-3">
+                <div class="grid gap-3 grid-cols-2 mt-3">
                     <!-- Desa Filter -->
                     <div class="relative">
                         <select id="village-filter" name="village_id" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">

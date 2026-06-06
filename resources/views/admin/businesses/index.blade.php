@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Monitoring SBR')
+@section('title', 'Dashboard Monitoring SBR')
 
 @section('content')
 <div class="space-y-6">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <h1 class="text-2xl font-semibold tracking-tight text-se-ink">Monitoring SBR</h1>
+            <h1 class="text-2xl font-semibold tracking-tight text-se-ink">Dashboard Monitoring SBR</h1>
             <p class="mt-1 text-sm text-slate-500">Upload data usaha dan kelola penugasan desa untuk petugas.</p>
         </div>
         <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm shadow-slate-950/5">

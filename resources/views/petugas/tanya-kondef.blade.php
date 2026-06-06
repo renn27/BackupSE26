@@ -18,8 +18,8 @@
             'icon' => 'list',
         ],
         [
-            'title' => 'Tanya KBLI 2026',
-            'description' => 'Notebook referensi KBLI 2026.',
+            'title' => 'Tanya KBLI 2025',
+            'description' => 'Notebook referensi KBLI 2025.',
             'url' => 'https://notebooklm.google.com/notebook/f12ec5bf-d166-4335-8719-ca9e425ff32b?authuser=2',
             'icon' => 'book',
         ],

@@ -20,8 +20,9 @@
 
     <nav class="flex-1 overflow-y-auto px-4 py-5">
         @if(auth()->user()->isSuperAdmin())
-            <div class="mb-4 px-2">
-                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Menu</p>
+            <!-- Group 1: Backup SE2026 -->
+            <div class="mb-2 mt-4 px-2">
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Backup SE2026</p>
             </div>
             <div class="space-y-1.5">
                 <a href="{{ route('admin.dashboard') }}" class="group relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition duration-200 {{ request()->routeIs('admin.dashboard') ? 'bg-se-subtle text-se-rust ring-1 ring-amber-200/70' : 'text-slate-600 hover:bg-slate-50 hover:text-se-rust' }}">
@@ -51,9 +52,15 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                         </svg>
                     </span>
-                    <span class="min-w-0 flex-1 truncate">Semua File</span>
+                    <span class="min-w-0 flex-1 truncate">Backup</span>
                 </a>
+            </div>
 
+            <!-- Group 2: Update Data SBR -->
+            <div class="mb-2 mt-5 px-2">
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Update Data SBR</p>
+            </div>
+            <div class="space-y-1.5">
                 <a href="{{ route('admin.monitoring-sbr.index') }}" class="group relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition duration-200 {{ request()->routeIs('admin.monitoring-sbr.*') ? 'bg-se-subtle text-se-rust ring-1 ring-amber-200/70' : 'text-slate-600 hover:bg-slate-50 hover:text-se-rust' }}">
                     <span class="{{ request()->routeIs('admin.monitoring-sbr.*') ? 'opacity-100' : 'opacity-0' }} absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-se-primary transition"></span>
                     <span class="flex h-9 w-9 items-center justify-center rounded-xl transition {{ request()->routeIs('admin.monitoring-sbr.*') ? 'bg-se-primary text-white shadow-sm shadow-se-primary/25' : 'border border-slate-200 bg-white text-se-rust group-hover:border-amber-200 group-hover:bg-se-subtle' }}">
@@ -61,7 +68,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6m4 6V7m4 10v-4M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                         </svg>
                     </span>
-                    <span class="min-w-0 flex-1 truncate">Monitoring SBR</span>
+                    <span class="min-w-0 flex-1 truncate">Dashboard Monitoring SBR</span>
                 </a>
 
                 <a href="{{ route('petugas.monitoring-sbr.index') }}" class="group relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition duration-200 {{ request()->routeIs('petugas.monitoring-sbr.*') ? 'bg-se-subtle text-se-rust ring-1 ring-amber-200/70' : 'text-slate-600 hover:bg-slate-50 hover:text-se-rust' }}">
@@ -71,7 +78,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                         </svg>
                     </span>
-                    <span class="min-w-0 flex-1 truncate">Daftar Usaha SBR</span>
+                    <span class="min-w-0 flex-1 truncate">Monitoring SBR</span>
                 </a>
             </div>
         @else
