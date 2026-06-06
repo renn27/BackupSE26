@@ -140,6 +140,82 @@
     </section>
 
     <div class="space-y-6">
+        <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-950/5">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-se-ink">Assignment Petugas</h2>
+                    <p class="mt-1 text-sm text-slate-500">Cari petugas dan wilayah, lalu tambahkan desa ke daftar kerja.</p>
+                </div>
+                <span id="assignment-summary" class="inline-flex w-fit rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-500">Belum ada petugas dipilih</span>
+            </div>
+
+            <div class="mt-5 grid gap-4 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+                <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-sm font-medium text-se-ink">1. Pilih Petugas</p>
+                            <p class="mt-1 text-xs text-slate-500">Cari nama atau email petugas.</p>
+                        </div>
+                    </div>
+                    <label class="relative mt-4 block">
+                        <span class="text-xs font-medium uppercase tracking-wide text-slate-500">Petugas</span>
+                        <input id="assignment-user-search" type="search" autocomplete="off" placeholder="Ketik nama atau email..." class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 pr-10 text-sm text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:ring-4 focus:ring-orange-100/70">
+                        <span class="pointer-events-none absolute bottom-3.5 right-4 text-xs text-slate-400">&#9662;</span>
+                        <div id="assignment-user-dropdown" class="absolute left-0 right-0 z-30 mt-2 hidden max-h-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-1 text-sm shadow-lg shadow-slate-950/10"></div>
+                        <select id="assignment-user" class="hidden">
+                            <option value="">Pilih petugas</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }} - {{ $user->email }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                </div>
+
+                <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-sm font-medium text-se-ink">2. Tambah Wilayah</p>
+                            <p class="mt-1 text-xs text-slate-500">Cari kecamatan atau desa yang akan ditugaskan.</p>
+                        </div>
+                    </div>
+                    <div class="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+                        <label class="relative block">
+                            <span class="text-xs font-medium uppercase tracking-wide text-slate-500">Wilayah</span>
+                            <input id="assignment-village-search" type="search" autocomplete="off" placeholder="Ketik kecamatan atau desa..." class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 pr-10 text-sm text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:ring-4 focus:ring-orange-100/70">
+                            <span class="pointer-events-none absolute bottom-3.5 right-4 text-xs text-slate-400">&#9662;</span>
+                            <div id="assignment-village-dropdown" class="absolute left-0 right-0 z-30 mt-2 hidden max-h-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-1 text-sm shadow-lg shadow-slate-950/10"></div>
+                            <select id="assignment-village" class="hidden">
+                                <option value="">Pilih desa</option>
+                                @foreach($villages as $village)
+                                    <option value="{{ $village->id }}">{{ $village->nmkec }} - {{ $village->nmdesa }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <button id="assignment-add" type="button" class="min-h-12 rounded-2xl bg-se-primary px-6 text-sm font-medium text-white shadow-sm shadow-se-primary/25 transition hover:bg-se-rust">
+                            Tambah
+                        </button>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl border border-slate-200 bg-white p-4 xl:col-span-2">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-se-ink">Desa Ter-assign</p>
+                            <p class="mt-1 text-xs text-slate-500">Wilayah kerja petugas terpilih.</p>
+                        </div>
+                        <span id="assignment-count" class="inline-flex w-fit rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500">0 desa</span>
+                    </div>
+                    <div id="assignment-list" class="mt-4 grid gap-2 text-sm text-slate-500 md:grid-cols-2 xl:grid-cols-3">
+                        <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500 md:col-span-2 xl:col-span-3">
+                            Pilih petugas untuk melihat assignment.
+                        </div>
+                    </div>
+                </div>
+
+                <p id="assignment-message" class="min-h-5 text-sm xl:col-span-2"></p>
+            </div>
+        </section>
+
         <section x-data="{ open: false }" class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5">
             <div @click="open = !open" class="flex cursor-pointer items-center justify-between border-b border-slate-200 px-5 py-4 hover:bg-slate-50 transition select-none">
                 <div>
@@ -209,10 +285,10 @@
                                                         <td class="px-3 py-2 text-slate-600">{{ number_format($villageRow->unrecorded_count) }}</td>
                                                         <td class="px-3 py-2">
                                                             <div class="flex min-w-[120px] items-center gap-2">
-                                                                <div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
-                                                                    <div class="h-full rounded-full bg-se-primary" style="width: {{ min(100, $villageRow->progress) }}%"></div>
-                                                                </div>
-                                                                <span class="font-medium text-se-rust">{{ $villageRow->progress }}%</span>
+                                                                 <div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+                                                                     <div class="h-full rounded-full bg-se-primary" style="width: {{ min(100, $villageRow->progress) }}%"></div>
+                                                                 </div>
+                                                                 <span class="font-medium text-se-rust">{{ $villageRow->progress }}%</span>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -372,83 +448,6 @@
                 </table>
             </div>
         </section>
-
-        <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-950/5">
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                    <h2 class="text-lg font-semibold text-se-ink">Assignment Petugas</h2>
-                    <p class="mt-1 text-sm text-slate-500">Cari petugas dan wilayah, lalu tambahkan desa ke daftar kerja.</p>
-                </div>
-                <span id="assignment-summary" class="inline-flex w-fit rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-500">Belum ada petugas dipilih</span>
-            </div>
-
-            <div class="mt-5 grid gap-4 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-                <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-                    <div class="flex items-center justify-between gap-3">
-                        <div>
-                            <p class="text-sm font-medium text-se-ink">1. Pilih Petugas</p>
-                            <p class="mt-1 text-xs text-slate-500">Cari nama atau email petugas.</p>
-                        </div>
-                    </div>
-                    <label class="relative mt-4 block">
-                        <span class="text-xs font-medium uppercase tracking-wide text-slate-500">Petugas</span>
-                        <input id="assignment-user-search" type="search" autocomplete="off" placeholder="Ketik nama atau email..." class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 pr-10 text-sm text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:ring-4 focus:ring-orange-100/70">
-                        <span class="pointer-events-none absolute bottom-3.5 right-4 text-xs text-slate-400">&#9662;</span>
-                        <div id="assignment-user-dropdown" class="absolute left-0 right-0 z-30 mt-2 hidden max-h-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-1 text-sm shadow-lg shadow-slate-950/10"></div>
-                        <select id="assignment-user" class="hidden">
-                            <option value="">Pilih petugas</option>
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name }} - {{ $user->email }}</option>
-                            @endforeach
-                        </select>
-                    </label>
-                </div>
-
-                <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-                    <div class="flex items-center justify-between gap-3">
-                        <div>
-                            <p class="text-sm font-medium text-se-ink">2. Tambah Wilayah</p>
-                            <p class="mt-1 text-xs text-slate-500">Cari kecamatan atau desa yang akan ditugaskan.</p>
-                        </div>
-                    </div>
-                    <div class="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-                        <label class="relative block">
-                            <span class="text-xs font-medium uppercase tracking-wide text-slate-500">Wilayah</span>
-                            <input id="assignment-village-search" type="search" autocomplete="off" placeholder="Ketik kecamatan atau desa..." class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 pr-10 text-sm text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:ring-4 focus:ring-orange-100/70">
-                            <span class="pointer-events-none absolute bottom-3.5 right-4 text-xs text-slate-400">&#9662;</span>
-                            <div id="assignment-village-dropdown" class="absolute left-0 right-0 z-30 mt-2 hidden max-h-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-1 text-sm shadow-lg shadow-slate-950/10"></div>
-                            <select id="assignment-village" class="hidden">
-                                <option value="">Pilih desa</option>
-                                @foreach($villages as $village)
-                                    <option value="{{ $village->id }}">{{ $village->nmkec }} - {{ $village->nmdesa }}</option>
-                                @endforeach
-                            </select>
-                        </label>
-                        <button id="assignment-add" type="button" class="min-h-12 rounded-2xl bg-se-primary px-6 text-sm font-medium text-white shadow-sm shadow-se-primary/25 transition hover:bg-se-rust">
-                            Tambah
-                        </button>
-                    </div>
-                </div>
-
-                <div class="rounded-2xl border border-slate-200 bg-white p-4 xl:col-span-2">
-                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-se-ink">Desa Ter-assign</p>
-                            <p class="mt-1 text-xs text-slate-500">Wilayah kerja petugas terpilih.</p>
-                        </div>
-                        <span id="assignment-count" class="inline-flex w-fit rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500">0 desa</span>
-                    </div>
-                    <div id="assignment-list" class="mt-4 grid gap-2 text-sm text-slate-500 md:grid-cols-2 xl:grid-cols-3">
-                        <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500 md:col-span-2 xl:col-span-3">
-                            Pilih petugas untuk melihat assignment.
-                        </div>
-                    </div>
-                </div>
-
-                <p id="assignment-message" class="min-h-5 text-sm xl:col-span-2"></p>
-            </div>
-        </section>
-    </div>
 </div>
 @endsection
 
