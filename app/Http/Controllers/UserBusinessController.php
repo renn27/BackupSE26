@@ -11,13 +11,27 @@ class UserBusinessController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+        $officers = collect();
         
         if ($user->isSuperAdmin()) {
             $assignedVillages = \App\Models\Village::orderBy('nmkec')
                 ->orderBy('nmdesa')
                 ->get();
             
+            $officers = \App\Models\User::where('role', 'petugas')
+                ->orderBy('name')
+                ->get(['id', 'name', 'email']);
+
+            $officerId = $request->user_id;
+
             $businesses = Business::with(['village', 'status.updatedBy'])
+                ->when($officerId, function ($query, $officerId) {
+                    $officerVillageIds = \App\Models\UserVillageAssignment::where('user_id', $officerId)->pluck('village_id');
+                    $query->whereIn('village_id', $officerVillageIds);
+                })
+                ->when($request->village_id, function ($query, $villageId) {
+                    $query->where('village_id', $villageId);
+                })
                 ->when($request->search, function ($query, $search) {
                     $query->where(function ($inner) use ($search) {
                         $inner->where('nama_usaha', 'like', "%{$search}%")
@@ -37,6 +51,11 @@ class UserBusinessController extends Controller
 
             $businesses = Business::with(['village', 'status.updatedBy'])
                 ->whereIn('village_id', $villageIds)
+                ->when($request->village_id, function ($query, $villageId) use ($villageIds) {
+                    if ($villageIds->contains($villageId)) {
+                        $query->where('village_id', $villageId);
+                    }
+                })
                 ->when($request->search, function ($query, $search) {
                     $query->where(function ($inner) use ($search) {
                         $inner->where('nama_usaha', 'like', "%{$search}%")
@@ -51,6 +70,9 @@ class UserBusinessController extends Controller
         $payload = [
             'businesses' => $businesses,
             'assignedVillages' => $assignedVillages,
+            'officers' => $officers,
+            'selectedVillageId' => $request->village_id,
+            'selectedUserId' => $user->isSuperAdmin() ? $request->user_id : null,
             'search' => $request->search,
         ];
 

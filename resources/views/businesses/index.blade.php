@@ -43,12 +43,43 @@
             </div>
         </div>
 
-        <form id="search-form" method="GET" class="mt-5 w-full">
-            <div class="relative">
-                <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+        <form id="filter-form" method="GET" class="mt-5 w-full">
+            <div class="grid gap-3 md:grid-cols-12">
+                <!-- Search Input -->
+                <div class="relative {{ auth()->user()->isSuperAdmin() ? 'md:col-span-6' : 'md:col-span-8' }}">
+                    <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                </div>
+
+                <!-- Desa Filter -->
+                <div class="relative md:col-span-4">
+                    <select id="village-filter" name="village_id" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                        <option value="">Semua Desa</option>
+                        @foreach($assignedVillages as $village)
+                            <option value="{{ $village->id }}" {{ $selectedVillageId == $village->id ? 'selected' : '' }}>
+                                {{ $village->nmkec }} - {{ $village->nmdesa }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">&#9662;</span>
+                </div>
+
+                <!-- Petugas Filter (Only for Superadmin) -->
+                @if(auth()->user()->isSuperAdmin())
+                    <div class="relative md:col-span-2">
+                        <select id="user-filter" name="user_id" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                            <option value="">Semua Petugas</option>
+                            @foreach($officers as $officer)
+                                <option value="{{ $officer->id }}" {{ $selectedUserId == $officer->id ? 'selected' : '' }}>
+                                    {{ $officer->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">&#9662;</span>
+                    </div>
+                @endif
             </div>
         </form>
     </div>
@@ -230,7 +261,7 @@ let searchTimer = null;
 let searchController = null;
 const tableContainer = document.getElementById('business-table-container');
 const searchInput = document.getElementById('search-input');
-const searchForm = document.getElementById('search-form');
+const filterForm = document.getElementById('filter-form');
 const saveButton = document.getElementById('modal-save');
 const saveButtonLabel = saveButton.querySelector('span');
 
@@ -254,7 +285,7 @@ function unlockBodyScroll() {
     window.scrollTo(0, lockedScrollY);
 }
 
-searchForm.addEventListener('submit', (event) => {
+filterForm.addEventListener('submit', (event) => {
     event.preventDefault();
     runLiveSearch(1);
 });
@@ -263,6 +294,16 @@ searchInput.addEventListener('input', () => {
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => runLiveSearch(1), 350);
 });
+
+const villageFilter = document.getElementById('village-filter');
+if (villageFilter) {
+    villageFilter.addEventListener('change', () => runLiveSearch(1));
+}
+
+const userFilter = document.getElementById('user-filter');
+if (userFilter) {
+    userFilter.addEventListener('change', () => runLiveSearch(1));
+}
 
 tableContainer.addEventListener('click', (event) => {
     const paginationLink = event.target.closest('a[href]');
@@ -281,6 +322,21 @@ async function runLiveSearch(page = 1) {
     searchController = new AbortController();
     const url = new URL(window.location.href);
     url.searchParams.set('search', searchInput.value);
+    
+    const villageFilter = document.getElementById('village-filter');
+    if (villageFilter && villageFilter.value) {
+        url.searchParams.set('village_id', villageFilter.value);
+    } else {
+        url.searchParams.delete('village_id');
+    }
+
+    const userFilter = document.getElementById('user-filter');
+    if (userFilter && userFilter.value) {
+        url.searchParams.set('user_id', userFilter.value);
+    } else {
+        url.searchParams.delete('user_id');
+    }
+
     url.searchParams.set('page', page);
     window.history.replaceState({}, '', url);
     tableContainer.classList.add('opacity-60');
