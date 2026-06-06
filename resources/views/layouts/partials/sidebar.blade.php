@@ -63,6 +63,16 @@
                     </span>
                     <span class="min-w-0 flex-1 truncate">Monitoring SBR</span>
                 </a>
+
+                <a href="{{ route('petugas.monitoring-sbr.index') }}" class="group relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition duration-200 {{ request()->routeIs('petugas.monitoring-sbr.*') ? 'bg-se-subtle text-se-rust ring-1 ring-amber-200/70' : 'text-slate-600 hover:bg-slate-50 hover:text-se-rust' }}">
+                    <span class="{{ request()->routeIs('petugas.monitoring-sbr.*') ? 'opacity-100' : 'opacity-0' }} absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-se-primary transition"></span>
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl transition {{ request()->routeIs('petugas.monitoring-sbr.*') ? 'bg-se-primary text-white shadow-sm shadow-se-primary/25' : 'border border-slate-200 bg-white text-se-rust group-hover:border-amber-200 group-hover:bg-se-subtle' }}">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </span>
+                    <span class="min-w-0 flex-1 truncate">Daftar Usaha SBR</span>
+                </a>
             </div>
         @else
             <div class="mb-4 px-2">

@@ -17,7 +17,7 @@
                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 1115 0"></path>
                     </svg>
-                    Petugas
+                    {{ auth()->user()->isSuperAdmin() ? 'Superadmin' : 'Petugas' }}
                 </div>
                 <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ auth()->user()->name }}</span>
             </div>
@@ -30,11 +30,15 @@
                     Wilayah tugas
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    @forelse($assignedVillages as $village)
-                        <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ $village->nmkec }} - {{ $village->nmdesa }}</span>
-                    @empty
-                        <span class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">Kamu belum ditugaskan ke desa manapun. Hubungi admin.</span>
-                    @endforelse
+                    @if(auth()->user()->isSuperAdmin())
+                        <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">Semua Wilayah (Superadmin)</span>
+                    @else
+                        @forelse($assignedVillages as $village)
+                            <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ $village->nmkec }} - {{ $village->nmdesa }}</span>
+                        @empty
+                            <span class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">Kamu belum ditugaskan ke desa manapun. Hubungi admin.</span>
+                        @endforelse
+                    @endif
                 </div>
             </div>
         </div>

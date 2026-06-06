@@ -11,24 +11,42 @@ class UserBusinessController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $assignedVillages = $user->villages()
-            ->orderBy('nmkec')
-            ->orderBy('nmdesa')
-            ->get();
+        
+        if ($user->isSuperAdmin()) {
+            $assignedVillages = \App\Models\Village::orderBy('nmkec')
+                ->orderBy('nmdesa')
+                ->get();
+            
+            $businesses = Business::with(['village', 'status.updatedBy'])
+                ->when($request->search, function ($query, $search) {
+                    $query->where(function ($inner) use ($search) {
+                        $inner->where('nama_usaha', 'like', "%{$search}%")
+                            ->orWhere('idsbr', 'like', "%{$search}%");
+                    });
+                })
+                ->latest()
+                ->paginate(20)
+                ->withQueryString();
+        } else {
+            $assignedVillages = $user->villages()
+                ->orderBy('nmkec')
+                ->orderBy('nmdesa')
+                ->get();
 
-        $villageIds = $assignedVillages->pluck('id');
+            $villageIds = $assignedVillages->pluck('id');
 
-        $businesses = Business::with(['village', 'status.updatedBy'])
-            ->whereIn('village_id', $villageIds)
-            ->when($request->search, function ($query, $search) {
-                $query->where(function ($inner) use ($search) {
-                    $inner->where('nama_usaha', 'like', "%{$search}%")
-                        ->orWhere('idsbr', 'like', "%{$search}%");
-                });
-            })
-            ->latest()
-            ->paginate(20)
-            ->withQueryString();
+            $businesses = Business::with(['village', 'status.updatedBy'])
+                ->whereIn('village_id', $villageIds)
+                ->when($request->search, function ($query, $search) {
+                    $query->where(function ($inner) use ($search) {
+                        $inner->where('nama_usaha', 'like', "%{$search}%")
+                            ->orWhere('idsbr', 'like', "%{$search}%");
+                    });
+                })
+                ->latest()
+                ->paginate(20)
+                ->withQueryString();
+        }
 
         $payload = [
             'businesses' => $businesses,
@@ -49,9 +67,11 @@ class UserBusinessController extends Controller
     public function updateStatus(Request $request, Business $business)
     {
         $user = $request->user();
-        $assignedVillageIds = $user->villages()->pluck('villages.id');
 
-        abort_unless($assignedVillageIds->contains($business->village_id), 403);
+        if (!$user->isSuperAdmin()) {
+            $assignedVillageIds = $user->villages()->pluck('villages.id');
+            abort_unless($assignedVillageIds->contains($business->village_id), 403);
+        }
 
         $validated = $request->validate([
             'status' => ['required', 'in:tidak_ditemukan,ditemukan,baru,tutup,ganda'],
