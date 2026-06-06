@@ -26,6 +26,10 @@ class GoogleController extends Controller
             $oauthOptions['prompt'] = $prompt;
         }
 
+        if ($request->filled('email')) {
+            $oauthOptions['login_hint'] = $request->input('email');
+        }
+
         $driver = Socialite::driver('google')
             ->scopes(config('google.scopes'))
             ->with($oauthOptions);
@@ -40,6 +44,18 @@ class GoogleController extends Controller
 
     public function callback(Request $request, GoogleDriveService $driveService)
     {
+        // Antisipasi jika user mengklik "Batal" atau terjadi error dari Google OAuth
+        if ($request->has('error')) {
+            $errorMsg = $request->get('error_description') ?: ($request->get('error') === 'access_denied' ? 'Akses dibatalkan oleh pengguna.' : $request->get('error'));
+            return redirect()->route('login')
+                ->with('error', 'Login Google dibatalkan. Alasan: ' . $errorMsg);
+        }
+
+        if (!$request->has('code')) {
+            return redirect()->route('login')
+                ->with('error', 'Login Google gagal: Parameter code tidak ditemukan.');
+        }
+
         try {
             $driver = Socialite::driver('google');
             if (app()->environment('local')) {
@@ -62,8 +78,10 @@ class GoogleController extends Controller
                 if (! $request->session()->pull('google_consent_retry', false)) {
                     $request->session()->put('google_consent_retry', true);
 
-                    return redirect()->route('auth.google', ['consent' => 1])
-                        ->with('error', 'Google belum mengirim izin Drive. Silakan setujui akses Google Drive.');
+                    return redirect()->route('auth.google', [
+                        'consent' => 1,
+                        'email' => $googleUser->getEmail()
+                    ])->with('error', 'Google belum mengirim izin Drive. Silakan setujui akses Google Drive.');
                 }
 
                 return redirect()->route('login', ['consent' => 1])
@@ -89,8 +107,10 @@ class GoogleController extends Controller
                 if (! $request->session()->pull('google_consent_retry', false)) {
                     $request->session()->put('google_consent_retry', true);
 
-                    return redirect()->route('auth.google', ['consent' => 1])
-                        ->with('error', 'Google belum mengirim izin Drive. Silakan setujui akses Google Drive.');
+                    return redirect()->route('auth.google', [
+                        'consent' => 1,
+                        'email' => $googleUser->getEmail()
+                    ])->with('error', 'Google belum mengirim izin Drive. Silakan setujui akses Google Drive.');
                 }
 
                 return redirect()->route('login', ['consent' => 1])

@@ -167,12 +167,40 @@
 
                     <div class="mt-8 lg:mt-[5.25rem]">
                         @if(session('error'))
-                            <div class="mb-5 flex items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4">
-                                <svg class="h-5 w-5 shrink-0 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <p class="text-sm font-medium text-rose-700">{{ session('error') }}</p>
+                            <div id="login-error-toast" class="fixed right-4 top-4 z-50 flex max-w-sm items-start gap-3.5 rounded-2xl border border-rose-200 bg-rose-50 p-4 shadow-xl shadow-rose-950/10 transition-all duration-300 animate-slide-in">
+                                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-600">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="min-w-0 flex-1 pt-0.5">
+                                    <h3 class="text-sm font-semibold text-rose-900 leading-none">Login Gagal</h3>
+                                    <p class="mt-1.5 text-xs text-rose-700 leading-normal">{{ session('error') }}</p>
+                                </div>
+                                <button type="button" onclick="const toast = document.getElementById('login-error-toast'); toast.classList.add('opacity-0', 'translate-y-[-10px]'); setTimeout(() => toast.remove(), 300);" class="shrink-0 rounded-lg p-1 text-rose-400 hover:bg-rose-100 hover:text-rose-600 transition">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
                             </div>
+                            <style>
+                                @keyframes slideIn {
+                                    from { transform: translateY(-20px); opacity: 0; }
+                                    to { transform: translateY(0); opacity: 1; }
+                                }
+                                .animate-slide-in {
+                                    animation: slideIn 0.3s ease-out forwards;
+                                }
+                            </style>
+                            <script>
+                                setTimeout(() => {
+                                    const toast = document.getElementById('login-error-toast');
+                                    if (toast) {
+                                        toast.classList.add('opacity-0', 'translate-y-[-10px]');
+                                        setTimeout(() => toast.remove(), 300);
+                                    }
+                                }, 8000);
+                            </script>
                         @endif
 
                         <div class="mb-5 flex items-center gap-4 text-center lg:justify-start">

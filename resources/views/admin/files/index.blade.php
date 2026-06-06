@@ -3,6 +3,19 @@
 @section('title', 'Semua File')
 
 @section('content')
+@php
+    $statusLabelsList = [
+        'uploaded' => 'Berhasil',
+        'uploading' => 'Proses',
+        'failed' => 'Gagal',
+        'deleted' => 'Dihapus',
+    ];
+    $selectedStatusLabel = 'Semua Status';
+    if (request('status') && isset($statusLabelsList[request('status')])) {
+        $selectedStatusLabel = $statusLabelsList[request('status')];
+    }
+@endphp
+
 <div class="space-y-6" x-data="{ viewMode: '{{ request('type') === 'photo' ? 'grid' : 'table' }}' }">
     <div class="file-toolbar">
         <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
@@ -18,17 +31,44 @@
                     <svg class="pointer-events-none absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
 
-                <div class="relative">
-                    <select name="status" class="file-select-control" onchange="this.form.submit()">
-                        <option value="">Semua Status</option>
-                        <option value="uploaded" {{ request('status') === 'uploaded' ? 'selected' : '' }}>Berhasil</option>
-                        <option value="uploading" {{ request('status') === 'uploading' ? 'selected' : '' }}>Proses</option>
-                        <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Gagal</option>
-                        <option value="deleted" {{ request('status') === 'deleted' ? 'selected' : '' }}>Dihapus</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                <div x-data="{ open: false, selectedLabel: '{{ $selectedStatusLabel }}', selectedValue: '{{ request('status') }}' }" 
+                     @click.outside="open = false" 
+                     class="relative min-w-36">
+                    <button type="button" @click="open = !open" 
+                            class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-left text-xs font-semibold text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-slate-50 focus:border-se-primary/40 focus:ring-4 focus:ring-orange-100/70">
+                        <span class="truncate" x-text="selectedLabel"></span>
+                        <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-100"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
+                         x-cloak 
+                         class="absolute top-full left-0 z-30 mt-1.5 w-full rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-900/5 focus:outline-none">
+                        <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                                class="flex w-full items-center px-3 py-2 text-left text-xs font-semibold transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-700'">
+                            Semua Status
+                        </button>
+                        @foreach($statusLabelsList as $val => $label)
+                            <button type="button" @click="selectedValue = '{{ $val }}'; selectedLabel = '{{ $label }}'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                                    class="flex w-full items-center px-3 py-2 text-left text-xs font-semibold transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                    :class="selectedValue === '{{ $val }}' ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-700'">
+                                {{ $label }}
+                            </button>
+                        @endforeach
                     </div>
+                    <select x-ref="statusSelect" name="status" x-model="selectedValue" class="hidden" onchange="this.form.submit()">
+                        <option value="">Semua Status</option>
+                        @foreach($statusLabelsList as $val => $label)
+                            <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <button type="submit" class="file-primary-button w-full lg:w-auto">

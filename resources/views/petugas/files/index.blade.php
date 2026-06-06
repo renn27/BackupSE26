@@ -3,6 +3,18 @@
 @section('title', 'File Saya')
 
 @section('content')
+@php
+    $statusLabelsList = [
+        'uploaded' => 'Berhasil',
+        'uploading' => 'Proses',
+        'failed' => 'Gagal'
+    ];
+    $selectedStatusLabel = 'Semua Status';
+    if (request('status') && isset($statusLabelsList[request('status')])) {
+        $selectedStatusLabel = $statusLabelsList[request('status')];
+    }
+@endphp
+
 <div class="space-y-4 sm:space-y-6" x-data="{ viewMode: '{{ request('type') === 'photo' ? 'grid' : 'table' }}' }">
     <div class="file-toolbar">
         <form action="{{ route('petugas.files.index') }}" method="GET" class="grid w-full grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto]">
@@ -14,16 +26,44 @@
                 <svg class="pointer-events-none absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
 
-            <div class="relative">
-                <select name="status" class="file-select-control" onchange="this.form.submit()">
-                    <option value="">Semua Status</option>
-                    <option value="uploaded" {{ request('status') === 'uploaded' ? 'selected' : '' }}>Berhasil</option>
-                    <option value="uploading" {{ request('status') === 'uploading' ? 'selected' : '' }}>Proses</option>
-                    <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Gagal</option>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            <div x-data="{ open: false, selectedLabel: '{{ $selectedStatusLabel }}', selectedValue: '{{ request('status') }}' }" 
+                 @click.outside="open = false" 
+                 class="relative min-w-36">
+                <button type="button" @click="open = !open" 
+                        class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-left text-xs font-semibold text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-slate-50 focus:border-se-primary/40 focus:ring-4 focus:ring-orange-100/70">
+                    <span class="truncate" x-text="selectedLabel"></span>
+                    <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div x-show="open" 
+                     x-transition:enter="transition ease-out duration-100"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95"
+                     x-cloak 
+                     class="absolute top-full left-0 z-30 mt-1.5 w-full rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-900/5 focus:outline-none">
+                    <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                            class="flex w-full items-center px-3 py-2 text-left text-xs font-semibold transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                            :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-700'">
+                        Semua Status
+                    </button>
+                    @foreach($statusLabelsList as $val => $label)
+                        <button type="button" @click="selectedValue = '{{ $val }}'; selectedLabel = '{{ $label }}'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                                class="flex w-full items-center px-3 py-2 text-left text-xs font-semibold transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                :class="selectedValue === '{{ $val }}' ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-700'">
+                            {{ $label }}
+                        </button>
+                    @endforeach
                 </div>
+                <select x-ref="statusSelect" name="status" x-model="selectedValue" class="hidden" onchange="this.form.submit()">
+                    <option value="">Semua Status</option>
+                    @foreach($statusLabelsList as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <button type="submit" class="file-primary-button w-28 px-3 sm:w-32 lg:w-auto lg:px-5">
@@ -110,19 +150,18 @@
                                 <div x-show="actionOpen" @click.away="actionOpen = false" x-transition.origin.top.right x-cloak class="absolute right-3 top-12 z-20 w-40 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl shadow-slate-950/10">
                                     @if($file->status === 'uploaded')
                                         @if($file->drive_web_view_link)
-                                        <a href="{{ $file->drive_web_view_link }}" target="_blank" class="flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-blue-700 transition hover:bg-blue-50" title="Buka di Drive">
+                                        <a href="{{ $file->drive_web_view_link }}" target="_blank" class="flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-slate-700 transition hover:bg-orange-50 hover:text-orange-700" title="Buka di Drive">
                                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                             Drive
                                         </a>
                                         @endif
-                                        <a href="{{ route('file.download', $file) }}" class="flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-green-700 transition hover:bg-green-50" title="Download">
+                                        <a href="{{ route('file.download', $file) }}" class="flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-slate-700 transition hover:bg-orange-50 hover:text-orange-700" title="Download">
                                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                             Unduh
                                         </a>
                                     @endif
-
                                     @if($file->status !== 'uploading' && $file->status !== 'deleted')
-                                        <button type="button" @click="deleteFile({{ $file->id }})" class="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs font-semibold text-rose-700 transition hover:bg-rose-50" title="Hapus">
+                                        <button type="button" @click="deleteFile({{ $file->id }})" class="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs font-semibold text-slate-700 transition hover:bg-orange-50 hover:text-orange-700" title="Hapus">
                                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                             Hapus
                                         </button>

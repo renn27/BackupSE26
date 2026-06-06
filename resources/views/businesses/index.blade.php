@@ -43,68 +43,221 @@
                     </div>
                 </div>
 
-                @if(auth()->user()->isSuperAdmin())
-                    <a href="{{ route('admin.monitoring-sbr.export') }}" class="inline-flex items-center gap-1.5 rounded-xl bg-se-primary px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust transition active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-orange-100">
+@php
+    $selectedVillageLabel = 'Semua Desa';
+    if ($selectedVillageId) {
+        $matched = $assignedVillages->firstWhere('id', $selectedVillageId);
+        if ($matched) {
+            $selectedVillageLabel = $matched->nmkec . ' - ' . $matched->nmdesa;
+        }
+    }
+
+    $selectedUserLabel = 'Semua Petugas';
+    if ($selectedUserId) {
+        $matched = $officers->firstWhere('id', $selectedUserId);
+        if ($matched) {
+            $selectedUserLabel = $matched->name;
+        }
+    }
+
+    $statusLabels = [
+        'belum_dicatat' => 'Belum Dicatat',
+        'ditemukan' => 'Ditemukan',
+        'tidak_ditemukan' => 'Tidak Ditemukan',
+        'pindah' => 'Pindah',
+        'baru' => 'Baru',
+        'tutup' => 'Tutup',
+        'ganda' => 'Ganda',
+    ];
+    $selectedStatusLabel = 'Semua Status';
+    if ($selectedStatus && isset($statusLabels[$selectedStatus])) {
+        $selectedStatusLabel = $statusLabels[$selectedStatus];
+    }
+@endphp
+
+<div class="space-y-5 sm:space-y-8">
+    <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-950/5 sm:rounded-3xl sm:p-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 mb-4">
+            <div class="min-w-0">
+                <h1 class="text-lg font-semibold tracking-tight text-se-ink sm:text-2xl">Monitoring SBR</h1>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-sm">
+                <!-- Petugas / Superadmin Info -->
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-medium uppercase tracking-wide text-slate-400 flex items-center gap-1.5">
                         <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 1115 0"></path>
                         </svg>
-                        Export Progress Monitoring
-                    </a>
-                @endif
+                        {{ auth()->user()->isSuperAdmin() ? 'Superadmin' : 'Petugas' }}:
+                    </span>
+                    <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ auth()->user()->name }}</span>
+                </div>
+
+                <!-- Wilayah Tugas Info -->
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-medium uppercase tracking-wide text-slate-400 flex items-center gap-1.5">
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                        </svg>
+                        Wilayah:
+                    </span>
+                    <div class="flex flex-wrap gap-1.5">
+                        @if(auth()->user()->isSuperAdmin())
+                            <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">Semua Wilayah (Superadmin)</span>
+                        @else
+                            @forelse($assignedVillages as $village)
+                                <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ $village->nmkec }} - {{ $village->nmdesa }}</span>
+                            @empty
+                                <span class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">Kamu belum ditugaskan ke desa manapun. Hubungi admin.</span>
+                            @endforelse
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
 
         @if(auth()->user()->isSuperAdmin())
-            <!-- Superadmin Layout (Search full width, Grid 3 Columns below for Desa, Petugas, and Status) -->
+            <!-- Superadmin Layout (Search & Export in grid 2 cols, Grid 3 Columns below for Desa, Petugas, and Status) -->
             <form id="filter-form" method="GET" class="w-full">
-                <!-- Search Input -->
-                <div class="relative w-full">
-                    <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                <!-- Search and Export Row -->
+                <div class="grid grid-cols-[1fr_auto] gap-3 items-center w-full">
+                    <div class="relative w-full">
+                        <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                    </div>
+                    <a href="{{ route('admin.monitoring-sbr.export') }}" class="inline-flex h-[46px] items-center gap-1.5 rounded-2xl bg-se-primary px-4 py-3 text-xs sm:text-sm font-semibold text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust transition active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-orange-100 whitespace-nowrap">
+                        <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Export Progress Monitoring
+                    </a>
                 </div>
 
                 <div class="grid gap-3 grid-cols-3 mt-3">
                     <!-- Desa Filter -->
-                    <div class="relative">
-                        <select id="village-filter" name="village_id" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                    <div x-data="{ open: false, selectedLabel: '{{ $selectedVillageLabel }}', selectedValue: '{{ $selectedVillageId }}' }" 
+                         @click.outside="open = false" 
+                         class="relative">
+                        <button type="button" @click="open = !open" 
+                                class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-medium text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-white focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                            <span class="truncate" x-text="selectedLabel"></span>
+                            <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             x-cloak 
+                             class="absolute top-full left-0 z-30 mt-1.5 w-full max-h-60 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1.5 shadow-xl shadow-slate-900/5 focus:outline-none [scrollbar-width:thin]">
+                            <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Desa'; open = false; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
+                                    class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                    :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                Semua Desa
+                            </button>
+                            @foreach($assignedVillages as $village)
+                                <button type="button" @click="selectedValue = '{{ $village->id }}'; selectedLabel = '{{ $village->nmkec }} - {{ $village->nmdesa }}'; open = false; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
+                                        class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                        :class="selectedValue == '{{ $village->id }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                    {{ $village->nmkec }} - {{ $village->nmdesa }}
+                                </button>
+                            @endforeach
+                        </div>
+                        <select x-ref="villageSelect" id="village-filter" name="village_id" x-model="selectedValue" class="hidden">
                             <option value="">Semua Desa</option>
                             @foreach($assignedVillages as $village)
-                                <option value="{{ $village->id }}" {{ $selectedVillageId == $village->id ? 'selected' : '' }}>
-                                    {{ $village->nmkec }} - {{ $village->nmdesa }}
-                                </option>
+                                <option value="{{ $village->id }}">{{ $village->nmkec }} - {{ $village->nmdesa }}</option>
                             @endforeach
                         </select>
-                        <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">&#9662;</span>
                     </div>
 
                     <!-- Petugas Filter -->
-                    <div class="relative">
-                        <select id="user-filter" name="user_id" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                    <div x-data="{ open: false, selectedLabel: '{{ $selectedUserLabel }}', selectedValue: '{{ $selectedUserId }}' }" 
+                         @click.outside="open = false" 
+                         class="relative">
+                        <button type="button" @click="open = !open" 
+                                class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-medium text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-white focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                            <span class="truncate" x-text="selectedLabel"></span>
+                            <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             x-cloak 
+                             class="absolute top-full left-0 z-30 mt-1.5 w-full max-h-60 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1.5 shadow-xl shadow-slate-900/5 focus:outline-none [scrollbar-width:thin]">
+                            <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Petugas'; open = false; $nextTick(() => { $refs.userSelect.dispatchEvent(new Event('change')) })"
+                                    class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                    :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                Semua Petugas
+                            </button>
+                            @foreach($officers as $officer)
+                                <button type="button" @click="selectedValue = '{{ $officer->id }}'; selectedLabel = '{{ $officer->name }}'; open = false; $nextTick(() => { $refs.userSelect.dispatchEvent(new Event('change')) })"
+                                        class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                        :class="selectedValue == '{{ $officer->id }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                    {{ $officer->name }}
+                                </button>
+                            @endforeach
+                        </div>
+                        <select x-ref="userSelect" id="user-filter" name="user_id" x-model="selectedValue" class="hidden">
                             <option value="">Semua Petugas</option>
                             @foreach($officers as $officer)
-                                <option value="{{ $officer->id }}" {{ $selectedUserId == $officer->id ? 'selected' : '' }}>
-                                    {{ $officer->name }}
-                                </option>
+                                <option value="{{ $officer->id }}">{{ $officer->name }}</option>
                             @endforeach
                         </select>
-                        <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">&#9662;</span>
                     </div>
 
                     <!-- Status Filter -->
-                    <div class="relative">
-                        <select id="status-filter" name="status" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                    <div x-data="{ open: false, selectedLabel: '{{ $selectedStatusLabel }}', selectedValue: '{{ $selectedStatus }}' }" 
+                         @click.outside="open = false" 
+                         class="relative">
+                        <button type="button" @click="open = !open" 
+                                class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-medium text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-white focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                            <span class="truncate" x-text="selectedLabel"></span>
+                            <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             x-cloak 
+                             class="absolute top-full left-0 z-30 mt-1.5 w-full max-h-60 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1.5 shadow-xl shadow-slate-900/5 focus:outline-none [scrollbar-width:thin]">
+                            <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                                    class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                    :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                Semua Status
+                            </button>
+                            @foreach($statusLabels as $val => $label)
+                                <button type="button" @click="selectedValue = '{{ $val }}'; selectedLabel = '{{ $label }}'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                                        class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                        :class="selectedValue === '{{ $val }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                    {{ $label }}
+                                </button>
+                            @endforeach
+                        </div>
+                        <select x-ref="statusSelect" id="status-filter" name="status" x-model="selectedValue" class="hidden">
                             <option value="">Semua Status</option>
-                            <option value="belum_dicatat" {{ $selectedStatus == 'belum_dicatat' ? 'selected' : '' }}>Belum Dicatat</option>
-                            <option value="ditemukan" {{ $selectedStatus == 'ditemukan' ? 'selected' : '' }}>Ditemukan</option>
-                            <option value="tidak_ditemukan" {{ $selectedStatus == 'tidak_ditemukan' ? 'selected' : '' }}>Tidak Ditemukan</option>
-                            <option value="pindah" {{ $selectedStatus == 'pindah' ? 'selected' : '' }}>Pindah</option>
-                            <option value="baru" {{ $selectedStatus == 'baru' ? 'selected' : '' }}>Baru</option>
-                            <option value="tutup" {{ $selectedStatus == 'tutup' ? 'selected' : '' }}>Tutup</option>
-                            <option value="ganda" {{ $selectedStatus == 'ganda' ? 'selected' : '' }}>Ganda</option>
+                            @foreach($statusLabels as $val => $label)
+                                <option value="{{ $val }}">{{ $label }}</option>
+                            @endforeach
                         </select>
-                        <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">&#9662;</span>
                     </div>
                 </div>
             </form>
@@ -121,31 +274,85 @@
 
                 <div class="grid gap-3 grid-cols-2 mt-3">
                     <!-- Desa Filter -->
-                    <div class="relative">
-                        <select id="village-filter" name="village_id" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                    <div x-data="{ open: false, selectedLabel: '{{ $selectedVillageLabel }}', selectedValue: '{{ $selectedVillageId }}' }" 
+                         @click.outside="open = false" 
+                         class="relative">
+                        <button type="button" @click="open = !open" 
+                                class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-medium text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-white focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                            <span class="truncate" x-text="selectedLabel"></span>
+                            <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             x-cloak 
+                             class="absolute top-full left-0 z-30 mt-1.5 w-full max-h-60 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1.5 shadow-xl shadow-slate-900/5 focus:outline-none [scrollbar-width:thin]">
+                            <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Desa'; open = false; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
+                                    class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                    :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                Semua Desa
+                            </button>
+                            @foreach($assignedVillages as $village)
+                                <button type="button" @click="selectedValue = '{{ $village->id }}'; selectedLabel = '{{ $village->nmkec }} - {{ $village->nmdesa }}'; open = false; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
+                                        class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                        :class="selectedValue == '{{ $village->id }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                    {{ $village->nmkec }} - {{ $village->nmdesa }}
+                                </button>
+                            @endforeach
+                        </div>
+                        <select x-ref="villageSelect" id="village-filter" name="village_id" x-model="selectedValue" class="hidden">
                             <option value="">Semua Desa</option>
                             @foreach($assignedVillages as $village)
-                                <option value="{{ $village->id }}" {{ $selectedVillageId == $village->id ? 'selected' : '' }}>
-                                    {{ $village->nmkec }} - {{ $village->nmdesa }}
-                                </option>
+                                <option value="{{ $village->id }}">{{ $village->nmkec }} - {{ $village->nmdesa }}</option>
                             @endforeach
                         </select>
-                        <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">&#9662;</span>
                     </div>
 
                     <!-- Status Filter -->
-                    <div class="relative">
-                        <select id="status-filter" name="status" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                    <div x-data="{ open: false, selectedLabel: '{{ $selectedStatusLabel }}', selectedValue: '{{ $selectedStatus }}' }" 
+                         @click.outside="open = false" 
+                         class="relative">
+                        <button type="button" @click="open = !open" 
+                                class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-medium text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-white focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                            <span class="truncate" x-text="selectedLabel"></span>
+                            <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             x-cloak 
+                             class="absolute top-full left-0 z-30 mt-1.5 w-full max-h-60 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1.5 shadow-xl shadow-slate-900/5 focus:outline-none [scrollbar-width:thin]">
+                            <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                                    class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                    :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                Semua Status
+                            </button>
+                            @foreach($statusLabels as $val => $label)
+                                <button type="button" @click="selectedValue = '{{ $val }}'; selectedLabel = '{{ $label }}'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                                        class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                        :class="selectedValue === '{{ $val }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                    {{ $label }}
+                                </button>
+                            @endforeach
+                        </div>
+                        <select x-ref="statusSelect" id="status-filter" name="status" x-model="selectedValue" class="hidden">
                             <option value="">Semua Status</option>
-                            <option value="belum_dicatat" {{ $selectedStatus == 'belum_dicatat' ? 'selected' : '' }}>Belum Dicatat</option>
-                            <option value="ditemukan" {{ $selectedStatus == 'ditemukan' ? 'selected' : '' }}>Ditemukan</option>
-                            <option value="tidak_ditemukan" {{ $selectedStatus == 'tidak_ditemukan' ? 'selected' : '' }}>Tidak Ditemukan</option>
-                            <option value="pindah" {{ $selectedStatus == 'pindah' ? 'selected' : '' }}>Pindah</option>
-                            <option value="baru" {{ $selectedStatus == 'baru' ? 'selected' : '' }}>Baru</option>
-                            <option value="tutup" {{ $selectedStatus == 'tutup' ? 'selected' : '' }}>Tutup</option>
-                            <option value="ganda" {{ $selectedStatus == 'ganda' ? 'selected' : '' }}>Ganda</option>
+                            @foreach($statusLabels as $val => $label)
+                                <option value="{{ $val }}">{{ $label }}</option>
+                            @endforeach
                         </select>
-                        <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">&#9662;</span>
                     </div>
                 </div>
             </form>

@@ -741,7 +741,7 @@ function renderCombobox(input, dropdown, select, options, emptyText, onPick = nu
     matches.forEach(option => {
         const button = document.createElement('button');
         button.type = 'button';
-        button.className = `block w-full rounded-xl px-3 py-2 text-left text-sm transition hover:bg-se-subtle ${select.value === option.value ? 'bg-se-subtle text-se-rust' : 'text-se-ink'}`;
+        button.className = `block w-full rounded-xl px-3 py-2 text-left text-sm font-medium transition hover:bg-orange-50 hover:text-orange-700 ${select.value === option.value ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-700'}`;
         button.textContent = option.label;
         button.addEventListener('mousedown', event => {
             event.preventDefault();

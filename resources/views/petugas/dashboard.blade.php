@@ -332,21 +332,21 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M6 12h.01M12 12h.01M18 12h.01"></path>
                                         </svg>
                                     </button>
-                                    <div x-show="open" x-transition.origin.bottom.right x-cloak class="absolute bottom-full right-0 z-20 mb-1 w-32 overflow-hidden rounded-xl border border-slate-100 bg-white py-1 shadow-lg shadow-slate-950/10">
+                                    <div x-show="open" x-transition.origin.top.right x-cloak class="absolute top-full right-0 z-20 mt-1 w-32 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-950/10">
                                         @if($file->status === 'uploaded' && $file->drive_web_view_link)
-                                            <a href="{{ $file->drive_web_view_link }}" target="_blank" class="flex w-full items-center gap-1.5 px-2.5 py-2 text-left text-xs font-medium text-slate-600 transition hover:bg-blue-50 hover:text-blue-600">
+                                            <a href="{{ $file->drive_web_view_link }}" target="_blank" class="flex w-full items-center gap-1.5 px-2.5 py-2 text-left text-xs font-semibold text-slate-600 transition hover:bg-orange-50 hover:text-orange-700">
                                                 <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                                 Buka Drive
                                             </a>
                                         @endif
                                         @if($file->status === 'uploaded')
-                                            <a href="{{ route('file.download', $file) }}" class="flex w-full items-center gap-1.5 px-2.5 py-2 text-left text-xs font-medium text-slate-600 transition hover:bg-green-50 hover:text-green-600">
+                                            <a href="{{ route('file.download', $file) }}" class="flex w-full items-center gap-1.5 px-2.5 py-2 text-left text-xs font-semibold text-slate-600 transition hover:bg-orange-50 hover:text-orange-700">
                                                 <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                                 Download
                                             </a>
                                         @endif
                                         @if($file->status !== 'uploading' && $file->status !== 'deleted')
-                                            <button type="button" @click="open = false; requestDeleteFile({ id: {{ $file->id }}, name: @js($file->original_name) })" class="flex w-full items-center gap-1.5 px-2.5 py-2 text-left text-xs font-medium text-slate-600 transition hover:bg-rose-50 hover:text-rose-600">
+                                            <button type="button" @click="open = false; requestDeleteFile({ id: {{ $file->id }}, name: @js($file->original_name) })" class="flex w-full items-center gap-1.5 px-2.5 py-2 text-left text-xs font-semibold text-slate-600 transition hover:bg-orange-50 hover:text-orange-700">
                                                 <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                 Hapus
                                             </button>
