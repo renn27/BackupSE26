@@ -140,12 +140,19 @@
     </section>
 
     <div class="space-y-6">
-        <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5">
-            <div class="border-b border-slate-200 px-5 py-4">
-                <h2 class="text-lg font-semibold text-se-ink">Monitoring Per Wilayah</h2>
-                <p class="mt-1 text-sm text-slate-500">Progress pencatatan status berdasarkan kecamatan.</p>
+        <section x-data="{ open: false }" class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5">
+            <div @click="open = !open" class="flex cursor-pointer items-center justify-between border-b border-slate-200 px-5 py-4 hover:bg-slate-50 transition select-none">
+                <div>
+                    <h2 class="text-lg font-semibold text-se-ink">Monitoring Per Wilayah</h2>
+                    <p class="mt-1 text-sm text-slate-500">Progress pencatatan status berdasarkan kecamatan.</p>
+                </div>
+                <div class="text-slate-400 p-1.5 rounded-xl transition hover:bg-slate-200/50 hover:text-slate-600">
+                    <svg class="h-5 w-5 transform transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
             </div>
-            <div class="overflow-x-auto">
+            <div x-show="open" x-cloak class="overflow-x-auto">
                 <table class="w-full min-w-[920px] divide-y divide-slate-200 text-sm">
                     <thead class="bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
                         <tr>
@@ -225,12 +232,19 @@
             </div>
         </section>
 
-        <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5">
-            <div class="border-b border-slate-200 px-5 py-4">
-                <h2 class="text-lg font-semibold text-se-ink">Monitoring Per Petugas</h2>
-                <p class="mt-1 text-sm text-slate-500">Progress dihitung dari usaha pada desa yang ditugaskan ke petugas.</p>
+        <section x-data="{ open: false }" class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5">
+            <div @click="open = !open" class="flex cursor-pointer items-center justify-between border-b border-slate-200 px-5 py-4 hover:bg-slate-50 transition select-none">
+                <div>
+                    <h2 class="text-lg font-semibold text-se-ink">Monitoring Per Petugas</h2>
+                    <p class="mt-1 text-sm text-slate-500">Progress dihitung dari usaha pada desa yang ditugaskan ke petugas.</p>
+                </div>
+                <div class="text-slate-400 p-1.5 rounded-xl transition hover:bg-slate-200/50 hover:text-slate-600">
+                    <svg class="h-5 w-5 transform transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
             </div>
-            <div class="overflow-x-auto">
+            <div x-show="open" x-cloak class="overflow-x-auto">
                 <table class="w-full min-w-[920px] divide-y divide-slate-200 text-sm">
                     <thead class="bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
                         <tr>
