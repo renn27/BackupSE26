@@ -4,71 +4,74 @@
 
 @section('content')
 <div class="space-y-5 sm:space-y-8">
-    <div class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm shadow-slate-950/5 sm:rounded-3xl sm:p-6">
-        <div class="flex flex-col gap-5">
+    <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-950/5 sm:rounded-3xl sm:p-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 mb-4">
             <div class="min-w-0">
                 <h1 class="text-lg font-semibold tracking-tight text-se-ink sm:text-2xl">Monitoring SBR</h1>
             </div>
+
+            <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-sm">
+                <!-- Petugas / Superadmin Info -->
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-medium uppercase tracking-wide text-slate-400 flex items-center gap-1.5">
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 1115 0"></path>
+                        </svg>
+                        {{ auth()->user()->isSuperAdmin() ? 'Superadmin' : 'Petugas' }}:
+                    </span>
+                    <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ auth()->user()->name }}</span>
+                </div>
+
+                <!-- Wilayah Tugas Info -->
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-medium uppercase tracking-wide text-slate-400 flex items-center gap-1.5">
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                        </svg>
+                        Wilayah:
+                    </span>
+                    <div class="flex flex-wrap gap-1.5">
+                        @if(auth()->user()->isSuperAdmin())
+                            <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">Semua Wilayah (Superadmin)</span>
+                        @else
+                            @forelse($assignedVillages as $village)
+                                <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ $village->nmkec }} - {{ $village->nmdesa }}</span>
+                            @empty
+                                <span class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">Kamu belum ditugaskan ke desa manapun. Hubungi admin.</span>
+                            @endforelse
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="mt-4 space-y-4 sm:mt-5">
-            <div>
-                <div class="mb-2 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-slate-400">
-                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 1115 0"></path>
-                    </svg>
-                    {{ auth()->user()->isSuperAdmin() ? 'Superadmin' : 'Petugas' }}
-                </div>
-                <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ auth()->user()->name }}</span>
-            </div>
+        @if(auth()->user()->isSuperAdmin())
+            <!-- Superadmin Layout (Inline Segaris) -->
+            <form id="filter-form" method="GET" class="w-full">
+                <div class="grid gap-3 md:grid-cols-12">
+                    <!-- Search Input -->
+                    <div class="relative md:col-span-4">
+                        <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                    </div>
 
-            <div>
-                <div class="mb-2 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-slate-400">
-                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-                    </svg>
-                    Wilayah tugas
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    @if(auth()->user()->isSuperAdmin())
-                        <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">Semua Wilayah (Superadmin)</span>
-                    @else
-                        @forelse($assignedVillages as $village)
-                            <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ $village->nmkec }} - {{ $village->nmdesa }}</span>
-                        @empty
-                            <span class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">Kamu belum ditugaskan ke desa manapun. Hubungi admin.</span>
-                        @endforelse
-                    @endif
-                </div>
-            </div>
-        </div>
+                    <!-- Desa Filter -->
+                    <div class="relative md:col-span-3">
+                        <select id="village-filter" name="village_id" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                            <option value="">Semua Desa</option>
+                            @foreach($assignedVillages as $village)
+                                <option value="{{ $village->id }}" {{ $selectedVillageId == $village->id ? 'selected' : '' }}>
+                                    {{ $village->nmkec }} - {{ $village->nmdesa }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">&#9662;</span>
+                    </div>
 
-        <form id="filter-form" method="GET" class="mt-5 w-full">
-            <div class="grid gap-3 md:grid-cols-12">
-                <!-- Search Input -->
-                <div class="relative {{ auth()->user()->isSuperAdmin() ? 'md:col-span-6' : 'md:col-span-8' }}">
-                    <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
-                </div>
-
-                <!-- Desa Filter -->
-                <div class="relative md:col-span-4">
-                    <select id="village-filter" name="village_id" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
-                        <option value="">Semua Desa</option>
-                        @foreach($assignedVillages as $village)
-                            <option value="{{ $village->id }}" {{ $selectedVillageId == $village->id ? 'selected' : '' }}>
-                                {{ $village->nmkec }} - {{ $village->nmdesa }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">&#9662;</span>
-                </div>
-
-                <!-- Petugas Filter (Only for Superadmin) -->
-                @if(auth()->user()->isSuperAdmin())
-                    <div class="relative md:col-span-2">
+                    <!-- Petugas Filter -->
+                    <div class="relative md:col-span-3">
                         <select id="user-filter" name="user_id" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
                             <option value="">Semua Petugas</option>
                             @foreach($officers as $officer)
@@ -79,9 +82,65 @@
                         </select>
                         <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">&#9662;</span>
                     </div>
-                @endif
-            </div>
-        </form>
+
+                    <!-- Status Filter -->
+                    <div class="relative md:col-span-2">
+                        <select id="status-filter" name="status" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                            <option value="">Semua Status</option>
+                            <option value="belum_dicatat" {{ $selectedStatus == 'belum_dicatat' ? 'selected' : '' }}>Belum Dicatat</option>
+                            <option value="ditemukan" {{ $selectedStatus == 'ditemukan' ? 'selected' : '' }}>Ditemukan</option>
+                            <option value="tidak_ditemukan" {{ $selectedStatus == 'tidak_ditemukan' ? 'selected' : '' }}>Tidak Ditemukan</option>
+                            <option value="pindah" {{ $selectedStatus == 'pindah' ? 'selected' : '' }}>Pindah</option>
+                            <option value="baru" {{ $selectedStatus == 'baru' ? 'selected' : '' }}>Baru</option>
+                            <option value="tutup" {{ $selectedStatus == 'tutup' ? 'selected' : '' }}>Tutup</option>
+                            <option value="ganda" {{ $selectedStatus == 'ganda' ? 'selected' : '' }}>Ganda</option>
+                        </select>
+                        <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">&#9662;</span>
+                    </div>
+                </div>
+            </form>
+        @else
+            <!-- Petugas Layout (Search full width, Grid 2 Columns below for Desa and Status) -->
+            <form id="filter-form" method="GET" class="w-full">
+                <!-- Search Input -->
+                <div class="relative w-full">
+                    <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                </div>
+
+                <div class="grid gap-3 md:grid-cols-2 mt-3">
+                    <!-- Desa Filter -->
+                    <div class="relative">
+                        <select id="village-filter" name="village_id" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                            <option value="">Semua Desa</option>
+                            @foreach($assignedVillages as $village)
+                                <option value="{{ $village->id }}" {{ $selectedVillageId == $village->id ? 'selected' : '' }}>
+                                    {{ $village->nmkec }} - {{ $village->nmdesa }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">&#9662;</span>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="relative">
+                        <select id="status-filter" name="status" class="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                            <option value="">Semua Status</option>
+                            <option value="belum_dicatat" {{ $selectedStatus == 'belum_dicatat' ? 'selected' : '' }}>Belum Dicatat</option>
+                            <option value="ditemukan" {{ $selectedStatus == 'ditemukan' ? 'selected' : '' }}>Ditemukan</option>
+                            <option value="tidak_ditemukan" {{ $selectedStatus == 'tidak_ditemukan' ? 'selected' : '' }}>Tidak Ditemukan</option>
+                            <option value="pindah" {{ $selectedStatus == 'pindah' ? 'selected' : '' }}>Pindah</option>
+                            <option value="baru" {{ $selectedStatus == 'baru' ? 'selected' : '' }}>Baru</option>
+                            <option value="tutup" {{ $selectedStatus == 'tutup' ? 'selected' : '' }}>Tutup</option>
+                            <option value="ganda" {{ $selectedStatus == 'ganda' ? 'selected' : '' }}>Ganda</option>
+                        </select>
+                        <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">&#9662;</span>
+                    </div>
+                </div>
+            </form>
+        @endif
     </div>
 
     <section id="business-table-container" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5 sm:rounded-3xl">
@@ -305,6 +364,11 @@ if (userFilter) {
     userFilter.addEventListener('change', () => runLiveSearch(1));
 }
 
+const statusFilter = document.getElementById('status-filter');
+if (statusFilter) {
+    statusFilter.addEventListener('change', () => runLiveSearch(1));
+}
+
 tableContainer.addEventListener('click', (event) => {
     const paginationLink = event.target.closest('a[href]');
     if (!paginationLink) return;
@@ -335,6 +399,13 @@ async function runLiveSearch(page = 1) {
         url.searchParams.set('user_id', userFilter.value);
     } else {
         url.searchParams.delete('user_id');
+    }
+
+    const statusFilter = document.getElementById('status-filter');
+    if (statusFilter && statusFilter.value) {
+        url.searchParams.set('status', statusFilter.value);
+    } else {
+        url.searchParams.delete('status');
     }
 
     url.searchParams.set('page', page);

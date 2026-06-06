@@ -23,6 +23,7 @@ class UserBusinessController extends Controller
                 ->get(['id', 'name', 'email']);
 
             $officerId = $request->user_id;
+            $selectedStatus = $request->status;
 
             $businesses = Business::with(['village', 'status.updatedBy'])
                 ->when($officerId, function ($query, $officerId) {
@@ -31,6 +32,19 @@ class UserBusinessController extends Controller
                 })
                 ->when($request->village_id, function ($query, $villageId) {
                     $query->where('village_id', $villageId);
+                })
+                ->when($selectedStatus, function ($query, $selectedStatus) {
+                    if ($selectedStatus === 'belum_dicatat') {
+                        $query->whereDoesntHave('status');
+                    } elseif ($selectedStatus === 'pindah') {
+                        $query->whereHas('status', function ($q) {
+                            $q->where('status', 'tidak_ditemukan');
+                        });
+                    } else {
+                        $query->whereHas('status', function ($q) use ($selectedStatus) {
+                            $q->where('status', $selectedStatus);
+                        });
+                    }
                 })
                 ->when($request->search, function ($query, $search) {
                     $query->where(function ($inner) use ($search) {
@@ -48,12 +62,26 @@ class UserBusinessController extends Controller
                 ->get();
 
             $villageIds = $assignedVillages->pluck('id');
+            $selectedStatus = $request->status;
 
             $businesses = Business::with(['village', 'status.updatedBy'])
                 ->whereIn('village_id', $villageIds)
                 ->when($request->village_id, function ($query, $villageId) use ($villageIds) {
                     if ($villageIds->contains($villageId)) {
                         $query->where('village_id', $villageId);
+                    }
+                })
+                ->when($selectedStatus, function ($query, $selectedStatus) {
+                    if ($selectedStatus === 'belum_dicatat') {
+                        $query->whereDoesntHave('status');
+                    } elseif ($selectedStatus === 'pindah') {
+                        $query->whereHas('status', function ($q) {
+                            $q->where('status', 'tidak_ditemukan');
+                        });
+                    } else {
+                        $query->whereHas('status', function ($q) use ($selectedStatus) {
+                            $q->where('status', $selectedStatus);
+                        });
                     }
                 })
                 ->when($request->search, function ($query, $search) {
@@ -73,6 +101,7 @@ class UserBusinessController extends Controller
             'officers' => $officers,
             'selectedVillageId' => $request->village_id,
             'selectedUserId' => $user->isSuperAdmin() ? $request->user_id : null,
+            'selectedStatus' => $request->status,
             'search' => $request->search,
         ];
 
