@@ -60,10 +60,10 @@ class UserBusinessController extends Controller
 
         $existingStatus = $business->status;
 
-        if ($existingStatus && $existingStatus->updated_by_user_id !== $user->id) {
+        if ($existingStatus && !$user->isSuperAdmin()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Status usaha ini sudah diperbarui petugas lain dan hanya bisa dilihat.',
+                'message' => 'Status usaha ini sudah diperbarui dan terkunci. Hanya superadmin yang dapat mengubah status ini.',
             ], 423);
         }
 

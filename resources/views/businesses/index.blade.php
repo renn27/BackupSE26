@@ -217,6 +217,7 @@ const statusClasses = {
     tutup: 'bg-rose-50 text-rose-700 ring-rose-200',
     ganda: 'bg-amber-50 text-amber-700 ring-amber-200'
 };
+const isSuperAdmin = {{ auth()->user()->isSuperAdmin() ? 'true' : 'false' }};
 let selectedBusinessId = null;
 let selectedStatus = null;
 let modalReadOnly = false;
@@ -299,7 +300,7 @@ async function runLiveSearch(page = 1) {
 function openModal(button) {
     selectedBusinessId = button.dataset.id;
     selectedStatus = button.dataset.status || null;
-    modalReadOnly = Boolean(button.dataset.statusOwnerId && button.dataset.statusOwnerId !== '{{ auth()->id() }}');
+    modalReadOnly = Boolean(selectedStatus && !isSuperAdmin);
     document.getElementById('modal-name').textContent = button.dataset.name;
     document.getElementById('modal-idsbr').textContent = `SBR ${button.dataset.idsbr || '-'}`;
     document.getElementById('modal-address').textContent = button.dataset.address;
@@ -338,7 +339,7 @@ function renderModalPermissions() {
 
     saveButton.classList.toggle('hidden', modalReadOnly);
     readOnlyNote.classList.toggle('hidden', !modalReadOnly);
-    readOnlyNote.textContent = modalReadOnly ? 'Sudah diperbarui petugas lain' : '';
+    readOnlyNote.textContent = modalReadOnly ? 'Sudah diperbarui & terkunci' : '';
 
     document.querySelectorAll('.status-option').forEach(button => {
         button.disabled = modalReadOnly;
