@@ -3,46 +3,6 @@
 @section('title', 'Monitoring SBR')
 
 @section('content')
-<div class="space-y-5 sm:space-y-8">
-    <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-950/5 sm:rounded-3xl sm:p-6">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 mb-4">
-            <div class="min-w-0">
-                <h1 class="text-lg font-semibold tracking-tight text-se-ink sm:text-2xl">Monitoring SBR</h1>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-sm">
-                <!-- Petugas / Superadmin Info -->
-                <div class="flex items-center gap-2">
-                    <span class="text-[10px] font-medium uppercase tracking-wide text-slate-400 flex items-center gap-1.5">
-                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 1115 0"></path>
-                        </svg>
-                        {{ auth()->user()->isSuperAdmin() ? 'Superadmin' : 'Petugas' }}:
-                    </span>
-                    <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ auth()->user()->name }}</span>
-                </div>
-
-                <!-- Wilayah Tugas Info -->
-                <div class="flex items-center gap-2">
-                    <span class="text-[10px] font-medium uppercase tracking-wide text-slate-400 flex items-center gap-1.5">
-                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-                        </svg>
-                        Wilayah:
-                    </span>
-                    <div class="flex flex-wrap gap-1.5">
-                        @if(auth()->user()->isSuperAdmin())
-                            <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">Semua Wilayah (Superadmin)</span>
-                        @else
-                            @forelse($assignedVillages as $village)
-                                <span class="inline-flex max-w-full items-center truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-orange-700 ring-1 ring-orange-100">{{ $village->nmkec }} - {{ $village->nmdesa }}</span>
-                            @empty
-                                <span class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">Kamu belum ditugaskan ke desa manapun. Hubungi admin.</span>
-                            @endforelse
-                        @endif
-                    </div>
-                </div>
-
 @php
     $selectedVillageLabel = 'Semua Desa';
     if ($selectedVillageId) {
@@ -118,17 +78,15 @@
         </div>
 
         @if(auth()->user()->isSuperAdmin())
-            <!-- Superadmin Layout (Search & Export in grid 2 cols, Grid 3 Columns below for Desa, Petugas, and Status) -->
             <form id="filter-form" method="GET" class="w-full">
-                <!-- Search and Export Row -->
-                <div class="grid grid-cols-[1fr_auto] gap-3 items-center w-full">
+                <div class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-center w-full">
                     <div class="relative w-full">
                         <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                         <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
                     </div>
-                    <a href="{{ route('admin.monitoring-sbr.export') }}" class="inline-flex h-[46px] items-center gap-1.5 rounded-2xl bg-se-primary px-4 py-3 text-xs sm:text-sm font-semibold text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust transition active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-orange-100 whitespace-nowrap">
+                    <a href="{{ route('admin.monitoring-sbr.export') }}" class="inline-flex h-[46px] items-center justify-center gap-1.5 rounded-2xl bg-se-primary px-4 py-3 text-xs sm:text-sm font-semibold text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust transition active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-orange-100 whitespace-nowrap">
                         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
@@ -136,7 +94,7 @@
                     </a>
                 </div>
 
-                <div class="grid gap-3 grid-cols-3 mt-3">
+                <div class="grid gap-3 grid-cols-1 sm:grid-cols-3 mt-3">
                     <!-- Desa Filter -->
                     <div x-data="{ open: false, selectedLabel: '{{ $selectedVillageLabel }}', selectedValue: '{{ $selectedVillageId }}' }" 
                          @click.outside="open = false" 
@@ -272,7 +230,7 @@
                     <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
                 </div>
 
-                <div class="grid gap-3 grid-cols-2 mt-3">
+                <div class="grid gap-3 grid-cols-1 sm:grid-cols-2 mt-3">
                     <!-- Desa Filter -->
                     <div x-data="{ open: false, selectedLabel: '{{ $selectedVillageLabel }}', selectedValue: '{{ $selectedVillageId }}' }" 
                          @click.outside="open = false" 
