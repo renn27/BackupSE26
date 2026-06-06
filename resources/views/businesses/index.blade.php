@@ -129,7 +129,7 @@
                         <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
                     </div>
                     <a href="{{ route('admin.monitoring-sbr.export') }}" class="inline-flex h-[46px] items-center gap-1.5 rounded-2xl bg-se-primary px-4 py-3 text-xs sm:text-sm font-semibold text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust transition active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-orange-100 whitespace-nowrap">
-                        <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
                         Export Progress Monitoring
