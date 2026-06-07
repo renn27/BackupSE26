@@ -96,10 +96,10 @@
 
                 <div class="grid gap-3 grid-cols-1 sm:grid-cols-3 mt-3">
                     <!-- Desa Filter -->
-                    <div x-data="{ open: false, selectedLabel: '{{ $selectedVillageLabel }}', selectedValue: '{{ $selectedVillageId }}' }" 
+                    <div x-data="{ open: false, selectedLabel: '{{ $selectedVillageLabel }}', selectedValue: '{{ $selectedVillageId }}', searchQuery: '' }" 
                          @click.outside="open = false" 
                          class="relative">
-                        <button type="button" @click="open = !open" 
+                        <button type="button" @click="open = !open; if(open) searchQuery = ''" 
                                 class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-medium text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-white focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
                             <span class="truncate" x-text="selectedLabel"></span>
                             <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,19 +114,27 @@
                              x-transition:leave-start="opacity-100 scale-100"
                              x-transition:leave-end="opacity-0 scale-95"
                              x-cloak 
-                             class="absolute top-full left-0 z-30 mt-1.5 w-full max-h-60 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1.5 shadow-xl shadow-slate-900/5 focus:outline-none [scrollbar-width:thin]">
-                            <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Desa'; open = false; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
-                                    class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                                    :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
-                                Semua Desa
-                            </button>
-                            @foreach($assignedVillages as $village)
-                                <button type="button" @click="selectedValue = '{{ $village->id }}'; selectedLabel = '{{ $village->nmkec }} - {{ $village->nmdesa }}'; open = false; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
+                             class="absolute top-full left-0 z-30 mt-1.5 w-full rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 focus:outline-none flex flex-col overflow-hidden">
+                            @if($assignedVillages->count() > 10)
+                                <div class="p-2 border-b border-slate-100 bg-white shrink-0">
+                                    <input type="text" x-model="searchQuery" placeholder="Cari desa..." class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 outline-none focus:border-se-primary/40 focus:bg-white transition">
+                                </div>
+                            @endif
+                            <div class="overflow-y-auto py-1 max-h-[180px] [scrollbar-width:thin]">
+                                <button type="button" x-show="'semua desa'.includes(searchQuery.toLowerCase())" @click="selectedValue = ''; selectedLabel = 'Semua Desa'; open = false; searchQuery = ''; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
                                         class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                                        :class="selectedValue == '{{ $village->id }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
-                                    {{ $village->nmkec }} - {{ $village->nmdesa }}
+                                        :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                    Semua Desa
                                 </button>
-                            @endforeach
+                                @foreach($assignedVillages as $village)
+                                    @php($villageLabel = $village->nmkec . ' - ' . $village->nmdesa)
+                                    <button type="button" x-show="'{{ strtolower($villageLabel) }}'.includes(searchQuery.toLowerCase())" @click="selectedValue = '{{ $village->id }}'; selectedLabel = '{{ $villageLabel }}'; open = false; searchQuery = ''; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
+                                            class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                            :class="selectedValue == '{{ $village->id }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                        {{ $villageLabel }}
+                                    </button>
+                                @endforeach
+                            </div>
                         </div>
                         <select x-ref="villageSelect" id="village-filter" name="village_id" x-model="selectedValue" class="hidden">
                             <option value="">Semua Desa</option>
@@ -137,10 +145,10 @@
                     </div>
 
                     <!-- Petugas Filter -->
-                    <div x-data="{ open: false, selectedLabel: '{{ $selectedUserLabel }}', selectedValue: '{{ $selectedUserId }}' }" 
+                    <div x-data="{ open: false, selectedLabel: '{{ $selectedUserLabel }}', selectedValue: '{{ $selectedUserId }}', searchQuery: '' }" 
                          @click.outside="open = false" 
                          class="relative">
-                        <button type="button" @click="open = !open" 
+                        <button type="button" @click="open = !open; if(open) searchQuery = ''" 
                                 class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-medium text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-white focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
                             <span class="truncate" x-text="selectedLabel"></span>
                             <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,19 +163,26 @@
                              x-transition:leave-start="opacity-100 scale-100"
                              x-transition:leave-end="opacity-0 scale-95"
                              x-cloak 
-                             class="absolute top-full left-0 z-30 mt-1.5 w-full max-h-60 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1.5 shadow-xl shadow-slate-900/5 focus:outline-none [scrollbar-width:thin]">
-                            <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Petugas'; open = false; $nextTick(() => { $refs.userSelect.dispatchEvent(new Event('change')) })"
-                                    class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                                    :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
-                                Semua Petugas
-                            </button>
-                            @foreach($officers as $officer)
-                                <button type="button" @click="selectedValue = '{{ $officer->id }}'; selectedLabel = '{{ $officer->name }}'; open = false; $nextTick(() => { $refs.userSelect.dispatchEvent(new Event('change')) })"
+                             class="absolute top-full left-0 z-30 mt-1.5 w-full rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 focus:outline-none flex flex-col overflow-hidden">
+                            @if($officers->count() > 10)
+                                <div class="p-2 border-b border-slate-100 bg-white shrink-0">
+                                    <input type="text" x-model="searchQuery" placeholder="Cari petugas..." class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 outline-none focus:border-se-primary/40 focus:bg-white transition">
+                                </div>
+                            @endif
+                            <div class="overflow-y-auto py-1 max-h-[180px] [scrollbar-width:thin]">
+                                <button type="button" x-show="'semua petugas'.includes(searchQuery.toLowerCase())" @click="selectedValue = ''; selectedLabel = 'Semua Petugas'; open = false; searchQuery = ''; $nextTick(() => { $refs.userSelect.dispatchEvent(new Event('change')) })"
                                         class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                                        :class="selectedValue == '{{ $officer->id }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
-                                    {{ $officer->name }}
+                                        :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                    Semua Petugas
                                 </button>
-                            @endforeach
+                                @foreach($officers as $officer)
+                                    <button type="button" x-show="'{{ strtolower($officer->name) }}'.includes(searchQuery.toLowerCase())" @click="selectedValue = '{{ $officer->id }}'; selectedLabel = '{{ $officer->name }}'; open = false; searchQuery = ''; $nextTick(() => { $refs.userSelect.dispatchEvent(new Event('change')) })"
+                                            class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                            :class="selectedValue == '{{ $officer->id }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                        {{ $officer->name }}
+                                    </button>
+                                @endforeach
+                            </div>
                         </div>
                         <select x-ref="userSelect" id="user-filter" name="user_id" x-model="selectedValue" class="hidden">
                             <option value="">Semua Petugas</option>
@@ -196,19 +211,21 @@
                              x-transition:leave-start="opacity-100 scale-100"
                              x-transition:leave-end="opacity-0 scale-95"
                              x-cloak 
-                             class="absolute top-full left-0 z-30 mt-1.5 w-full max-h-60 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1.5 shadow-xl shadow-slate-900/5 focus:outline-none [scrollbar-width:thin]">
-                            <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
-                                    class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                                    :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
-                                Semua Status
-                            </button>
-                            @foreach($statusLabels as $val => $label)
-                                <button type="button" @click="selectedValue = '{{ $val }}'; selectedLabel = '{{ $label }}'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                             class="absolute top-full left-0 z-30 mt-1.5 w-full rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 focus:outline-none flex flex-col overflow-hidden">
+                            <div class="overflow-y-auto py-1 max-h-[180px] [scrollbar-width:thin]">
+                                <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
                                         class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                                        :class="selectedValue === '{{ $val }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
-                                    {{ $label }}
+                                        :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                    Semua Status
                                 </button>
-                            @endforeach
+                                @foreach($statusLabels as $val => $label)
+                                    <button type="button" @click="selectedValue = '{{ $val }}'; selectedLabel = '{{ $label }}'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                                            class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                            :class="selectedValue === '{{ $val }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                        {{ $label }}
+                                    </button>
+                                @endforeach
+                            </div>
                         </div>
                         <select x-ref="statusSelect" id="status-filter" name="status" x-model="selectedValue" class="hidden">
                             <option value="">Semua Status</option>
@@ -230,12 +247,11 @@
                     <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
                 </div>
 
-                <div class="grid gap-3 grid-cols-1 sm:grid-cols-2 mt-3">
                     <!-- Desa Filter -->
-                    <div x-data="{ open: false, selectedLabel: '{{ $selectedVillageLabel }}', selectedValue: '{{ $selectedVillageId }}' }" 
+                    <div x-data="{ open: false, selectedLabel: '{{ $selectedVillageLabel }}', selectedValue: '{{ $selectedVillageId }}', searchQuery: '' }" 
                          @click.outside="open = false" 
                          class="relative">
-                        <button type="button" @click="open = !open" 
+                        <button type="button" @click="open = !open; if(open) searchQuery = ''" 
                                 class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-medium text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-white focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
                             <span class="truncate" x-text="selectedLabel"></span>
                             <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -250,19 +266,27 @@
                              x-transition:leave-start="opacity-100 scale-100"
                              x-transition:leave-end="opacity-0 scale-95"
                              x-cloak 
-                             class="absolute top-full left-0 z-30 mt-1.5 w-full max-h-60 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1.5 shadow-xl shadow-slate-900/5 focus:outline-none [scrollbar-width:thin]">
-                            <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Desa'; open = false; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
-                                    class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                                    :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
-                                Semua Desa
-                            </button>
-                            @foreach($assignedVillages as $village)
-                                <button type="button" @click="selectedValue = '{{ $village->id }}'; selectedLabel = '{{ $village->nmkec }} - {{ $village->nmdesa }}'; open = false; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
+                             class="absolute top-full left-0 z-30 mt-1.5 w-full rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 focus:outline-none flex flex-col overflow-hidden">
+                            @if($assignedVillages->count() > 10)
+                                <div class="p-2 border-b border-slate-100 bg-white shrink-0">
+                                    <input type="text" x-model="searchQuery" placeholder="Cari desa..." class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 outline-none focus:border-se-primary/40 focus:bg-white transition">
+                                </div>
+                            @endif
+                            <div class="overflow-y-auto py-1 max-h-[180px] [scrollbar-width:thin]">
+                                <button type="button" x-show="'semua desa'.includes(searchQuery.toLowerCase())" @click="selectedValue = ''; selectedLabel = 'Semua Desa'; open = false; searchQuery = ''; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
                                         class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                                        :class="selectedValue == '{{ $village->id }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
-                                    {{ $village->nmkec }} - {{ $village->nmdesa }}
+                                        :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                    Semua Desa
                                 </button>
-                            @endforeach
+                                @foreach($assignedVillages as $village)
+                                    @php($villageLabel = $village->nmkec . ' - ' . $village->nmdesa)
+                                    <button type="button" x-show="'{{ strtolower($villageLabel) }}'.includes(searchQuery.toLowerCase())" @click="selectedValue = '{{ $village->id }}'; selectedLabel = '{{ $villageLabel }}'; open = false; searchQuery = ''; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
+                                            class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                            :class="selectedValue == '{{ $village->id }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                        {{ $villageLabel }}
+                                    </button>
+                                @endforeach
+                            </div>
                         </div>
                         <select x-ref="villageSelect" id="village-filter" name="village_id" x-model="selectedValue" class="hidden">
                             <option value="">Semua Desa</option>
@@ -291,19 +315,21 @@
                              x-transition:leave-start="opacity-100 scale-100"
                              x-transition:leave-end="opacity-0 scale-95"
                              x-cloak 
-                             class="absolute top-full left-0 z-30 mt-1.5 w-full max-h-60 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1.5 shadow-xl shadow-slate-900/5 focus:outline-none [scrollbar-width:thin]">
-                            <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
-                                    class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                                    :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
-                                Semua Status
-                            </button>
-                            @foreach($statusLabels as $val => $label)
-                                <button type="button" @click="selectedValue = '{{ $val }}'; selectedLabel = '{{ $label }}'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                             class="absolute top-full left-0 z-30 mt-1.5 w-full rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 focus:outline-none flex flex-col overflow-hidden">
+                            <div class="overflow-y-auto py-1 max-h-[180px] [scrollbar-width:thin]">
+                                <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
                                         class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                                        :class="selectedValue === '{{ $val }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
-                                    {{ $label }}
+                                        :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                    Semua Status
                                 </button>
-                            @endforeach
+                                @foreach($statusLabels as $val => $label)
+                                    <button type="button" @click="selectedValue = '{{ $val }}'; selectedLabel = '{{ $label }}'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                                            class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                            :class="selectedValue === '{{ $val }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                        {{ $label }}
+                                    </button>
+                                @endforeach
+                            </div>
                         </div>
                         <select x-ref="statusSelect" id="status-filter" name="status" x-model="selectedValue" class="hidden">
                             <option value="">Semua Status</option>
