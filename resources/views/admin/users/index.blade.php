@@ -18,65 +18,71 @@
     }"
 >
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <form action="{{ route('admin.users.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <div class="relative">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau email..." class="pl-10 pr-4 py-2 w-full sm:w-64 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm">
-                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </div>
-            @php
-                $statusLabelsList = [
-                    'active' => 'Aktif',
-                    'suspended' => 'Nonaktif',
-                ];
-                $selectedStatusLabel = 'Semua Status';
-                if (request('status') && isset($statusLabelsList[request('status')])) {
-                    $selectedStatusLabel = $statusLabelsList[request('status')];
-                }
-            @endphp
-            <div x-data="{ open: false, selectedLabel: '{{ $selectedStatusLabel }}', selectedValue: '{{ request('status') }}' }" 
-                 @click.outside="open = false" 
-                 class="relative min-w-[150px]">
-                <button type="button" @click="open = !open" 
-                        class="flex w-full items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-2 text-left text-sm text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-slate-50 focus:border-se-primary/40 focus:ring-4 focus:ring-orange-100/70">
-                    <span class="truncate" x-text="selectedLabel"></span>
-                    <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        @php
+            $statusLabelsList = [
+                'active' => 'Aktif',
+                'suspended' => 'Nonaktif',
+            ];
+            $selectedStatusLabel = 'Semua Status';
+            if (request('status') && isset($statusLabelsList[request('status')])) {
+                $selectedStatusLabel = $statusLabelsList[request('status')];
+            }
+        @endphp
+        <form id="filter-form" action="{{ route('admin.users.index') }}" method="GET" class="w-full lg:w-[min(100%,36rem)]">
+            <div class="grid gap-3 grid-cols-1 sm:grid-cols-2 w-full">
+                <!-- Search Input -->
+                <div class="relative w-full">
+                    <input id="search-input" type="search" name="search" value="{{ request('search') }}" placeholder="Cari nama atau email..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                    <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
-                </button>
-                <div x-show="open" 
-                     x-transition:enter="transition ease-out duration-100"
-                     x-transition:enter-start="opacity-0 scale-95"
-                     x-transition:enter-end="opacity-100 scale-100"
-                     x-transition:leave="transition ease-in duration-75"
-                     x-transition:leave-start="opacity-100 scale-100"
-                     x-transition:leave-end="opacity-0 scale-95"
-                     x-cloak 
-                     class="absolute top-full left-0 z-30 mt-1.5 w-full rounded-lg border border-slate-200 bg-white py-1 shadow-lg shadow-slate-900/5 focus:outline-none">
-                    <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
-                            class="flex w-full items-center px-3 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                            :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-700 font-medium'">
-                        Semua Status
-                    </button>
-                    @foreach($statusLabelsList as $val => $label)
-                        <button type="button" @click="selectedValue = '{{ $val }}'; selectedLabel = '{{ $label }}'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
-                                class="flex w-full items-center px-3 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                                :class="selectedValue === '{{ $val }}' ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-700 font-medium'">
-                            {{ $label }}
-                        </button>
-                    @endforeach
                 </div>
-                <select x-ref="statusSelect" name="status" x-model="selectedValue" class="hidden" onchange="this.form.submit()">
-                    <option value="">Semua Status</option>
-                    @foreach($statusLabelsList as $val => $label)
-                        <option value="{{ $val }}">{{ $label }}</option>
-                    @endforeach
-                </select>
+                
+                <!-- Status Dropdown -->
+                <div x-data="{ open: false, selectedLabel: '{{ $selectedStatusLabel }}', selectedValue: '{{ request('status') }}' }" 
+                     @click.outside="open = false" 
+                     class="relative w-full">
+                    <button type="button" @click="open = !open" 
+                            class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-medium text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-white focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                        <span class="truncate" x-text="selectedLabel"></span>
+                        <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-100"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
+                         x-cloak 
+                         class="absolute top-full left-0 z-30 mt-1.5 w-full rounded-2xl border border-slate-200 bg-white py-1 shadow-xl shadow-slate-900/5 focus:outline-none flex flex-col overflow-hidden">
+                        <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                                class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-700 font-medium'">
+                            Semua Status
+                        </button>
+                        @foreach($statusLabelsList as $val => $label)
+                            <button type="button" @click="selectedValue = '{{ $val }}'; selectedLabel = '{{ $label }}'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                                    class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                    :class="selectedValue === '{{ $val }}' ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-700 font-medium'">
+                                {{ $label }}
+                            </button>
+                        @endforeach
+                    </div>
+                    <select x-ref="statusSelect" id="status-filter" name="status" x-model="selectedValue" class="hidden">
+                        <option value="">Semua Status</option>
+                        @foreach($statusLabelsList as $val => $label)
+                            <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-            <button type="submit" class="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">Filter</button>
         </form>
     </div>
 
-    <div class="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+    <div id="users-table-wrapper" class="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm whitespace-nowrap">
                 <thead class="bg-slate-50 text-slate-500 font-medium">
@@ -243,3 +249,79 @@
     </template>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    let searchController = null;
+    let searchTimer = null;
+
+    const searchInput = document.getElementById('search-input');
+    const statusSelect = document.getElementById('status-filter');
+    const usersTableWrapper = document.getElementById('users-table-wrapper');
+
+    function runLiveSearch(page = 1) {
+        if (searchController) searchController.abort();
+        searchController = new AbortController();
+
+        const url = new URL(window.location.href);
+        url.searchParams.set('search', searchInput.value);
+        if (statusSelect.value) {
+            url.searchParams.set('status', statusSelect.value);
+        } else {
+            url.searchParams.delete('status');
+        }
+        url.searchParams.set('page', page);
+        window.history.replaceState({}, '', url);
+
+        usersTableWrapper.classList.add('opacity-60');
+
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            signal: searchController.signal
+        })
+        .then(res => res.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newTable = doc.getElementById('users-table-wrapper');
+            if (newTable) {
+                usersTableWrapper.innerHTML = newTable.innerHTML;
+            }
+        })
+        .catch(err => {
+            if (err.name !== 'AbortError') console.error(err);
+        })
+        .finally(() => {
+            usersTableWrapper.classList.remove('opacity-60');
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => runLiveSearch(1), 350);
+        });
+    }
+
+    if (statusSelect) {
+        statusSelect.addEventListener('change', () => runLiveSearch(1));
+    }
+
+    if (usersTableWrapper) {
+        usersTableWrapper.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href]');
+            if (!link) return;
+
+            const url = new URL(link.href);
+            if (!url.searchParams.has('page')) return;
+
+            e.preventDefault();
+            runLiveSearch(url.searchParams.get('page') || 1);
+        });
+    }
+});
+</script>
+@endpush

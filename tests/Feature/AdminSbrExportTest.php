@@ -48,7 +48,7 @@ class AdminSbrExportTest extends TestCase
         ]);
 
         $this->travelTo(now());
-        $filename = 'Update Monitoring SBR_SE2026_' . now()->format('Ymd_His') . '.xlsx';
+        $filename = 'Update Monitoring SBR_SE2026_' . now('Asia/Jakarta')->format('Ymd_His') . '.xlsx';
 
         $response = $this->actingAs($admin)
             ->get(route('admin.monitoring-sbr.export'));
