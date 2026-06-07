@@ -79,14 +79,14 @@
 
         @if(auth()->user()->isSuperAdmin())
             <form id="filter-form" method="GET" class="w-full">
-                <div class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-center w-full">
-                    <div class="relative w-full">
+                <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full">
+                    <div class="relative w-full sm:flex-1">
                         <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                         <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
                     </div>
-                    <a href="{{ route('admin.monitoring-sbr.export') }}" class="inline-flex h-[46px] items-center justify-center gap-1.5 rounded-2xl bg-se-primary px-4 py-3 text-xs sm:text-sm font-semibold text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust transition active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-orange-100 whitespace-nowrap">
+                    <a href="{{ route('admin.monitoring-sbr.export') }}" class="inline-flex h-[46px] w-full sm:w-auto items-center justify-center gap-1.5 rounded-2xl bg-se-primary px-4 py-3 text-xs sm:text-sm font-semibold text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust transition active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-orange-100 whitespace-nowrap">
                         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
