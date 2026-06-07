@@ -134,11 +134,18 @@ class GoogleController extends Controller
                 ->with('error', 'Akun Anda telah dinonaktifkan. Hubungi superadmin.');
         }
 
+        // Cek apakah baru pertama kali login
+        $isFirstLogin = is_null($user->last_login_at);
+
         // Update info login terakhir
         $user->update([
             'last_login_at' => now(),
             'last_login_ip' => $request->ip(),
         ]);
+
+        if ($user->role === 'petugas') {
+            $request->session()->put('show_welcome_modal', $isFirstLogin ? 'first_time' : 'returning');
+        }
 
         // Log aktivitas
         ActivityLog::create([

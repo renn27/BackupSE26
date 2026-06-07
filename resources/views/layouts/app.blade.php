@@ -117,6 +117,72 @@
             @endif
         </div>
     </div>
+
+    @if(auth()->check() && !auth()->user()->isSuperAdmin() && ($welcomeType = session()->pull('show_welcome_modal')))
+        <div
+            x-data="{ open: true }"
+            x-show="open"
+            x-transition.opacity.duration.300ms
+            class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-[4px]"
+            @keydown.escape.window="open = false"
+        >
+            <!-- Card -->
+            <div
+                x-show="open"
+                x-transition:enter="transition ease-out duration-300 transform"
+                x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                x-transition:leave="transition ease-in duration-200 transform"
+                x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+                class="relative w-full max-w-md overflow-hidden rounded-3xl border border-amber-100 bg-white p-6 text-center shadow-[0_24px_80px_rgba(249,115,22,0.15)] sm:p-8"
+                @click.outside="open = false"
+            >
+                <!-- Background Glow -->
+                <div class="absolute -top-12 -left-12 h-40 w-40 rounded-full bg-orange-100/50 blur-3xl"></div>
+                <div class="absolute -bottom-12 -right-12 h-40 w-40 rounded-full bg-amber-100/50 blur-3xl"></div>
+
+                <div class="relative z-10 flex flex-col items-center">
+                    <!-- Logo -->
+                    <div class="mb-6 flex h-24 w-24 items-center justify-center rounded-2xl bg-orange-50/50 p-3 ring-1 ring-orange-100/50">
+                        <img src="{{ asset('images/logo-se2026-ribbon-only-v3.png') }}" class="h-full w-full object-contain" alt="Logo SE2026">
+                    </div>
+
+                    <!-- Badge/Greeting Tag -->
+                    <span class="mb-3 inline-flex items-center rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700 ring-1 ring-inset ring-orange-600/10">
+                        Mitra Kerja SE2026
+                    </span>
+
+                    <!-- Message -->
+                    <h3 class="mb-4 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+                        @if($welcomeType === 'first_time')
+                            Selamat Bergabung!
+                        @else
+                            Selamat Datang Kembali!
+                        @endif
+                    </h3>
+                    
+                    <p class="mb-8 text-sm leading-relaxed text-slate-600 sm:text-base">
+                        @if($welcomeType === 'first_time')
+                            Selamat Bergabung <span class="font-bold text-slate-900">{{ auth()->user()->name }}</span> sebagai Mitra SE2026. Mari kita Sukseskan SE2026
+                        @else
+                            Selamat Datang Kembali <span class="font-bold text-slate-900">{{ auth()->user()->name }}</span> sebagai Mitra SE2026. Mari Lanjutkan Kerja Kita
+                        @endif
+                    </p>
+
+                    <!-- Action Button -->
+                    <button
+                        type="button"
+                        @click="open = false"
+                        class="inline-flex w-full items-center justify-center rounded-xl bg-orange-500 px-8 py-3 text-sm font-bold text-white shadow-md shadow-orange-500/20 transition-all hover:bg-orange-600 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                    >
+                        Siap!
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @stack('scripts')
 </body>
 </html>
