@@ -175,7 +175,7 @@
                     <button
                         type="button"
                         @click="open = false"
-                        class="inline-flex w-full items-center justify-center rounded-xl bg-se-primary px-8 py-3 text-sm font-bold text-white shadow-md shadow-se-primary/20 transition-all hover:bg-se-rust active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-se-primary focus:ring-offset-2"
+                        class="inline-flex w-full items-center justify-center rounded-xl bg-se-primary px-8 py-3 mt-2 text-sm font-bold text-white shadow-md shadow-se-primary/20 transition-all hover:bg-se-rust active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-se-primary focus:ring-offset-2"
                         style="background-color: #f68b24;"
                     >
                         Siap!
