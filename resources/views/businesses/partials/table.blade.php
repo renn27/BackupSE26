@@ -39,7 +39,7 @@
                     data-status-owner-id="{{ $business->status?->updated_by_user_id }}"
                     data-note="{{ e($business->status?->catatan ?? '') }}"
                     data-updated-by="{{ e($business->status?->updated_by_name ?? '-') }}"
-                    data-updated-at="{{ $business->status?->updated_at?->format('d M Y H:i') ?? '-' }}">
+                    data-updated-at="{{ $business->status?->updated_at?->timezone('Asia/Jakarta')->locale('id')->translatedFormat('d F Y H:i') ?? '-' }}">
                     <td class="px-4 py-4 text-slate-500">{{ $businesses->firstItem() + $loop->index }}</td>
                     <td class="whitespace-nowrap px-4 py-4 font-mono text-[11px] font-medium text-slate-600 sm:text-xs">{{ $business->idsbr }}</td>
                     <td class="min-w-[180px] max-w-[240px] px-4 py-4 font-medium text-se-ink">

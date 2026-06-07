@@ -153,7 +153,7 @@ class UserBusinessController extends Controller
             'status' => $status->status,
             'status_label' => $this->statusLabel($status->status),
             'updated_by' => $status->updated_by_name,
-            'updated_at' => $status->updated_at->format('d M Y H:i'),
+            'updated_at' => $status->updated_at->timezone('Asia/Jakarta')->locale('id')->translatedFormat('d F Y H:i'),
             'catatan' => $status->catatan,
         ]);
     }
