@@ -123,7 +123,8 @@
             x-data="{ open: true }"
             x-show="open"
             x-transition.opacity.duration.300ms
-            class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-[4px]"
+            class="fixed inset-0 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-[4px]"
+            style="z-index: 9999;"
             @keydown.escape.window="open = false"
         >
             <!-- Card -->
@@ -156,7 +157,7 @@
                     <!-- Message -->
                     <h3 class="mb-4 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
                         @if($welcomeType === 'first_time')
-                            Selamat Bergabung!
+                            Selamat Bergabung
                         @else
                             Selamat Datang Kembali!
                         @endif
@@ -164,9 +165,9 @@
                     
                     <p class="mb-8 text-sm leading-relaxed text-slate-600 sm:text-base">
                         @if($welcomeType === 'first_time')
-                            Selamat Bergabung <span class="font-bold text-slate-900">{{ auth()->user()->name }}</span> sebagai Mitra SE2026. Mari kita Sukseskan SE2026
+                            Halo <span class="font-bold text-slate-900">{{ auth()->user()->name }}</span>, Sebagai Mitra SE2026. Mari kita Sukseskan SE2026. Semangat !!
                         @else
-                            Selamat Datang Kembali <span class="font-bold text-slate-900">{{ auth()->user()->name }}</span> sebagai Mitra SE2026. Mari Lanjutkan Kerja Kita
+                            Halo <span class="font-bold text-slate-900">{{ auth()->user()->name }}</span>, Mitra SE2026. Mari lanjutkan kerja kita, Semangat !!
                         @endif
                     </p>
 
@@ -174,7 +175,8 @@
                     <button
                         type="button"
                         @click="open = false"
-                        class="inline-flex w-full items-center justify-center rounded-xl bg-orange-500 px-8 py-3 text-sm font-bold text-white shadow-md shadow-orange-500/20 transition-all hover:bg-orange-600 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                        class="inline-flex w-full items-center justify-center rounded-xl bg-se-primary px-8 py-3 text-sm font-bold text-white shadow-md shadow-se-primary/20 transition-all hover:bg-se-rust active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-se-primary focus:ring-offset-2"
+                        style="background-color: #f68b24;"
                     >
                         Siap!
                     </button>
