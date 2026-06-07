@@ -1,4 +1,4 @@
-<div :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" x-cloak class="fixed inset-y-0 left-0 z-50 flex w-[min(20rem,calc(100vw-2rem))] transform flex-col border-r border-slate-200 bg-white shadow-2xl shadow-slate-950/5 transition-transform duration-300 ease-out lg:w-72 lg:translate-x-0 lg:shadow-none">
+<div :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 flex w-[min(20rem,calc(100vw-2rem))] transform -translate-x-full flex-col border-r border-slate-200 bg-white shadow-2xl shadow-slate-950/5 transition-transform duration-300 ease-out lg:w-72 lg:translate-x-0 lg:shadow-none">
     <div class="flex h-16 items-center justify-between gap-2 border-b border-slate-200 px-4 sm:h-[68px] sm:px-5">
         <div class="flex min-w-0 flex-1 items-center gap-2.5">
             <div class="flex h-10 shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 shadow-sm shadow-slate-950/5 sm:h-12 sm:gap-2 sm:px-2.5">
