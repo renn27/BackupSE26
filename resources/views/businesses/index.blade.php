@@ -120,7 +120,7 @@
                                     <input type="text" x-model="searchQuery" placeholder="Cari desa..." class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 outline-none focus:border-se-primary/40 focus:bg-white transition">
                                 </div>
                             @endif
-                            <div class="overflow-y-auto py-1 max-h-[180px] [scrollbar-width:thin]">
+                            <div class="overflow-y-auto py-1 [scrollbar-width:thin]" style="max-height: 180px;">
                                 <button type="button" x-show="'semua desa'.includes(searchQuery.toLowerCase())" @click="selectedValue = ''; selectedLabel = 'Semua Desa'; open = false; searchQuery = ''; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
                                         class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
                                         :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
@@ -169,7 +169,7 @@
                                     <input type="text" x-model="searchQuery" placeholder="Cari petugas..." class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 outline-none focus:border-se-primary/40 focus:bg-white transition">
                                 </div>
                             @endif
-                            <div class="overflow-y-auto py-1 max-h-[180px] [scrollbar-width:thin]">
+                            <div class="overflow-y-auto py-1 [scrollbar-width:thin]" style="max-height: 180px;">
                                 <button type="button" x-show="'semua petugas'.includes(searchQuery.toLowerCase())" @click="selectedValue = ''; selectedLabel = 'Semua Petugas'; open = false; searchQuery = ''; $nextTick(() => { $refs.userSelect.dispatchEvent(new Event('change')) })"
                                         class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
                                         :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
@@ -212,7 +212,7 @@
                              x-transition:leave-end="opacity-0 scale-95"
                              x-cloak 
                              class="absolute top-full left-0 z-30 mt-1.5 w-full rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 focus:outline-none flex flex-col overflow-hidden">
-                            <div class="overflow-y-auto py-1 max-h-[180px] [scrollbar-width:thin]">
+                            <div class="overflow-y-auto py-1 [scrollbar-width:thin]" style="max-height: 180px;">
                                 <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
                                         class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
                                         :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
@@ -272,7 +272,7 @@
                                     <input type="text" x-model="searchQuery" placeholder="Cari desa..." class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 outline-none focus:border-se-primary/40 focus:bg-white transition">
                                 </div>
                             @endif
-                            <div class="overflow-y-auto py-1 max-h-[180px] [scrollbar-width:thin]">
+                            <div class="overflow-y-auto py-1 [scrollbar-width:thin]" style="max-height: 180px;">
                                 <button type="button" x-show="'semua desa'.includes(searchQuery.toLowerCase())" @click="selectedValue = ''; selectedLabel = 'Semua Desa'; open = false; searchQuery = ''; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })"
                                         class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
                                         :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
@@ -316,7 +316,7 @@
                              x-transition:leave-end="opacity-0 scale-95"
                              x-cloak 
                              class="absolute top-full left-0 z-30 mt-1.5 w-full rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 focus:outline-none flex flex-col overflow-hidden">
-                            <div class="overflow-y-auto py-1 max-h-[180px] [scrollbar-width:thin]">
+                            <div class="overflow-y-auto py-1 [scrollbar-width:thin]" style="max-height: 180px;">
                                 <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
                                         class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
                                         :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
