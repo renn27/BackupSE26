@@ -55,6 +55,15 @@
         @apply flex-[1_1_auto] bg-white text-amber-700 shadow-sm ring-1 ring-amber-100 hover:bg-white hover:text-amber-700;
     }
 
+    .file-tab-inactive span {
+        display: none;
+    }
+    @media (min-width: 640px) {
+        .file-tab-inactive span {
+            display: inline;
+        }
+    }
+
     .file-view-toggle {
         @apply ml-auto inline-flex shrink-0 items-center gap-1 rounded-xl bg-blue-50 p-1 sm:rounded-lg;
     }

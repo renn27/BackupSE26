@@ -196,13 +196,13 @@
                         </div>
                     </div>
 
-                    <form action="{{ route('petugas.dashboard') }}#file-saya" method="GET" class="grid w-full gap-2 sm:gap-3 lg:w-[min(100%,28rem)]">
+                    <form id="filter-form" action="{{ route('petugas.dashboard') }}#file-saya" method="GET" class="grid w-full gap-2 sm:gap-3 lg:w-[min(100%,28rem)]">
                         @if(request('type'))
                             <input type="hidden" name="type" value="{{ request('type') }}">
                         @endif
                         <div class="relative">
-                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama file..." class="file-search-control h-10 rounded-xl pl-9 text-xs sm:h-10">
-                            <svg class="pointer-events-none absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <input id="search-input" type="search" name="search" value="{{ request('search') }}" placeholder="Cari nama file..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                            <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         </div>
 
                         <button type="submit" class="sr-only">Terapkan pencarian</button>
@@ -210,19 +210,20 @@
                 </div>
             </div>
 
-            <div class="file-tabs-shell !py-2">
+            <div id="files-table-wrapper">
+                <div class="file-tabs-shell !py-2">
                 <div class="file-tab-list">
-                    <a href="{{ request()->fullUrlWithQuery(['type' => null, 'page' => null]) }}#file-saya" class="file-tab {{ empty(request('type')) ? 'file-tab-active-neutral' : '' }}" title="Semua File">
+                    <a href="{{ request()->fullUrlWithQuery(['type' => null, 'page' => null]) }}#file-saya" class="file-tab {{ empty(request('type')) ? 'file-tab-active-neutral' : 'file-tab-inactive' }}" title="Semua File">
                         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                        <span class="{{ empty(request('type')) ? 'inline' : 'hidden sm:inline' }}">Semua File</span>
+                        <span>Semua File</span>
                     </a>
-                    <a href="{{ request()->fullUrlWithQuery(['type' => 'photo', 'page' => null]) }}#file-saya" class="file-tab {{ request('type') === 'photo' ? 'file-tab-active-photo' : '' }}" title="Foto Laporan">
+                    <a href="{{ request()->fullUrlWithQuery(['type' => 'photo', 'page' => null]) }}#file-saya" class="file-tab {{ request('type') === 'photo' ? 'file-tab-active-photo' : 'file-tab-inactive' }}" title="Foto Laporan">
                         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        <span class="{{ request('type') === 'photo' ? 'inline' : 'hidden sm:inline' }}">Foto Laporan</span>
+                        <span>Foto Laporan</span>
                     </a>
-                    <a href="{{ request()->fullUrlWithQuery(['type' => 'backup', 'page' => null]) }}#file-saya" class="file-tab {{ request('type') === 'backup' ? 'file-tab-active-backup' : '' }}" title="Data Backup">
+                    <a href="{{ request()->fullUrlWithQuery(['type' => 'backup', 'page' => null]) }}#file-saya" class="file-tab {{ request('type') === 'backup' ? 'file-tab-active-backup' : 'file-tab-inactive' }}" title="Data Backup">
                         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
-                        <span class="{{ request('type') === 'backup' ? 'inline' : 'hidden sm:inline' }}">Data Backup</span>
+                        <span>Data Backup</span>
                     </a>
                 </div>
 
@@ -369,6 +370,7 @@
                 {{ $files->fragment('file-saya')->links() }}
             </div>
             @endif
+            </div>
         </div>
     </section>
 
@@ -813,6 +815,94 @@ document.addEventListener('alpine:init', () => {
             delete this.progressTimers[key];
         }
     }));
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const filterForm = document.getElementById('filter-form');
+    const searchInput = document.getElementById('search-input');
+    const filesTableWrapper = document.getElementById('files-table-wrapper');
+    let searchTimer;
+    let abortController = null;
+
+    function runLiveSearch(page = 1) {
+        if (!filterForm || !filesTableWrapper) return;
+
+        if (abortController) {
+            abortController.abort();
+        }
+        abortController = new AbortController();
+
+        const formData = new FormData(filterForm);
+        const params = new URLSearchParams();
+
+        for (const [key, val] of formData.entries()) {
+            if (val) params.set(key, val);
+        }
+        params.set('page', page);
+
+        filesTableWrapper.classList.add('opacity-60');
+
+        const requestUrl = `${filterForm.action.split('#')[0]}?${params.toString()}`;
+
+        window.history.pushState(null, '', `${requestUrl}#file-saya`);
+
+        fetch(requestUrl, { signal: abortController.signal })
+            .then(res => res.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newTable = doc.getElementById('files-table-wrapper');
+                if (newTable) {
+                    filesTableWrapper.innerHTML = newTable.innerHTML;
+                }
+            })
+            .catch(err => {
+                if (err.name !== 'AbortError') console.error(err);
+            })
+            .finally(() => {
+                filesTableWrapper.classList.remove('opacity-60');
+            });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => runLiveSearch(1), 350);
+        });
+        
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    }
+
+    if (filesTableWrapper) {
+        filesTableWrapper.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href]');
+            if (!link) return;
+
+            const url = new URL(link.href);
+            const targetPath = url.pathname;
+            if (url.origin !== window.location.origin || targetPath !== window.location.pathname) return;
+
+            e.preventDefault();
+            
+            const typeParam = url.searchParams.get('type');
+            const typeInput = filterForm.querySelector('input[name="type"]');
+            if (typeInput) {
+                typeInput.value = typeParam || '';
+            }
+
+            if (url.searchParams.has('type')) {
+                runLiveSearch(1);
+            } else {
+                runLiveSearch(url.searchParams.get('page') || 1);
+            }
+        });
+    }
 });
 </script>
 @endpush

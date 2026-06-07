@@ -18,66 +18,63 @@
 
 <div class="space-y-6" x-data="{ viewMode: '{{ request('type') === 'photo' ? 'grid' : 'table' }}' }">
     <div class="file-toolbar">
-        <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-            <form action="{{ route('admin.files.index') }}" method="GET" class="grid w-full grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] xl:max-w-4xl">
-                @if(request('user_id'))
-                    <input type="hidden" name="user_id" value="{{ request('user_id') }}">
-                @endif
-                @if(request('type'))
-                    <input type="hidden" name="type" value="{{ request('type') }}">
-                @endif
-                <div class="relative">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama file..." class="file-search-control">
-                    <svg class="pointer-events-none absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </div>
-
-                <div x-data="{ open: false, selectedLabel: '{{ $selectedStatusLabel }}', selectedValue: '{{ request('status') }}' }" 
-                     @click.outside="open = false" 
-                     class="relative min-w-36">
-                    <button type="button" @click="open = !open" 
-                            class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-left text-xs font-semibold text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-slate-50 focus:border-se-primary/40 focus:ring-4 focus:ring-orange-100/70">
-                        <span class="truncate" x-text="selectedLabel"></span>
-                        <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-100"
-                         x-transition:enter-start="opacity-0 scale-95"
-                         x-transition:enter-end="opacity-100 scale-100"
-                         x-transition:leave="transition ease-in duration-75"
-                         x-transition:leave-start="opacity-100 scale-100"
-                         x-transition:leave-end="opacity-0 scale-95"
-                         x-cloak 
-                         class="absolute top-full left-0 z-30 mt-1.5 w-full rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-900/5 focus:outline-none">
-                        <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
-                                class="flex w-full items-center px-3 py-2 text-left text-xs font-semibold transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                                :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-700'">
-                            Semua Status
-                        </button>
-                        @foreach($statusLabelsList as $val => $label)
-                            <button type="button" @click="selectedValue = '{{ $val }}'; selectedLabel = '{{ $label }}'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
-                                    class="flex w-full items-center px-3 py-2 text-left text-xs font-semibold transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
-                                    :class="selectedValue === '{{ $val }}' ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-700'">
-                                {{ $label }}
-                            </button>
-                        @endforeach
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
+            <form id="filter-form" action="{{ route('admin.files.index') }}" method="GET" class="w-full lg:w-[min(100%,36rem)]">
+                <div class="grid gap-3 grid-cols-1 sm:grid-cols-2 w-full">
+                    @if(request('user_id'))
+                        <input type="hidden" name="user_id" value="{{ request('user_id') }}">
+                    @endif
+                    @if(request('type'))
+                        <input type="hidden" name="type" value="{{ request('type') }}">
+                    @endif
+                    <div class="relative w-full">
+                        <input id="search-input" type="search" name="search" value="{{ request('search') }}" placeholder="Cari nama file..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                        <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
-                    <select x-ref="statusSelect" name="status" x-model="selectedValue" class="hidden" onchange="this.form.submit()">
-                        <option value="">Semua Status</option>
-                        @foreach($statusLabelsList as $val => $label)
-                            <option value="{{ $val }}">{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
 
-                <button type="submit" class="file-primary-button w-full lg:w-auto">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                    Filter
-                </button>
+                    <div x-data="{ open: false, selectedLabel: '{{ $selectedStatusLabel }}', selectedValue: '{{ request('status') }}' }" 
+                         @click.outside="open = false" 
+                         class="relative w-full">
+                        <button type="button" @click="open = !open" 
+                                class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-medium text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-white focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
+                            <span class="truncate" x-text="selectedLabel"></span>
+                            <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             x-cloak 
+                             class="absolute top-full left-0 z-30 mt-1.5 w-full rounded-2xl border border-slate-200 bg-white py-1 shadow-xl shadow-slate-900/5 focus:outline-none flex flex-col overflow-hidden">
+                            <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                                    class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                    :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-700 font-medium'">
+                                Semua Status
+                            </button>
+                            @foreach($statusLabelsList as $val => $label)
+                                <button type="button" @click="selectedValue = '{{ $val }}'; selectedLabel = '{{ $label }}'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })"
+                                        class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                                        :class="selectedValue === '{{ $val }}' ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-700 font-medium'">
+                                    {{ $label }}
+                                </button>
+                            @endforeach
+                        </div>
+                        <select x-ref="statusSelect" id="status-filter" name="status" x-model="selectedValue" class="hidden">
+                            <option value="">Semua Status</option>
+                            @foreach($statusLabelsList as $val => $label)
+                                <option value="{{ $val }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
             </form>
 
-            <a href="{{ route('admin.files.export') }}" class="file-secondary-button w-full xl:w-auto">
+            <a href="{{ route('admin.files.export') }}" class="file-secondary-button w-full sm:w-auto h-[46px] rounded-2xl px-4 py-3 flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold whitespace-nowrap">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 Export CSV
             </a>
@@ -105,20 +102,20 @@
         </div>
     @endif
 
-    <div class="file-results-shell">
+    <div id="files-table-wrapper" class="file-results-shell">
         <div class="file-tabs-shell">
             <div class="file-tab-list">
-                <a href="{{ request()->fullUrlWithQuery(['type' => null]) }}" class="file-tab {{ empty(request('type')) ? 'file-tab-active-neutral' : '' }}">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                    Semua File
+                <a href="{{ request()->fullUrlWithQuery(['type' => null]) }}" class="file-tab {{ empty(request('type')) ? 'file-tab-active-neutral' : 'file-tab-inactive' }}" title="Semua File">
+                    <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <span>Semua File</span>
                 </a>
-                <a href="{{ request()->fullUrlWithQuery(['type' => 'photo']) }}" class="file-tab {{ request('type') === 'photo' ? 'file-tab-active-photo' : '' }}">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    Foto Laporan
+                <a href="{{ request()->fullUrlWithQuery(['type' => 'photo']) }}" class="file-tab {{ request('type') === 'photo' ? 'file-tab-active-photo' : 'file-tab-inactive' }}" title="Foto Laporan">
+                    <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span>Foto Laporan</span>
                 </a>
-                <a href="{{ request()->fullUrlWithQuery(['type' => 'backup']) }}" class="file-tab {{ request('type') === 'backup' ? 'file-tab-active-backup' : '' }}">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
-                    Data Backup
+                <a href="{{ request()->fullUrlWithQuery(['type' => 'backup']) }}" class="file-tab {{ request('type') === 'backup' ? 'file-tab-active-backup' : 'file-tab-inactive' }}" title="Data Backup">
+                    <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                    <span>Data Backup</span>
                 </a>
             </div>
 
@@ -317,3 +314,91 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const filterForm = document.getElementById('filter-form');
+    const searchInput = document.getElementById('search-input');
+    const statusSelect = document.getElementById('status-filter');
+    const filesTableWrapper = document.getElementById('files-table-wrapper');
+    let searchTimer;
+    let abortController = null;
+
+    function runLiveSearch(page = 1) {
+        if (!filterForm || !filesTableWrapper) return;
+
+        if (abortController) {
+            abortController.abort();
+        }
+        abortController = new AbortController();
+
+        const formData = new FormData(filterForm);
+        const params = new URLSearchParams();
+
+        for (const [key, val] of formData.entries()) {
+            if (val) params.set(key, val);
+        }
+        params.set('page', page);
+
+        filesTableWrapper.classList.add('opacity-60');
+
+        const requestUrl = `${filterForm.action}?${params.toString()}`;
+
+        window.history.pushState(null, '', requestUrl);
+
+        fetch(requestUrl, { signal: abortController.signal })
+            .then(res => res.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newTable = doc.getElementById('files-table-wrapper');
+                if (newTable) {
+                    filesTableWrapper.innerHTML = newTable.innerHTML;
+                }
+            })
+            .catch(err => {
+                if (err.name !== 'AbortError') console.error(err);
+            })
+            .finally(() => {
+                filesTableWrapper.classList.remove('opacity-60');
+            });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => runLiveSearch(1), 350);
+        });
+    }
+
+    if (statusSelect) {
+        statusSelect.addEventListener('change', () => runLiveSearch(1));
+    }
+
+    if (filesTableWrapper) {
+        filesTableWrapper.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href]');
+            if (!link) return;
+
+            const url = new URL(link.href);
+            if (url.origin !== window.location.origin || url.pathname !== window.location.pathname) return;
+
+            e.preventDefault();
+            
+            const typeParam = url.searchParams.get('type');
+            const typeInput = filterForm.querySelector('input[name="type"]');
+            if (typeInput) {
+                typeInput.value = typeParam || '';
+            }
+
+            if (url.searchParams.has('type')) {
+                runLiveSearch(1);
+            } else {
+                runLiveSearch(url.searchParams.get('page') || 1);
+            }
+        });
+    }
+});
+</script>
+@endpush
