@@ -21,6 +21,11 @@
     <style>
         body { font-family: 'Outfit', 'Plus Jakarta Sans', 'Inter', sans-serif; }
         [x-cloak] { display: none !important; }
+        @media (max-width: 639.98px) {
+            .file-tab-inactive span {
+                display: none !important;
+            }
+        }
     </style>
     <!-- AlpineJS for interactive components -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>

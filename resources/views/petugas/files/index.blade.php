@@ -19,9 +19,7 @@
     <div class="file-toolbar">
         <form id="filter-form" action="{{ route('petugas.files.index') }}" method="GET" class="w-full lg:w-[min(100%,36rem)]">
             <div class="grid gap-3 grid-cols-1 sm:grid-cols-2 w-full">
-                @if(request('type'))
-                    <input type="hidden" name="type" value="{{ request('type') }}">
-                @endif
+                <input type="hidden" name="type" value="{{ request('type') }}">
                 <div class="relative w-full">
                     <input id="search-input" type="search" name="search" value="{{ request('search') }}" placeholder="Cari nama file..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
                     <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
