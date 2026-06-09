@@ -72,6 +72,22 @@ function formatPushError(result) {
     return reason.length > 70 ? `${reason.slice(0, 67)}...` : reason;
 }
 
+function formatConfigError(response) {
+    if (!response) {
+        return 'Endpoint web-push tidak bisa diakses.';
+    }
+
+    if (response.status === 401 || response.status === 403) {
+        return 'Session login tidak valid.';
+    }
+
+    if (response.status >= 500) {
+        return 'Server web-push error.';
+    }
+
+    return 'Gagal memuat status notifikasi.';
+}
+
 function setPushButtonState(state) {
     if (!pushToggleButton) {
         return;
@@ -289,13 +305,15 @@ async function initWebPush() {
         const response = await withTimeout(fetch(window.webPushRoutes.config, { headers: { 'Accept': 'application/json' } }));
 
         if (!response.ok) {
-            throw new Error('Web Push config request failed.');
+            throw new Error(formatConfigError(response));
         }
 
         config = await response.json();
     } catch (error) {
         console.error('Gagal memuat konfigurasi Web Push.', error);
-        setPushButtonState('error');
+        pushStatus && (pushStatus.textContent = error.message || 'Gagal memuat status notifikasi.');
+        pushSwitch && (pushSwitch.disabled = true);
+        pushTestButton && (pushTestButton.disabled = true);
         return;
     }
 
@@ -309,7 +327,9 @@ async function initWebPush() {
         await refreshPushButtonState(config.publicKey);
     } catch (error) {
         console.error('Gagal membaca status subscription Web Push.', error);
-        setPushButtonState('error');
+        pushStatus && (pushStatus.textContent = error.message || 'Gagal membaca status notifikasi.');
+        pushSwitch && (pushSwitch.disabled = true);
+        pushTestButton && (pushTestButton.disabled = true);
         return;
     }
 

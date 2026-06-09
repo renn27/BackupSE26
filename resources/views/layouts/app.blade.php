@@ -32,10 +32,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         window.webPushRoutes = {
-            config: @js(route('web-push.config')),
-            subscribe: @js(route('web-push.subscriptions.store')),
-            unsubscribe: @js(route('web-push.subscriptions.destroy')),
-            test: @js(route('web-push.test')),
+            config: @js(parse_url(route('web-push.config'), PHP_URL_PATH)),
+            subscribe: @js(parse_url(route('web-push.subscriptions.store'), PHP_URL_PATH)),
+            unsubscribe: @js(parse_url(route('web-push.subscriptions.destroy'), PHP_URL_PATH)),
+            test: @js(parse_url(route('web-push.test'), PHP_URL_PATH)),
         };
 
         if ('serviceWorker' in navigator) {
