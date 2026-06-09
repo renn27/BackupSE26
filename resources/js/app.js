@@ -41,6 +41,15 @@ function subscriptionMatchesPublicKey(subscription, publicKey) {
     return uint8ArrayToUrlBase64(subscriptionKey) === publicKey;
 }
 
+function withTimeout(promise, timeoutMs = 4000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => {
+            window.setTimeout(() => reject(new Error('Operation timed out.')), timeoutMs);
+        }),
+    ]);
+}
+
 function setPushButtonState(state) {
     if (!pushToggleButton) {
         return;
@@ -51,6 +60,7 @@ function setPushButtonState(state) {
         disabled: 'Notifikasi belum dikonfigurasi',
         denied: 'Izin notifikasi diblokir',
         enabled: 'Notifikasi aktif',
+        error: 'Gagal memuat status notifikasi',
         idle: 'Aktifkan notifikasi',
         loading: 'Menyiapkan notifikasi...',
     };
@@ -89,7 +99,7 @@ async function getServiceWorkerRegistration() {
 
     registration.update().catch(() => {});
 
-    return navigator.serviceWorker.ready;
+    return registration;
 }
 
 async function showTestNotification() {
@@ -106,7 +116,9 @@ async function showTestNotification() {
     };
 
     try {
-        const registration = await getServiceWorkerRegistration();
+        const registration = await withTimeout(navigator.serviceWorker.ready, 4000)
+            .catch(() => getServiceWorkerRegistration());
+
         await registration.showNotification('Test notif ASISTEN SE2026', options);
         return;
     } catch (error) {
@@ -245,6 +257,7 @@ async function initWebPush() {
     }
 
     pushMenu.classList.remove('hidden');
+    setPushButtonState('loading');
 
     if (!('Notification' in window) || !('PushManager' in window) || !('serviceWorker' in navigator)) {
         setPushButtonState('unsupported');
@@ -252,8 +265,21 @@ async function initWebPush() {
         return;
     }
 
-    const response = await fetch(window.webPushRoutes.config, { headers: { 'Accept': 'application/json' } });
-    const config = await response.json();
+    let config;
+
+    try {
+        const response = await withTimeout(fetch(window.webPushRoutes.config, { headers: { 'Accept': 'application/json' } }));
+
+        if (!response.ok) {
+            throw new Error('Web Push config request failed.');
+        }
+
+        config = await response.json();
+    } catch (error) {
+        console.error('Gagal memuat konfigurasi Web Push.', error);
+        setPushButtonState('error');
+        return;
+    }
 
     if (!config.enabled || !config.publicKey) {
         setPushButtonState('disabled');
@@ -261,7 +287,13 @@ async function initWebPush() {
         return;
     }
 
-    await refreshPushButtonState(config.publicKey);
+    try {
+        await refreshPushButtonState(config.publicKey);
+    } catch (error) {
+        console.error('Gagal membaca status subscription Web Push.', error);
+        setPushButtonState('error');
+        return;
+    }
 
     pushSwitch?.addEventListener('change', async () => {
         try {
