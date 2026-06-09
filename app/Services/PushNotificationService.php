@@ -25,7 +25,12 @@ class PushNotificationService
     public function sendToSubscriptions(Collection $subscriptions, array $payload): array
     {
         if (! $this->isConfigured() || $subscriptions->isEmpty()) {
-            return ['sent' => 0, 'failed' => 0, 'expired' => 0];
+            return [
+                'sent' => 0,
+                'failed' => 0,
+                'expired' => 0,
+                'errors' => [$this->isConfigured() ? 'Belum ada browser yang mengaktifkan notifikasi.' : 'Konfigurasi VAPID belum lengkap.'],
+            ];
         }
 
         $webPush = new WebPush([
@@ -55,7 +60,7 @@ class PushNotificationService
             );
         }
 
-        $stats = ['sent' => 0, 'failed' => 0, 'expired' => 0];
+        $stats = ['sent' => 0, 'failed' => 0, 'expired' => 0, 'errors' => []];
 
         foreach ($webPush->flush() as $report) {
             $storedSubscription = $subscriptions->firstWhere('endpoint', $report->getEndpoint());
@@ -73,12 +78,16 @@ class PushNotificationService
                 $storedSubscription?->delete();
             }
 
+            $stats['errors'][] = $report->getReason();
+
             Log::warning('Web push delivery failed.', [
                 'endpoint' => $report->getEndpoint(),
                 'reason' => $report->getReason(),
                 'expired' => $report->isSubscriptionExpired(),
             ]);
         }
+
+        $stats['errors'] = array_values(array_unique(array_filter($stats['errors'])));
 
         return $stats;
     }

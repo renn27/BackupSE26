@@ -50,6 +50,28 @@ function withTimeout(promise, timeoutMs = 4000) {
     ]);
 }
 
+function formatPushError(result) {
+    const reason = result?.stats?.errors?.[0] || result?.message || 'Gagal mengirim test notif.';
+
+    if (reason.includes('cURL error 60')) {
+        return 'SSL/cURL server bermasalah.';
+    }
+
+    if (reason.includes('cURL error 6') || reason.includes('Could not resolve host')) {
+        return 'Server tidak bisa resolve FCM.';
+    }
+
+    if (reason.includes('cURL error 7') || reason.includes('Connection refused') || reason.includes('timed out')) {
+        return 'Server tidak bisa akses FCM.';
+    }
+
+    if (reason.includes('410') || reason.includes('404')) {
+        return 'Subscription browser sudah kedaluwarsa.';
+    }
+
+    return reason.length > 70 ? `${reason.slice(0, 67)}...` : reason;
+}
+
 function setPushButtonState(state) {
     if (!pushToggleButton) {
         return;
@@ -235,14 +257,10 @@ async function sendTestPushNotification() {
         },
     });
 
-    if (!response.ok) {
-        throw new Error('Test notification request failed.');
-    }
-
     const result = await response.json();
 
-    if ((result.stats?.sent || 0) < 1) {
-        throw new Error('No notification was sent.');
+    if (!response.ok || (result.stats?.sent || 0) < 1) {
+        throw new Error(formatPushError(result));
     }
 
     await showTestNotification();
@@ -313,7 +331,7 @@ async function initWebPush() {
             await sendTestPushNotification();
         } catch (error) {
             console.error('Gagal mengirim test notifikasi.', error);
-            pushStatus && (pushStatus.textContent = 'Gagal mengirim test notif.');
+            pushStatus && (pushStatus.textContent = error.message || 'Gagal mengirim test notif.');
             pushTestButton.disabled = false;
         }
     });

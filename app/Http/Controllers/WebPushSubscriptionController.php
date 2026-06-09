@@ -69,9 +69,13 @@ class WebPushSubscriptionController extends Controller
             ]
         );
 
+        $message = $stats['sent'] > 0
+            ? 'Notifikasi percobaan dikirim.'
+            : 'Notifikasi percobaan gagal dikirim.';
+
         return response()->json([
-            'message' => 'Notifikasi percobaan dikirim.',
+            'message' => $message,
             'stats' => $stats,
-        ]);
+        ], $stats['sent'] > 0 ? 200 : 422);
     }
 }
