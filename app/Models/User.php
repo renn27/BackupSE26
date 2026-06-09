@@ -62,6 +62,11 @@ class User extends Authenticatable
         return $this->hasMany(ActivityLog::class);
     }
 
+    public function pushSubscriptions()
+    {
+        return $this->hasMany(PushSubscription::class);
+    }
+
     public function villageAssignments()
     {
         return $this->hasMany(UserVillageAssignment::class);

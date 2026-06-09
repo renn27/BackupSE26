@@ -13,7 +13,8 @@
         "laravel/horizon": "^5.46",
         "laravel/socialite": "^5.27",
         "laravel/tinker": "^3.0",
-        "maatwebsite/excel": "*"
+        "maatwebsite/excel": "*",
+        "minishlink/web-push": "^10.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

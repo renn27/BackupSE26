@@ -6,9 +6,18 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\Petugas;
 use App\Http\Controllers\FileProxyController;
 use App\Http\Controllers\UserBusinessController;
+use App\Http\Controllers\WebPushSubscriptionController;
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    if (! auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    return redirect()->route(
+        auth()->user()->isSuperAdmin()
+            ? 'admin.dashboard'
+            : 'petugas.dashboard'
+    );
 });
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
@@ -16,6 +25,13 @@ Route::get('/login', fn() => view('auth.login'))->name('login')->middleware('gue
 Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 Route::post('/logout', [GoogleController::class, 'logout'])->name('logout')->middleware('auth');
+
+Route::middleware('auth')->prefix('web-push')->name('web-push.')->group(function () {
+    Route::get('/config', [WebPushSubscriptionController::class, 'config'])->name('config');
+    Route::post('/subscriptions', [WebPushSubscriptionController::class, 'store'])->name('subscriptions.store');
+    Route::delete('/subscriptions', [WebPushSubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
+    Route::post('/test', [WebPushSubscriptionController::class, 'test'])->name('test');
+});
 
 // ─── File Download Proxy (Auth + Drive Token) ─────────────────────────────────
 Route::middleware(['auth', \App\Http\Middleware\EnsureGoogleTokenValid::class])->group(function () {

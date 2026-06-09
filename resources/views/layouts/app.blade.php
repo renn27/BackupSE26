@@ -31,6 +31,13 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        window.webPushRoutes = {
+            config: @js(route('web-push.config')),
+            subscribe: @js(route('web-push.subscriptions.store')),
+            unsubscribe: @js(route('web-push.subscriptions.destroy')),
+            test: @js(route('web-push.test')),
+        };
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').catch(() => {});
