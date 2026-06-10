@@ -21,6 +21,9 @@
     <style>
         body { font-family: 'Outfit', 'Plus Jakarta Sans', 'Inter', sans-serif; }
         [x-cloak] { display: none !important; }
+        [data-web-push-banner] { display: none; }
+        html.web-push-banner-visible [data-web-push-banner] { display: block; }
+        html.web-push-enabled [data-web-push-banner] { display: none !important; }
         @media (max-width: 639.98px) {
             .file-tab-inactive span {
                 display: none !important;
@@ -31,6 +34,12 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        try {
+            if (localStorage.getItem('webPushState') === 'enabled') {
+                document.documentElement.classList.add('web-push-enabled');
+            }
+        } catch (error) {}
+
         window.webPushRoutes = {
             config: @js(parse_url(route('web-push.config'), PHP_URL_PATH)),
             subscribe: @js(parse_url(route('web-push.subscriptions.store'), PHP_URL_PATH)),
@@ -59,6 +68,33 @@
 
             <main class="flex-1 bg-se-soft pb-24 pt-4 sm:pt-6 lg:pb-8 lg:pt-8">
                 <div class="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+                    <div data-web-push-banner class="mb-6 overflow-hidden rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 via-white to-orange-50 shadow-sm shadow-amber-500/10">
+                        <div class="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+                            <div class="flex items-start gap-3">
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-se-primary/10 text-se-rust">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2a2 2 0 01-.6 1.4L4 17h5m6 0a3 3 0 01-6 0m6 0H9"></path>
+                                    </svg>
+                                </span>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-bold text-se-ink sm:text-base">Aktifkan notifikasi pengingat</p>
+                                    <p class="mt-1 text-sm leading-6 text-slate-600">
+                                        Dapatkan pengingat backup langsung di browser. Aktifkan web push notification untuk menghilangkan banner ini.
+                                    </p>
+                                    <p data-web-push-banner-status class="mt-1 text-xs font-semibold text-se-rust">Memuat status notifikasi...</p>
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                data-web-push-banner-enable
+                                class="inline-flex shrink-0 items-center justify-center rounded-xl bg-se-primary px-4 py-2.5 text-sm font-bold text-white shadow-sm shadow-se-primary/20 transition hover:bg-se-rust focus:outline-none focus:ring-4 focus:ring-amber-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                Aktifkan notif
+                            </button>
+                        </div>
+                    </div>
+
                     {{-- Flash Messages --}}
                     @if(session('success'))
                         <div x-data="{ show: true }" x-show="show" class="mb-6 flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 p-4 shadow-sm transition-all">

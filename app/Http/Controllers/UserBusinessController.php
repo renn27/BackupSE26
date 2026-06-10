@@ -12,6 +12,11 @@ class UserBusinessController extends Controller
     {
         $user = $request->user();
         $officers = collect();
+        $monitoringSummary = [
+            'total' => 0,
+            'recorded' => 0,
+            'unrecorded' => 0,
+        ];
         
         if ($user->isSuperAdmin()) {
             $assignedVillages = \App\Models\Village::orderBy('nmkec')
@@ -63,6 +68,16 @@ class UserBusinessController extends Controller
 
             $villageIds = $assignedVillages->pluck('id');
             $selectedStatus = $request->status;
+            $totalBusinesses = Business::whereIn('village_id', $villageIds)->count();
+            $recordedBusinesses = BusinessStatus::whereHas('business', function ($query) use ($villageIds) {
+                $query->whereIn('village_id', $villageIds);
+            })->count();
+
+            $monitoringSummary = [
+                'total' => $totalBusinesses,
+                'recorded' => $recordedBusinesses,
+                'unrecorded' => max(0, $totalBusinesses - $recordedBusinesses),
+            ];
 
             $businesses = Business::with(['village', 'status.updatedBy'])
                 ->whereIn('village_id', $villageIds)
@@ -103,6 +118,7 @@ class UserBusinessController extends Controller
             'selectedUserId' => $user->isSuperAdmin() ? $request->user_id : null,
             'selectedStatus' => $request->status,
             'search' => $request->search,
+            'monitoringSummary' => $monitoringSummary,
         ];
 
         if ($request->expectsJson()) {

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Monitoring SBR')
 
@@ -37,7 +37,7 @@
 
 <div class="space-y-5 sm:space-y-8">
     <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-950/5 sm:rounded-3xl sm:p-6">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 mb-4">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between {{ auth()->user()->isSuperAdmin() ? 'border-b border-slate-100 pb-4 mb-4' : '' }}">
             <div class="min-w-0">
                 <h1 class="text-lg font-semibold tracking-tight text-se-ink sm:text-2xl">Monitoring SBR</h1>
             </div>
@@ -76,6 +76,23 @@
                 </div>
             </div>
         </div>
+
+        @unless(auth()->user()->isSuperAdmin())
+            <div class="mt-5 grid grid-cols-3 gap-1.5 border-t border-slate-100 pt-4 sm:gap-3">
+                <div class="min-w-0 rounded-2xl border border-slate-200 bg-slate-50 px-2 py-2.5 sm:px-4 sm:py-3">
+                    <p class="truncate text-[9px] font-semibold uppercase tracking-normal text-slate-400 sm:text-[10px] sm:tracking-wide">Total Usaha</p>
+                    <p class="mt-1 text-base font-semibold leading-none text-se-ink sm:text-xl">{{ number_format($monitoringSummary['total']) }}</p>
+                </div>
+                <div class="min-w-0 rounded-2xl border border-green-200 bg-green-50 px-2 py-2.5 sm:px-4 sm:py-3">
+                    <p class="truncate text-[9px] font-semibold uppercase tracking-normal text-green-600 sm:text-[10px] sm:tracking-wide">Sudah Didata</p>
+                    <p class="mt-1 text-base font-semibold leading-none text-green-700 sm:text-xl">{{ number_format($monitoringSummary['recorded']) }}</p>
+                </div>
+                <div class="min-w-0 rounded-2xl border border-amber-200 bg-amber-50 px-2 py-2.5 sm:px-4 sm:py-3">
+                    <p class="truncate text-[9px] font-semibold uppercase tracking-normal text-amber-700 sm:text-[10px] sm:tracking-wide">Belum Didata</p>
+                    <p class="mt-1 text-base font-semibold leading-none text-se-rust sm:text-xl">{{ number_format($monitoringSummary['unrecorded']) }}</p>
+                </div>
+            </div>
+        @endunless
 
         @if(auth()->user()->isSuperAdmin())
             <form id="filter-form" method="GET" class="w-full">
@@ -248,7 +265,7 @@
                     </a>
                 </div>
             </form>
-        @else
+        @elseif(false)
             <!-- Petugas Layout (Search full width, Grid 2 Columns below for Desa and Status) -->
             <form id="filter-form" method="GET" class="w-full">
                 <!-- Search Input -->
@@ -356,8 +373,82 @@
         @endif
     </div>
 
-    <section id="business-table-container" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5 sm:rounded-3xl">
-        @include('businesses.partials.table')
+    <section id="business-table-card" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5 sm:rounded-3xl">
+        @unless(auth()->user()->isSuperAdmin())
+            <form id="filter-form" method="GET" class="border-b border-slate-200 bg-white p-3 sm:p-5">
+                <div class="relative w-full">
+                    <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 sm:left-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-3 text-xs font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70 sm:rounded-2xl sm:py-3 sm:pl-10 sm:pr-4 sm:text-sm">
+                </div>
+
+                <div class="mt-2 grid grid-cols-2 gap-2 sm:mt-3 sm:gap-3">
+                    <div x-data="{ open: false, selectedLabel: '{{ $selectedVillageLabel }}', selectedValue: '{{ $selectedVillageId }}', searchQuery: '' }" @click.outside="open = false" class="relative">
+                        <button type="button" @click="open = !open; if(open) searchQuery = ''" class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-left text-xs font-semibold text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-white focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70 sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm">
+                            <span class="truncate" x-text="selectedLabel"></span>
+                            <svg class="ml-2 h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform duration-200 sm:h-4 sm:w-4" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition.origin.top.left x-cloak class="absolute left-0 top-full z-30 mt-1.5 flex w-[calc(200%+0.5rem)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 sm:w-full">
+                            @if($assignedVillages->count() > 10)
+                                <div class="shrink-0 border-b border-slate-100 bg-white p-2">
+                                    <input type="text" x-model="searchQuery" placeholder="Cari desa..." class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 outline-none transition focus:border-se-primary/40 focus:bg-white">
+                                </div>
+                            @endif
+                            <div class="overflow-y-auto py-1 [scrollbar-width:thin]" style="max-height: 180px;">
+                                <button type="button" x-show="'semua desa'.includes(searchQuery.toLowerCase())" @click="selectedValue = ''; selectedLabel = 'Semua Desa'; open = false; searchQuery = ''; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })" class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none" :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                    <span class="truncate">Semua Desa</span>
+                                </button>
+                                @foreach($assignedVillages as $village)
+                                    @php($villageLabel = $village->nmkec . ' - ' . $village->nmdesa)
+                                    <button type="button" x-show="'{{ strtolower($villageLabel) }}'.includes(searchQuery.toLowerCase())" @click="selectedValue = '{{ $village->id }}'; selectedLabel = '{{ $villageLabel }}'; open = false; searchQuery = ''; $nextTick(() => { $refs.villageSelect.dispatchEvent(new Event('change')) })" class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none" :class="selectedValue == '{{ $village->id }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                        <span class="truncate">{{ $villageLabel }}</span>
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+                        <select x-ref="villageSelect" id="village-filter" name="village_id" x-model="selectedValue" class="hidden">
+                            <option value="">Semua Desa</option>
+                            @foreach($assignedVillages as $village)
+                                <option value="{{ $village->id }}">{{ $village->nmkec }} - {{ $village->nmdesa }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div x-data="{ open: false, selectedLabel: '{{ $selectedStatusLabel }}', selectedValue: '{{ $selectedStatus }}' }" @click.outside="open = false" class="relative">
+                        <button type="button" @click="open = !open" class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-left text-xs font-semibold text-slate-700 outline-none transition hover:border-se-primary/30 hover:bg-white focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70 sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm">
+                            <span class="truncate" x-text="selectedLabel"></span>
+                            <svg class="ml-2 h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform duration-200 sm:h-4 sm:w-4" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition.origin.top.right x-cloak class="absolute right-0 top-full z-30 mt-1.5 flex w-[calc(200%+0.5rem)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 sm:left-0 sm:right-auto sm:w-full">
+                            <div class="overflow-y-auto py-1 [scrollbar-width:thin]" style="max-height: 180px;">
+                                <button type="button" @click="selectedValue = ''; selectedLabel = 'Semua Status'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })" class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none" :class="selectedValue === '' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                    Semua Status
+                                </button>
+                                @foreach($statusLabels as $val => $label)
+                                    <button type="button" @click="selectedValue = '{{ $val }}'; selectedLabel = '{{ $label }}'; open = false; $nextTick(() => { $refs.statusSelect.dispatchEvent(new Event('change')) })" class="flex w-full items-center px-4 py-2 text-left text-sm transition hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none" :class="selectedValue === '{{ $val }}' ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 font-medium'">
+                                        {{ $label }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+                        <select x-ref="statusSelect" id="status-filter" name="status" x-model="selectedValue" class="hidden">
+                            <option value="">Semua Status</option>
+                            @foreach($statusLabels as $val => $label)
+                                <option value="{{ $val }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </form>
+        @endunless
+        <div id="business-table-container">
+            @include('businesses.partials.table')
+        </div>
     </section>
 </div>
 

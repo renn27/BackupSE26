@@ -6,8 +6,8 @@
 <div class="space-y-6">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <h1 class="text-2xl font-semibold tracking-tight text-se-ink">Dashboard Monitoring SBR</h1>
-            <p class="mt-1 text-sm text-slate-500">Upload data usaha dan kelola penugasan desa untuk petugas.</p>
+            <h1 class="text-2xl font-semibold tracking-tight text-se-ink">Monitoring SBR</h1>
+            <p class="mt-1 text-sm text-slate-500">Pantau progres pencatatan usaha dan penugasan desa.</p>
         </div>
         <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm shadow-slate-950/5">
             {{ number_format($villages->count()) }} desa tersedia
@@ -32,110 +32,85 @@
             ? min(100, round(($summary['assigned_villages'] / $summary['villages']) * 100, 1))
             : 0;
         $statusTotal = max(1, array_sum($summary['statuses']));
-        $tidakDitemukanStop = round(($summary['statuses']['tidak_ditemukan'] / $statusTotal) * 100, 1);
-        $ditemukanStop = round((($summary['statuses']['tidak_ditemukan'] + $summary['statuses']['ditemukan']) / $statusTotal) * 100, 1);
-        $baruStop = round((($summary['statuses']['tidak_ditemukan'] + $summary['statuses']['ditemukan'] + $summary['statuses']['baru']) / $statusTotal) * 100, 1);
-        $tutupStop = round((($summary['statuses']['tidak_ditemukan'] + $summary['statuses']['ditemukan'] + $summary['statuses']['baru'] + $summary['statuses']['tutup']) / $statusTotal) * 100, 1);
         $statusItems = [
-            ['label' => 'Tidak Ditemukan', 'value' => $summary['statuses']['tidak_ditemukan'], 'color' => 'bg-slate-500', 'text' => 'text-slate-700', 'soft' => 'bg-slate-50'],
-            ['label' => 'Ditemukan', 'value' => $summary['statuses']['ditemukan'], 'color' => 'bg-green-500', 'text' => 'text-green-700', 'soft' => 'bg-green-50'],
-            ['label' => 'Baru', 'value' => $summary['statuses']['baru'], 'color' => 'bg-blue-500', 'text' => 'text-blue-700', 'soft' => 'bg-blue-50'],
-            ['label' => 'Tutup', 'value' => $summary['statuses']['tutup'], 'color' => 'bg-rose-500', 'text' => 'text-rose-700', 'soft' => 'bg-rose-50'],
-            ['label' => 'Ganda', 'value' => $summary['statuses']['ganda'], 'color' => 'bg-amber-500', 'text' => 'text-amber-700', 'soft' => 'bg-amber-50'],
+            ['label' => 'Tidak Ditemukan', 'value' => $summary['statuses']['tidak_ditemukan'], 'text' => 'text-slate-700', 'soft' => 'bg-slate-50'],
+            ['label' => 'Ditemukan', 'value' => $summary['statuses']['ditemukan'], 'text' => 'text-green-700', 'soft' => 'bg-green-50'],
+            ['label' => 'Baru', 'value' => $summary['statuses']['baru'], 'text' => 'text-blue-700', 'soft' => 'bg-blue-50'],
+            ['label' => 'Tutup', 'value' => $summary['statuses']['tutup'], 'text' => 'text-rose-700', 'soft' => 'bg-rose-50'],
+            ['label' => 'Ganda', 'value' => $summary['statuses']['ganda'], 'text' => 'text-amber-700', 'soft' => 'bg-amber-50'],
         ];
     @endphp
 
     <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-950/5">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-                <h2 class="text-lg font-semibold text-se-ink">Dashboard Monitoring</h2>
-                <p class="mt-1 text-sm text-slate-500">Ringkasan pencatatan status usaha SBR per wilayah dan petugas.</p>
+                <h2 class="text-lg font-semibold text-se-ink">Ringkasan Pencatatan</h2>
+                <p class="mt-1 text-sm text-slate-500">Ringkasan progres pencatatan usaha SBR.</p>
             </div>
-            <div class="inline-flex w-fit items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-se-rust">
+            <div class="inline-flex w-fit items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-se-rust">
                 <span class="h-2 w-2 rounded-full bg-se-primary"></span>
                 {{ $summary['progress'] }}% tercatat
             </div>
         </div>
 
-        <div class="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
-            <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-                <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Progress Pencatatan</p>
-                        <div class="mt-2 flex flex-wrap items-end gap-x-3 gap-y-1">
-                            <p class="text-4xl font-semibold leading-none text-se-ink">{{ $summary['progress'] }}%</p>
-                            <p class="pb-1 text-sm text-slate-500">{{ number_format($summary['recorded']) }} dari {{ number_format($summary['businesses']) }} usaha</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3 text-sm lg:min-w-[320px]">
-                        <div class="rounded-2xl bg-white p-3 ring-1 ring-slate-200">
-                            <p class="text-xs text-slate-500">Sudah dicatat</p>
-                            <p class="mt-1 text-xl font-semibold text-green-700">{{ number_format($summary['recorded']) }}</p>
-                        </div>
-                        <div class="rounded-2xl bg-white p-3 ring-1 ring-slate-200">
-                            <p class="text-xs text-slate-500">Belum dicatat</p>
-                            <p class="mt-1 text-xl font-semibold text-slate-700">{{ number_format($summary['unrecorded']) }}</p>
-                        </div>
+        <div class="mt-5 rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Progress Pencatatan</p>
+                    <div class="mt-2 flex flex-wrap items-end gap-x-3 gap-y-1">
+                        <p class="text-4xl font-semibold leading-none text-se-ink">{{ $summary['progress'] }}%</p>
+                        <p class="pb-1 text-sm text-slate-500">{{ number_format($summary['recorded']) }} dari {{ number_format($summary['businesses']) }} usaha sudah dicatat</p>
                     </div>
                 </div>
 
-                <div class="mt-5 h-3 overflow-hidden rounded-full bg-white ring-1 ring-slate-200">
-                    <div class="h-full rounded-full bg-se-primary" style="width: {{ $recordedPercent }}%"></div>
-                </div>
-                <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-500">
-                    <span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-se-primary"></span>Tercatat {{ $recordedPercent }}%</span>
-                    <span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-slate-300"></span>Belum {{ $unrecordedPercent }}%</span>
-                    <span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-amber-400"></span>Desa ditugaskan {{ $assignedVillagePercent }}%</span>
+                <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:min-w-[560px]">
+                    <div class="rounded-2xl bg-white p-3 ring-1 ring-slate-200">
+                        <p class="text-[11px] font-medium uppercase tracking-wide text-slate-400">Total</p>
+                        <p class="mt-1 text-xl font-semibold text-se-ink">{{ number_format($summary['businesses']) }}</p>
+                    </div>
+                    <div class="rounded-2xl bg-white p-3 ring-1 ring-green-200">
+                        <p class="text-[11px] font-medium uppercase tracking-wide text-green-600">Sudah</p>
+                        <p class="mt-1 text-xl font-semibold text-green-700">{{ number_format($summary['recorded']) }}</p>
+                    </div>
+                    <div class="rounded-2xl bg-white p-3 ring-1 ring-slate-200">
+                        <p class="text-[11px] font-medium uppercase tracking-wide text-slate-400">Belum</p>
+                        <p class="mt-1 text-xl font-semibold text-slate-700">{{ number_format($summary['unrecorded']) }}</p>
+                    </div>
+                    <div class="rounded-2xl bg-white p-3 ring-1 ring-amber-200">
+                        <p class="text-[11px] font-medium uppercase tracking-wide text-amber-700">Desa Tugas</p>
+                        <p class="mt-1 text-xl font-semibold text-se-rust">{{ number_format($summary['assigned_villages']) }} <span class="text-xs font-medium text-slate-400">/ {{ number_format($summary['villages']) }}</span></p>
+                    </div>
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-slate-200 bg-white p-4">
-                <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Komposisi Status</p>
-                <div class="mx-auto mt-4 flex h-36 w-36 items-center justify-center rounded-full"
-                    style="background: conic-gradient(#64748b 0 {{ $tidakDitemukanStop }}%, #22c55e {{ $tidakDitemukanStop }}% {{ $ditemukanStop }}%, #3b82f6 {{ $ditemukanStop }}% {{ $baruStop }}%, #f43f5e {{ $baruStop }}% {{ $tutupStop }}%, #f59e0b {{ $tutupStop }}% 100%);">
-                    <div class="flex h-24 w-24 flex-col items-center justify-center rounded-full bg-white text-center shadow-sm">
-                        <span class="text-2xl font-semibold text-se-ink">{{ number_format(array_sum($summary['statuses'])) }}</span>
-                        <span class="text-xs text-slate-500">status</span>
-                    </div>
-                </div>
+            <div class="mt-5 h-2.5 overflow-hidden rounded-full bg-white ring-1 ring-slate-200">
+                <div class="h-full rounded-full bg-se-primary" style="width: {{ $recordedPercent }}%"></div>
+            </div>
+            <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-500">
+                <span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-se-primary"></span>Tercatat {{ $recordedPercent }}%</span>
+                <span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-slate-300"></span>Belum {{ $unrecordedPercent }}%</span>
+                <span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-amber-400"></span>Desa ditugaskan {{ $assignedVillagePercent }}%</span>
             </div>
         </div>
 
-        <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div class="rounded-2xl border border-slate-200 bg-white p-4">
-                <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Total Usaha</p>
-                <p class="mt-2 text-2xl font-semibold text-se-ink">{{ number_format($summary['businesses']) }}</p>
+        <div class="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Status yang sudah dicatat</p>
+                <p class="text-xs text-slate-400">Total {{ number_format(array_sum($summary['statuses'])) }} status</p>
             </div>
-            <div class="rounded-2xl border border-slate-200 bg-white p-4">
-                <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Desa</p>
-                <p class="mt-2 text-2xl font-semibold text-se-ink">{{ number_format($summary['villages']) }}</p>
-            </div>
-            <div class="rounded-2xl border border-slate-200 bg-white p-4">
-                <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Desa Ditugaskan</p>
-                <p class="mt-2 text-2xl font-semibold text-se-rust">{{ number_format($summary['assigned_villages']) }}</p>
-            </div>
-            <div class="rounded-2xl border border-slate-200 bg-white p-4">
-                <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Coverage Desa</p>
-                <p class="mt-2 text-2xl font-semibold text-se-rust">{{ $assignedVillagePercent }}%</p>
-            </div>
-        </div>
 
-        <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-            @foreach($statusItems as $status)
-                @php($statusPercent = round(($status['value'] / $statusTotal) * 100, 1))
-                <div class="rounded-2xl border border-slate-200 bg-white p-4">
-                    <div class="flex items-start justify-between gap-3">
-                        <div>
-                            <p class="text-xs font-medium uppercase tracking-wide text-slate-500">{{ $status['label'] }}</p>
-                            <p class="mt-2 text-2xl font-semibold {{ $status['text'] }}">{{ number_format($status['value']) }}</p>
+            <div class="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                @foreach($statusItems as $status)
+                    @php($statusPercent = round(($status['value'] / $statusTotal) * 100, 1))
+                    <div class="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/70 px-3 py-2.5">
+                        <div class="min-w-0">
+                            <p class="truncate text-xs font-medium text-slate-500">{{ $status['label'] }}</p>
+                            <p class="mt-0.5 text-lg font-semibold {{ $status['text'] }}">{{ number_format($status['value']) }}</p>
                         </div>
-                        <span class="rounded-full px-2.5 py-1 text-xs {{ $status['soft'] }} {{ $status['text'] }}">{{ $statusPercent }}%</span>
+                        <span class="shrink-0 rounded-full px-2 py-0.5 text-[11px] {{ $status['soft'] }} {{ $status['text'] }}">{{ $statusPercent }}%</span>
                     </div>
-                    <div class="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
-                        <div class="h-full rounded-full {{ $status['color'] }}" style="width: {{ $statusPercent }}%"></div>
-                    </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
     </section>
 
@@ -321,14 +296,14 @@
                 </div>
             </div>
             <div x-show="open" x-cloak class="overflow-x-auto">
-                <table class="w-full min-w-[920px] divide-y divide-slate-200 text-sm">
+                <table class="w-full min-w-[1080px] divide-y divide-slate-200 text-sm">
                     <thead class="bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
                         <tr>
-                            <th class="w-[34%] px-4 py-3">Petugas</th>
-                            <th class="w-[10%] px-4 py-3">Desa</th>
-                            <th class="w-[12%] px-4 py-3">Usaha</th>
-                            <th class="w-[12%] px-4 py-3">Tercatat</th>
-                            <th class="w-[32%] px-4 py-3">Progress</th>
+                            <th class="w-[24%] px-4 py-3">Petugas</th>
+                            <th class="w-[28%] px-4 py-3">Desa Ditugaskan</th>
+                            <th class="w-[10%] px-4 py-3">Usaha</th>
+                            <th class="w-[10%] px-4 py-3">Tercatat</th>
+                            <th class="w-[28%] px-4 py-3">Progress</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -338,7 +313,19 @@
                                     <p class="font-medium text-se-ink">{{ $item->name }}</p>
                                     <p class="text-xs text-slate-500">{{ $item->email }}</p>
                                 </td>
-                                <td class="px-4 py-3 text-slate-600">{{ number_format($item->assigned_villages_count) }}</td>
+                                <td class="px-4 py-3">
+                                    @if($item->assigned_villages->isNotEmpty())
+                                        <div class="flex max-w-md flex-wrap gap-1.5">
+                                            @foreach($item->assigned_villages as $villageName)
+                                                <span class="inline-flex max-w-full items-center rounded-full bg-orange-50 px-2.5 py-1 text-xs font-medium text-orange-700 ring-1 ring-orange-100" title="{{ $villageName }}">
+                                                    <span class="truncate">{{ $villageName }}</span>
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <span class="text-slate-400">Belum ada desa</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3 text-slate-600">{{ number_format($item->businesses_count) }}</td>
                                 <td class="px-4 py-3 text-slate-600">{{ number_format($item->recorded_count) }}</td>
                                 <td class="px-4 py-3">

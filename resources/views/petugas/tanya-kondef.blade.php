@@ -26,7 +26,7 @@
     ];
 @endphp
 
-<div class="mx-auto max-w-5xl space-y-5 sm:space-y-8">
+<div class="space-y-5 sm:space-y-6">
     <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-950/5 sm:rounded-3xl sm:p-6">
         <div class="flex items-start gap-3 sm:gap-4">
             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-se-subtle text-se-rust ring-1 ring-amber-200/70 sm:h-12 sm:w-12 sm:rounded-2xl">

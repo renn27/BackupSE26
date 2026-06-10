@@ -135,6 +135,9 @@ class AdminBusinessController extends Controller
             ->keyBy('user_id');
 
         $userMonitoring = User::where('role', 'petugas')
+            ->with(['villages' => function ($query) {
+                $query->orderBy('nmkec')->orderBy('nmdesa');
+            }])
             ->withCount(['villages as assigned_villages_count'])
             ->orderBy('name')
             ->get(['id', 'name', 'email'])
@@ -146,6 +149,7 @@ class AdminBusinessController extends Controller
                 return (object) [
                     'name' => $user->name,
                     'email' => $user->email,
+                    'assigned_villages' => $user->villages->map(fn ($village) => trim($village->nmkec . ' - ' . $village->nmdesa))->values(),
                     'assigned_villages_count' => $user->assigned_villages_count,
                     'businesses_count' => $businessCount,
                     'recorded_count' => $recordedCount,

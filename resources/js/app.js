@@ -6,6 +6,9 @@ const pushSwitchTrack = document.querySelector('[data-web-push-switch-track]');
 const pushSwitchKnob = document.querySelector('[data-web-push-switch-knob]');
 const pushStatus = document.querySelector('[data-web-push-status]');
 const pushTestButton = document.querySelector('[data-web-push-test]');
+const pushBanner = document.querySelector('[data-web-push-banner]');
+const pushBannerStatus = document.querySelector('[data-web-push-banner-status]');
+const pushBannerEnableButton = document.querySelector('[data-web-push-banner-enable]');
 
 function urlBase64ToUint8Array(base64String) {
     const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -102,30 +105,66 @@ function setPushButtonState(state) {
         idle: 'Aktifkan notifikasi',
         loading: 'Menyiapkan notifikasi...',
     };
+    const bannerMessages = {
+        unsupported: 'Browser ini belum mendukung web push notification.',
+        disabled: 'Web push notification belum dikonfigurasi.',
+        denied: 'Izin notifikasi diblokir. Buka pengaturan browser untuk mengaktifkannya.',
+        error: 'Status notifikasi belum bisa dimuat. Coba refresh halaman.',
+        idle: 'Setelah aktif, coba test notif lewat tombol lonceng.',
+        loading: 'Menyiapkan status notifikasi...',
+    };
+    const isEnabled = state === 'enabled';
+    const shouldShowBanner = !isEnabled && state !== 'loading';
+
+    document.documentElement.classList.toggle('web-push-enabled', isEnabled);
+    document.documentElement.classList.toggle('web-push-banner-visible', shouldShowBanner);
+
+    try {
+        if (isEnabled) {
+            localStorage.setItem('webPushState', 'enabled');
+        } else if (!['loading', 'error'].includes(state)) {
+            localStorage.removeItem('webPushState');
+        }
+    } catch (error) {}
 
     pushToggleButton.title = labels[state] || labels.idle;
     pushToggleButton.setAttribute('aria-label', pushToggleButton.title);
     pushToggleButton.dataset.state = state;
-    pushToggleButton.classList.toggle('text-green-600', state === 'enabled');
+    pushToggleButton.classList.toggle('text-green-600', isEnabled);
     pushToggleButton.classList.toggle('text-rose-500', state === 'denied');
-    pushSwitch?.toggleAttribute('checked', state === 'enabled');
+    pushSwitch?.toggleAttribute('checked', isEnabled);
 
     if (pushSwitch) {
-        pushSwitch.checked = state === 'enabled';
+        pushSwitch.checked = isEnabled;
         pushSwitch.disabled = ['unsupported', 'disabled', 'denied', 'loading'].includes(state);
     }
 
     if (pushTestButton) {
-        pushTestButton.disabled = state !== 'enabled';
+        pushTestButton.disabled = !isEnabled;
     }
 
     if (pushStatus) {
         pushStatus.textContent = labels[state] || labels.idle;
     }
 
-    pushSwitchTrack?.classList.toggle('bg-se-primary', state === 'enabled');
-    pushSwitchTrack?.classList.toggle('bg-slate-300', state !== 'enabled');
-    pushSwitchKnob?.classList.toggle('translate-x-5', state === 'enabled');
+    pushSwitchTrack?.classList.toggle('bg-se-primary', isEnabled);
+    pushSwitchTrack?.classList.toggle('bg-slate-300', !isEnabled);
+    pushSwitchKnob?.classList.toggle('translate-x-5', isEnabled);
+
+    if (pushBanner) {
+        pushBanner.classList.toggle('hidden', !shouldShowBanner);
+    }
+
+    if (pushBannerStatus) {
+        pushBannerStatus.textContent = isEnabled
+            ? 'Web push notification sudah aktif.'
+            : (bannerMessages[state] || bannerMessages.idle);
+    }
+
+    if (pushBannerEnableButton) {
+        pushBannerEnableButton.disabled = ['unsupported', 'disabled', 'denied', 'loading'].includes(state);
+        pushBannerEnableButton.textContent = state === 'loading' ? 'Menyiapkan...' : 'Aktifkan notif';
+    }
 }
 
 async function getServiceWorkerRegistration() {
@@ -311,6 +350,7 @@ async function initWebPush() {
         config = await response.json();
     } catch (error) {
         console.error('Gagal memuat konfigurasi Web Push.', error);
+        setPushButtonState('error');
         pushStatus && (pushStatus.textContent = error.message || 'Gagal memuat status notifikasi.');
         pushSwitch && (pushSwitch.disabled = true);
         pushTestButton && (pushTestButton.disabled = true);
@@ -327,6 +367,7 @@ async function initWebPush() {
         await refreshPushButtonState(config.publicKey);
     } catch (error) {
         console.error('Gagal membaca status subscription Web Push.', error);
+        setPushButtonState('error');
         pushStatus && (pushStatus.textContent = error.message || 'Gagal membaca status notifikasi.');
         pushSwitch && (pushSwitch.disabled = true);
         pushTestButton && (pushTestButton.disabled = true);
@@ -342,6 +383,15 @@ async function initWebPush() {
             }
         } catch (error) {
             console.error('Gagal mengubah status notifikasi.', error);
+            setPushButtonState('idle');
+        }
+    });
+
+    pushBannerEnableButton?.addEventListener('click', async () => {
+        try {
+            await enablePushNotifications(config.publicKey);
+        } catch (error) {
+            console.error('Gagal mengaktifkan notifikasi dari banner.', error);
             setPushButtonState('idle');
         }
     });
