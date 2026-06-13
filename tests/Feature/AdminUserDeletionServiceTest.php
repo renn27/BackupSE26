@@ -89,6 +89,24 @@ class AdminUserDeletionServiceTest extends TestCase
             'assigned_at' => now(),
         ]);
 
+        $businessId = DB::table('businesses')->insertGetId([
+            'idsbr' => 12345678,
+            'village_id' => $villageId,
+            'nama_usaha' => 'Toko Sederhana',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('business_statuses')->insert([
+            'business_id' => $businessId,
+            'status' => 'ditemukan',
+            'updated_by_user_id' => $user->id,
+            'updated_by_name' => $user->name,
+            'catatan' => 'Catatan status',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         $driveService = Mockery::mock(GoogleDriveService::class);
         $driveService
             ->shouldReceive('deleteFile')
@@ -104,5 +122,6 @@ class AdminUserDeletionServiceTest extends TestCase
         $this->assertDatabaseMissing('activity_logs', ['user_id' => $user->id]);
         $this->assertDatabaseMissing('sessions', ['user_id' => $user->id]);
         $this->assertDatabaseMissing('user_village_assignments', ['user_id' => $user->id]);
+        $this->assertDatabaseMissing('business_statuses', ['updated_by_user_id' => $user->id]);
     }
 }

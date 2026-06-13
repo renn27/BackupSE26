@@ -43,6 +43,7 @@ class UserDeletionService
                 ->orWhere('assigned_by', $user->id)
                 ->delete();
             DB::table('excel_upload_logs')->where('uploaded_by', $user->id)->delete();
+            DB::table('business_statuses')->where('updated_by_user_id', $user->id)->delete();
 
             $user->forceDelete();
         });
