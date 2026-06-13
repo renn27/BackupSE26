@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Monitoring SBR')
 
@@ -36,6 +36,20 @@
 @endphp
 
 <div class="space-y-5 sm:space-y-8">
+    <!-- Export Progress Card -->
+    <div id="sbr-export-progress" class="hidden rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm shadow-slate-950/5 sm:rounded-3xl sm:p-5">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p id="sbr-export-title" class="text-sm font-semibold text-se-ink">Menyiapkan data ekspor...</p>
+                <p id="sbr-export-detail" class="mt-1 text-xs text-slate-500">0 dari sekitar 48 ribu data diproses</p>
+            </div>
+            <span id="sbr-export-percent" class="text-sm font-semibold text-se-rust">0%</span>
+        </div>
+        <div class="mt-3 h-3 overflow-hidden rounded-full bg-white ring-1 ring-slate-200">
+            <div id="sbr-export-bar" class="h-full w-0 rounded-full bg-se-primary transition-all duration-300"></div>
+        </div>
+    </div>
+
     <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-950/5 sm:rounded-3xl sm:p-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between {{ auth()->user()->isSuperAdmin() ? 'border-b border-slate-100 pb-4 mb-4' : '' }}">
             <div class="min-w-0">
@@ -105,12 +119,12 @@
                         <input id="search-input" type="search" name="search" value="{{ $search }}" placeholder="Cari ID SBR atau nama usaha..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-se-ink outline-none transition placeholder:text-slate-400 focus:border-se-primary/40 focus:bg-white focus:ring-4 focus:ring-orange-100/70">
                     </div>
                     <!-- Desktop Export Button -->
-                    <a href="{{ route('admin.monitoring-sbr.export') }}" class="hidden sm:inline-flex h-[46px] w-full sm:w-auto items-center justify-center gap-1.5 rounded-2xl bg-se-primary px-4 py-3 text-xs sm:text-sm font-semibold text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust transition active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-orange-100 whitespace-nowrap">
+                    <button type="button" class="btn-export-monitoring hidden sm:inline-flex h-[46px] w-full sm:w-auto items-center justify-center gap-1.5 rounded-2xl bg-se-primary px-4 py-3 text-xs sm:text-sm font-semibold text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust transition active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-orange-100 whitespace-nowrap">
                         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
-                        Export Progress Monitoring
-                    </a>
+                        <span class="export-btn-label">Export Progress Monitoring</span>
+                    </button>
                 </div>
 
                 <div class="grid gap-3 grid-cols-1 sm:grid-cols-3 mt-3">
@@ -257,12 +271,12 @@
 
                 <div class="flex justify-end mt-3 sm:hidden">
                     <!-- Mobile Export Button -->
-                    <a href="{{ route('admin.monitoring-sbr.export') }}" class="inline-flex h-[46px] w-full items-center justify-center gap-1.5 rounded-2xl bg-se-primary px-4 py-3 text-xs sm:text-sm font-semibold text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust transition active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-orange-100 whitespace-nowrap">
+                    <button type="button" class="btn-export-monitoring inline-flex h-[46px] w-full items-center justify-center gap-1.5 rounded-2xl bg-se-primary px-4 py-3 text-xs sm:text-sm font-semibold text-white shadow-sm shadow-se-primary/20 hover:bg-se-rust transition active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-orange-100 whitespace-nowrap">
                         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
-                        Export Progress Monitoring
-                    </a>
+                        <span class="export-btn-label">Export Progress Monitoring</span>
+                    </button>
                 </div>
             </form>
         @elseif(false)
@@ -922,6 +936,121 @@ document.getElementById('modal-save').addEventListener('click', async () => {
     } finally {
         setSaveLoading(false);
     }
+});
+
+// --- Export Progress Logic ---
+const exportButtons = document.querySelectorAll('.btn-export-monitoring');
+const exportProgressBox = document.getElementById('sbr-export-progress');
+const exportTitle = document.getElementById('sbr-export-title');
+const exportDetail = document.getElementById('sbr-export-detail');
+const exportPercent = document.getElementById('sbr-export-percent');
+const exportBar = document.getElementById('sbr-export-bar');
+
+function setExportButtonsLoading(loading, labelText = 'Export Progress Monitoring') {
+    exportButtons.forEach(button => {
+        button.disabled = loading;
+        button.classList.toggle('cursor-not-allowed', loading);
+        button.classList.toggle('opacity-75', loading);
+        const label = button.querySelector('.export-btn-label');
+        if (label) {
+            label.textContent = loading ? labelText : 'Export Progress Monitoring';
+        }
+    });
+}
+
+function updateExportProgress(percent, title, detail) {
+    const safePercent = Math.max(0, Math.min(100, Math.round(percent || 0)));
+    exportProgressBox.classList.remove('hidden');
+    exportTitle.textContent = title;
+    exportDetail.textContent = detail;
+    exportPercent.textContent = `${safePercent}%`;
+    exportBar.style.width = `${safePercent}%`;
+}
+
+function hideExportProgress() {
+    exportProgressBox.classList.add('hidden');
+    exportBar.style.width = '0%';
+}
+
+exportButtons.forEach(button => {
+    button.addEventListener('click', async () => {
+        const exportId = (window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random()}`).replace(/[^a-zA-Z0-9_-]/g, '');
+        setExportButtonsLoading(true, 'Mengekspor...');
+        updateExportProgress(0, 'Menyiapkan ekspor...', 'Menghubungi server...');
+
+        let pollingTimer = null;
+
+        const stopPolling = () => {
+            if (pollingTimer) {
+                clearInterval(pollingTimer);
+            }
+        };
+
+        // Start polling progress
+        const startPolling = () => {
+            const progressUrl = `{{ url('/admin/monitoring-sbr/export/progress') }}/${exportId}`;
+            pollingTimer = setInterval(async () => {
+                try {
+                    const response = await fetch(progressUrl);
+                    if (!response.ok) return;
+
+                    const data = await response.json();
+                    if (data.phase === 'processing') {
+                        updateExportProgress(
+                            data.percent,
+                            'Memproses data ekspor...',
+                            `${new Intl.NumberFormat('id-ID').format(data.processed)} dari sekitar ${new Intl.NumberFormat('id-ID').format(data.total)} row selesai.`
+                        );
+                    } else if (data.phase === 'finished') {
+                        stopPolling();
+                        updateExportProgress(100, 'Ekspor selesai', 'Mengunduh file...');
+                        setTimeout(() => {
+                            hideExportProgress();
+                            setExportButtonsLoading(false);
+                        }, 1000);
+                    }
+                } catch (e) {
+                    // Ignore transient errors
+                }
+            }, 800);
+        };
+
+        startPolling();
+
+        try {
+            const response = await fetch(`{{ url('/admin/monitoring-sbr/export/start') }}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ export_id: exportId })
+            });
+
+            const data = await response.json();
+            stopPolling();
+
+            if (response.ok && data.success && data.download_url) {
+                updateExportProgress(100, 'Ekspor selesai', 'Mengunduh file...');
+                window.location.href = data.download_url;
+                setTimeout(() => {
+                    hideExportProgress();
+                    setExportButtonsLoading(false);
+                }, 1000);
+            } else {
+                stopPolling();
+                hideExportProgress();
+                setExportButtonsLoading(false);
+                alert(data.message || 'Gagal mengekspor data SBR.');
+            }
+        } catch (error) {
+            stopPolling();
+            hideExportProgress();
+            setExportButtonsLoading(false);
+            alert('Terjadi kesalahan koneksi saat memproses ekspor.');
+        }
+    });
 });
 </script>
 @endpush

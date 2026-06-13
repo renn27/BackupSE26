@@ -360,10 +360,74 @@ class AdminBusinessController extends Controller
         return response()->json(['success' => true, 'villages' => $villages]);
     }
 
-    public function exportProgress()
+    public function startExport(Request $request)
     {
-        $filename = 'Update Monitoring SBR_SE2026_' . now('Asia/Jakarta')->format('Ymd_His') . '.xlsx';
-        return Excel::download(new \App\Exports\ProgressMonitoringExport, $filename);
+        $exportId = preg_replace('/[^a-zA-Z0-9_-]/', '', $request->input('export_id', \Illuminate\Support\Str::random(16)));
+        $progressKey = 'monitoring_sbr_export:' . $request->user()->id . ':' . $exportId;
+
+        // Ensure exports directory exists
+        \Illuminate\Support\Facades\Storage::disk('local')->makeDirectory('exports');
+
+        $totalRows = Business::count();
+
+        // Set initial progress
+        Cache::put($progressKey, [
+            'phase' => 'processing',
+            'percent' => 0,
+            'processed' => 0,
+            'total' => $totalRows,
+            'updated_at' => now()->format('H:i:s'),
+        ], 600);
+
+        $filename = 'exports/Update_Monitoring_SBR_SE2026_' . $exportId . '.xlsx';
+
+        // Run the export and store the file locally
+        Excel::store(new \App\Exports\ProgressMonitoringExport($progressKey, $totalRows), $filename, 'local');
+
+        // Mark as finished
+        Cache::put($progressKey, [
+            'phase' => 'finished',
+            'percent' => 100,
+            'processed' => $totalRows,
+            'total' => $totalRows,
+            'download_url' => route('admin.monitoring-sbr.export.download', ['exportId' => $exportId]),
+            'updated_at' => now()->format('H:i:s'),
+        ], 600);
+
+        return response()->json([
+            'success' => true,
+            'download_url' => route('admin.monitoring-sbr.export.download', ['exportId' => $exportId]),
+        ]);
+    }
+
+    public function exportProgress(Request $request, string $exportId)
+    {
+        $exportId = preg_replace('/[^a-zA-Z0-9_-]/', '', $exportId);
+        $progressKey = 'monitoring_sbr_export:' . $request->user()->id . ':' . $exportId;
+        $progress = Cache::get($progressKey);
+
+        return response()->json($progress ?? [
+            'phase' => 'waiting',
+            'percent' => 0,
+            'processed' => 0,
+            'total' => 0,
+            'updated_at' => null,
+        ]);
+    }
+
+    public function downloadExport(Request $request, string $exportId)
+    {
+        $exportId = preg_replace('/[^a-zA-Z0-9_-]/', '', $exportId);
+        $filename = 'exports/Update_Monitoring_SBR_SE2026_' . $exportId . '.xlsx';
+
+        if (!\Illuminate\Support\Facades\Storage::disk('local')->exists($filename)) {
+            abort(404, 'File export tidak ditemukan atau sudah kadaluarsa.');
+        }
+
+        $filePath = \Illuminate\Support\Facades\Storage::disk('local')->path($filename);
+        $downloadName = 'Update Monitoring SBR_SE2026_' . now('Asia/Jakarta')->format('Ymd_His') . '.xlsx';
+
+        return response()->download($filePath, $downloadName)->deleteFileAfterSend();
     }
 
     private function progressKey(Request $request, ?string $importId): ?string

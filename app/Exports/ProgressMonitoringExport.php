@@ -4,6 +4,8 @@ namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
@@ -12,20 +14,33 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use App\Models\Business;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class ProgressMonitoringExport implements WithMultipleSheets
 {
+    public function __construct(
+        private ?string $progressKey = null,
+        private int $totalRows = 0
+    ) {}
+
     public function sheets(): array
     {
         return [
-            new BusinessesSheet(),
+            new BusinessesSheet($this->progressKey, $this->totalRows),
             new OfficersSheet(),
         ];
     }
 }
 
-class BusinessesSheet implements FromCollection, WithHeadings, WithTitle, WithCustomStartCell, WithStyles
+class BusinessesSheet implements FromQuery, WithMapping, WithHeadings, WithTitle, WithCustomStartCell, WithStyles
 {
+    private int $currentRow = 0;
+
+    public function __construct(
+        private ?string $progressKey = null,
+        private int $totalRows = 0
+    ) {}
+
     public function title(): string
     {
         return 'Data Usaha';
@@ -50,40 +65,73 @@ class BusinessesSheet implements FromCollection, WithHeadings, WithTitle, WithCu
         ];
     }
 
-    public function collection()
+    public function query()
     {
-        return Business::with(['village', 'status.updatedBy'])
-            ->get()
-            ->map(function ($business) {
-                $status = $business->status;
-                
-                $statusText = 'Belum Dicatat';
-                if ($status) {
-                    $statusText = match ($status->status) {
-                        'ditemukan' => 'Ditemukan',
-                        'tidak_ditemukan' => 'Tidak Ditemukan',
-                        'pindah' => 'Pindah',
-                        'baru' => 'Baru',
-                        'tutup' => 'Tutup',
-                        'ganda' => 'Ganda',
-                        default => ucwords(str_replace('_', ' ', $status->status)),
-                    };
-                }
+        return DB::table('businesses')
+            ->leftJoin('villages', 'businesses.village_id', '=', 'villages.id')
+            ->leftJoin('business_statuses', 'business_statuses.business_id', '=', 'businesses.id')
+            ->leftJoin('users', 'business_statuses.updated_by_user_id', '=', 'users.id')
+            ->select([
+                'businesses.idsbr',
+                'businesses.nama_usaha',
+                'business_statuses.status as status_val',
+                'villages.nmdesa',
+                'villages.nmkec',
+                'businesses.alamat_usaha',
+                'business_statuses.updated_by_name as status_updated_by_name',
+                'users.name as user_name',
+                'business_statuses.updated_at as status_updated_at',
+                'business_statuses.created_at as status_created_at',
+            ]);
+    }
 
-                $petugasName = $status ? ($status->updated_by_name ?? ($status->updatedBy ? $status->updatedBy->name : '-')) : '-';
-                $tanggalDitandai = $status ? ($status->updated_at ? $status->updated_at->format('Y-m-d H:i:s') : ($status->created_at ? $status->created_at->format('Y-m-d H:i:s') : '-')) : '-';
+    public function map($row): array
+    {
+        $this->currentRow++;
+        if ($this->progressKey && $this->currentRow % 200 === 0) {
+            $total = max(1, $this->totalRows);
+            $percent = min(98, (int) floor(($this->currentRow / $total) * 100));
+            Cache::put($this->progressKey, [
+                'phase' => 'processing',
+                'percent' => $percent,
+                'processed' => $this->currentRow,
+                'total' => $total,
+                'updated_at' => now()->format('H:i:s'),
+            ], 600);
+        }
 
-                return [
-                    'idsbr' => $business->idsbr,
-                    'nama_usaha' => $business->nama_usaha,
-                    'status' => $statusText,
-                    'desa' => $business->village ? $business->village->nmdesa : '-',
-                    'kecamatan' => $business->village ? $business->village->nmkec : '-',
-                    'alamat' => $business->alamat_usaha,
-                    'petugas' => $petugasName,
-                    'tanggal' => $tanggalDitandai,
-                ];
-            });
+        $statusText = 'Belum Dicatat';
+        if ($row->status_val) {
+            $statusText = match ($row->status_val) {
+                'ditemukan' => 'Ditemukan',
+                'tidak_ditemukan' => 'Tidak Ditemukan',
+                'pindah' => 'Pindah',
+                'baru' => 'Baru',
+                'tutup' => 'Tutup',
+                'ganda' => 'Ganda',
+                default => ucwords(str_replace('_', ' ', $row->status_val)),
+            };
+        }
+
+        $petugasName = $row->status_val ? ($row->status_updated_by_name ?? ($row->user_name ?? '-')) : '-';
+        $tanggalDitandai = '-';
+        if ($row->status_val) {
+            $date = $row->status_updated_at ?? $row->status_created_at;
+            if ($date) {
+                $tanggalDitandai = \Carbon\Carbon::parse($date)->format('Y-m-d H:i:s');
+            }
+        }
+
+        return [
+            $row->idsbr,
+            $row->nama_usaha,
+            $statusText,
+            $row->nmdesa ?? '-',
+            $row->nmkec ?? '-',
+            $row->alamat_usaha,
+            $petugasName,
+            $tanggalDitandai,
+        ];
     }
 
     public function styles(Worksheet $sheet)

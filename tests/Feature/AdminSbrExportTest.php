@@ -7,6 +7,8 @@ use App\Models\Village;
 use App\Models\Business;
 use App\Models\BusinessStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Tests\TestCase;
 
@@ -17,6 +19,7 @@ class AdminSbrExportTest extends TestCase
     public function test_it_allows_superadmin_to_export_sbr_data(): void
     {
         Excel::fake();
+        Storage::fake('local');
 
         $admin = User::create([
             'name' => 'Admin Test',
@@ -47,15 +50,56 @@ class AdminSbrExportTest extends TestCase
             'updated_by_name' => $admin->name,
         ]);
 
-        $this->travelTo(now());
-        $filename = 'Update Monitoring SBR_SE2026_' . now('Asia/Jakarta')->format('Ymd_His') . '.xlsx';
+        $exportId = 'test-export-id';
 
         $response = $this->actingAs($admin)
-            ->get(route('admin.monitoring-sbr.export'));
+            ->postJson(route('admin.monitoring-sbr.export.start'), [
+                'export_id' => $exportId,
+            ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+            ]);
+
+        $filename = 'exports/Update_Monitoring_SBR_SE2026_' . $exportId . '.xlsx';
+        Excel::assertStored($filename, 'local');
+
+        // Verify progress is finished
+        $progressResponse = $this->actingAs($admin)
+            ->getJson(route('admin.monitoring-sbr.export.progress', ['exportId' => $exportId]));
+        
+        $progressResponse->assertStatus(200)
+            ->assertJson([
+                'phase' => 'finished',
+                'percent' => 100,
+            ]);
+    }
+
+    public function test_it_allows_superadmin_to_download_export(): void
+    {
+        Storage::fake('local');
+        $this->travelTo(now());
+
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin.test@example.com',
+            'role' => 'superadmin',
+            'status' => 'active',
+            'google_refresh_token' => 'mock-token',
+        ]);
+
+        $exportId = 'test-download-id';
+        $filename = 'exports/Update_Monitoring_SBR_SE2026_' . $exportId . '.xlsx';
+        
+        // Put a dummy file in storage
+        Storage::disk('local')->put($filename, 'dummy content');
+
+        $response = $this->actingAs($admin)
+            ->get(route('admin.monitoring-sbr.export.download', ['exportId' => $exportId]));
 
         $response->assertStatus(200);
-
-        Excel::assertDownloaded($filename);
+        $response->assertHeader('content-disposition', 'attachment; filename="Update Monitoring SBR_SE2026_' . now('Asia/Jakarta')->format('Ymd_His') . '.xlsx"');
     }
 
     public function test_it_denies_petugas_from_exporting_sbr_data(): void
@@ -69,8 +113,18 @@ class AdminSbrExportTest extends TestCase
         ]);
 
         $response = $this->actingAs($petugas)
-            ->get(route('admin.monitoring-sbr.export'));
+            ->postJson(route('admin.monitoring-sbr.export.start'));
 
         $response->assertStatus(403);
+
+        $responseProgress = $this->actingAs($petugas)
+            ->getJson(route('admin.monitoring-sbr.export.progress', ['exportId' => 'some-id']));
+
+        $responseProgress->assertStatus(403);
+
+        $responseDownload = $this->actingAs($petugas)
+            ->get(route('admin.monitoring-sbr.export.download', ['exportId' => 'some-id']));
+
+        $responseDownload->assertStatus(403);
     }
 }
