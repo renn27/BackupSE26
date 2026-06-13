@@ -82,7 +82,8 @@ class BusinessesSheet implements FromQuery, WithMapping, WithHeadings, WithTitle
                 'users.name as user_name',
                 'business_statuses.updated_at as status_updated_at',
                 'business_statuses.created_at as status_created_at',
-            ]);
+            ])
+            ->orderBy('businesses.id');
     }
 
     public function map($row): array
