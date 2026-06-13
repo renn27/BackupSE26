@@ -41,10 +41,6 @@ class UserBusinessController extends Controller
                 ->when($selectedStatus, function ($query, $selectedStatus) {
                     if ($selectedStatus === 'belum_dicatat') {
                         $query->whereDoesntHave('status');
-                    } elseif ($selectedStatus === 'pindah') {
-                        $query->whereHas('status', function ($q) {
-                            $q->where('status', 'tidak_ditemukan');
-                        });
                     } else {
                         $query->whereHas('status', function ($q) use ($selectedStatus) {
                             $q->where('status', $selectedStatus);
@@ -89,10 +85,6 @@ class UserBusinessController extends Controller
                 ->when($selectedStatus, function ($query, $selectedStatus) {
                     if ($selectedStatus === 'belum_dicatat') {
                         $query->whereDoesntHave('status');
-                    } elseif ($selectedStatus === 'pindah') {
-                        $query->whereHas('status', function ($q) {
-                            $q->where('status', 'tidak_ditemukan');
-                        });
                     } else {
                         $query->whereHas('status', function ($q) use ($selectedStatus) {
                             $q->where('status', $selectedStatus);

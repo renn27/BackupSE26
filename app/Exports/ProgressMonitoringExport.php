@@ -105,7 +105,6 @@ class BusinessesSheet implements FromQuery, WithMapping, WithHeadings, WithTitle
             $statusText = match ($row->status_val) {
                 'ditemukan' => 'Ditemukan',
                 'tidak_ditemukan' => 'Tidak Ditemukan',
-                'pindah' => 'Pindah',
                 'baru' => 'Baru',
                 'tutup' => 'Tutup',
                 'ganda' => 'Ganda',

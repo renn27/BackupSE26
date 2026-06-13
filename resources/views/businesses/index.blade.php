@@ -24,7 +24,6 @@
         'belum_dicatat' => 'Belum Dicatat',
         'ditemukan' => 'Ditemukan',
         'tidak_ditemukan' => 'Tidak Ditemukan',
-        'pindah' => 'Pindah',
         'baru' => 'Baru',
         'tutup' => 'Tutup',
         'ganda' => 'Ganda',
