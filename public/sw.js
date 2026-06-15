@@ -1,4 +1,4 @@
-const CACHE_NAME = 'asisten-se2026-v3';
+const CACHE_NAME = 'asisten-se2026-v4';
 const CORE_ASSETS = [
   '/',
   '/manifest.webmanifest',
@@ -6,6 +6,7 @@ const CORE_ASSETS = [
   '/images/logo-se2026-small.png',
   '/images/asisten-se2026-icon-192.png',
   '/images/asisten-se2026-icon-512.png',
+  '/images/asisten-se2026-icon-180.png',
 ];
 
 self.addEventListener('install', (event) => {

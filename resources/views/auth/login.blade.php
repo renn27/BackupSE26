@@ -14,7 +14,7 @@
     <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
     <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/asisten-se2026-icon-192.png') }}">
     <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/asisten-se2026-icon-512.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/asisten-se2026-icon-192.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/asisten-se2026-icon-180.png') }}">
     @vite(['resources/css/app.css'])
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
